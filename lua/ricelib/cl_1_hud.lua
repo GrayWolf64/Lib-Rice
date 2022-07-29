@@ -163,7 +163,7 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,OnEnter)
     TE:Dock(RIGHT)
     TE:SetWide(RL_hudScaleX(TEW))
     TE:SetFont("OPPOSans_"..FontSize)
-    TE.OnEnter = function(text)
+    TE.OnEnter = function(self,text)
         OnEnter(text)
     end
 
