@@ -81,22 +81,22 @@ function RL.IncludeDirAs(directory, name)
     end
 end
 
-function RL.AddCSFiles(directory, name)
-    if CLIENT then return end
-    local files, directories = file.Find(directory .. "*", "LUA")
-
-    for _, v in ipairs(files) do
-        AddFileAs(v, directory, name)
-    end
-
-    for _, v in ipairs(directories) do
-        print("["..name.."] AddCSFiles : " .. directory .. v)
-        RL.IncludeDirAs(directory .. v, name)
-    end
-end
-
 RL.IncludeDir("ricelib/")
 
 if SERVER then
+    function RL.AddCSFiles(directory, name)
+        local files, directories = file.Find(directory .. "*", "LUA")
+    
+        for _, v in ipairs(files) do
+            print("["..name.."] AddCSFiles : " .. directory .. v)
+            AddCSLuaFile(directory .. v)
+        end
+    
+        for _, v in ipairs(directories) do
+            print("["..name.."] AddCSFiles Dir : " .. directory .. v)
+            RL.AddCSFiles(directory .. v, name)
+        end
+    end
+
     resource.AddWorkshop( "2829757059" )
 end

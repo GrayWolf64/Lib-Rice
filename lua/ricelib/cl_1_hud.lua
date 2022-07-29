@@ -149,8 +149,7 @@ function RL.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
     return btn
 end
 
-function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,OnEnter,...)
-    local var = {...}
+function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,OnEnter)
     OnEnter = OnEnter or function() end
     
     local body = vgui.Create("DPanel", Panel)
@@ -164,8 +163,8 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,OnEnter,...)
     TE:Dock(RIGHT)
     TE:SetWide(RL_hudScaleX(TEW))
     TE:SetFont("OPPOSans_"..FontSize)
-    TE.OnEnter = function()
-        OnEnter(unpack(var))
+    TE.OnEnter = function(text)
+        OnEnter(text)
     end
 
     return body,TE
