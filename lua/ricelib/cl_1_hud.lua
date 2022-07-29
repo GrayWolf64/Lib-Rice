@@ -168,5 +168,5 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,OnEnter,...)
         OnEnter(unpack(var))
     end
 
-    return body
+    return body,TE
 end
