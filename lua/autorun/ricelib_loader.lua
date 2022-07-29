@@ -81,12 +81,22 @@ function RL.IncludeDirAs(directory, name)
     end
 end
 
-if SERVER then
-    RL.IncludeDir("ricelib/")
+function RL.AddCSFiles(directory, name)
+    if CLIENT then return end
+    local files, directories = file.Find(directory .. "*", "LUA")
 
+    for _, v in ipairs(files) do
+        AddFileAs(v, directory, name)
+    end
+
+    for _, v in ipairs(directories) do
+        print("["..name.."] AddCSFiles : " .. directory .. v)
+        RL.IncludeDirAs(directory .. v, name)
+    end
+end
+
+RL.IncludeDir("ricelib/")
+
+if SERVER then
     resource.AddWorkshop( "2829757059" )
-else
-    hook.Add("InitPostEntity","RiceLib_Load",function()
-        RL.IncludeDir("ricelib/")
-    end)
 end
