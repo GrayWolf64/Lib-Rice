@@ -81,8 +81,6 @@ function RL.IncludeDirAs(directory, name)
     end
 end
 
-RL.IncludeDir("ricelib/")
-
 if SERVER then
     function RL.AddCSFiles(directory, name)
         local files, directories = file.Find(directory .. "*", "LUA")
@@ -100,3 +98,5 @@ if SERVER then
 
     resource.AddWorkshop( "2829757059" )
 end
+
+RL.IncludeDir("ricelib/")
