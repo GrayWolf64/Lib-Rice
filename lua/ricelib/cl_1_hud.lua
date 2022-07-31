@@ -35,20 +35,21 @@ else
 end
 
 function RL.hudOffset(x,y,profile)
-    if RL.VGUI.HUDOffset[profile] then x = RL.VGUI.HUDOffset[profile].x end
-    if RL.VGUI.HUDOffset[profile] then y = RL.VGUI.HUDOffset[profile].y end
+    if RL.VGUI.HUDOffset[profile] then 
+        return RL.VGUI.HUDOffset[profile].x,RL.VGUI.HUDOffset[profile].y
+    end
 
     return x * (ScrW()/1920), y * (ScrH()/1080)
 end
 
 function RL.hudOffsetX(x,profile)
-    if RL.VGUI.HUDOffset[profile] then x = RL.VGUI.HUDOffset[profile].x end
+    if RL.VGUI.HUDOffset[profile] then return RL.VGUI.HUDOffset[profile].x end
 
     return x * (ScrW()/1920)
 end
 
 function RL.hudOffsetY(y,profile)
-    if RL.VGUI.HUDOffset[profile] then y = RL.VGUI.HUDOffset[profile].y end
+    if RL.VGUI.HUDOffset[profile] then return RL.VGUI.HUDOffset[profile].y end
 
     return y * (ScrH()/1080)
 end
