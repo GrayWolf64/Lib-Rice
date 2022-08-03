@@ -1,4 +1,5 @@
 RL.VGUI = RL.VGUI or {}
+RICELIB_PLAYERCHAT = false
 
 // HUD/UI 位置/大小 缩放
 
@@ -67,14 +68,30 @@ function RL.Clear_HUDOffset(profile,x,y)
 end
 
 // HUD位置更改按钮
-function RL.VGUI.OffsetButton(panel,profile,x,y)
+function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName)
     local btn = vgui.Create("DButton",panel)
     btn:SetSize(btn:GetParent():GetSize())
     btn:SetText("")
-    btn.Paint = function() end
+    btn.RLshow = show
+    btn.RLshowName = showName
+    btn.Paint = function(self,w,h)
+        local color = Color(0,255,0,255)
+        if RICELIB_PLAYERCHAT then color = Color(0,255,0,100) end
+        if self.Dragging then color = Color(0,255,0,255) end
+
+        if self.Dragging or RICELIB_PLAYERCHAT then
+            surface.SetDrawColor(color)
+            surface.DrawOutlinedRect(0,0,w,h,2)
+        end
+
+        if self.RLshow and RICELIB_PLAYERCHAT then
+            draw.SimpleText(self.RLshowName,"OPPOSans_30",w/2,h/2,Color(0,255,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+        end
+    end
     btn.DoClick = function(self)
         if not panel.Dragging then
             panel.Dragging = true
+            self.Dragging = true
 
             local x,y = input.GetCursorPos()
             panel.DragOrgX, panel.DragOrgY = panel:GetX() - x,panel:GetY() - y
@@ -82,12 +99,14 @@ function RL.VGUI.OffsetButton(panel,profile,x,y)
             return
         else
             panel.Dragging = false 
+            self.Dragging = false
 
             RL.Change_HUDOffset(profile,panel:GetX(),panel:GetY())
         end
     end
-    btn.DoRightClick = function()
+    btn.DoRightClick = function(self)
         panel.Dragging = false
+        self.Dragging = false
         panel:SetPos(RL.hudScale(x,y))
 
         RL.Clear_HUDOffset(profile,0,0)
@@ -107,7 +126,7 @@ function RL.VGUI.RegisterFont(FontName, CodeName, addData)
     for i=1,10 do
         local data = {
             font = FontName,
-            size = i*10,
+            size = i*10*(ScrH()/1080),
             weight = 500,
             antialias = true,
             additive = false,
@@ -120,6 +139,25 @@ function RL.VGUI.RegisterFont(FontName, CodeName, addData)
     end
 
     print("[Ricelib Font] RegisterFont: "..CodeName.." ("..FontName..")")
+end
+
+function RL.VGUI.RegisterFontFixed(FontName, CodeName, addData)
+    for i=1,10 do
+        local data = {
+            font = FontName,
+            size = i*10,
+            weight = 500,
+            antialias = true,
+            additive = false,
+            outline = false
+        }
+
+        table.Merge(data, (addData or {}))
+
+        surface.CreateFont(CodeName.."_"..i*10,data)
+    end
+
+    print("[Ricelib Font] Register Fixed Font: "..CodeName.." ("..FontName..")")
 end
 
 // 现代VGUI组件
@@ -170,3 +208,11 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,OnEnter)
 
     return body,TE
 end
+
+hook.Add("StartChat","RiceLib_StartChat",function()
+    RICELIB_PLAYERCHAT = true
+end)
+
+hook.Add("FinishChat","RiceLib_FinishChat",function()
+    RICELIB_PLAYERCHAT = false
+end)
