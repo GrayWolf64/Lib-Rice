@@ -188,26 +188,92 @@ function RL.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
     return btn
 end
 
-function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,OnEnter)
-    OnEnter = OnEnter or function() end
+function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,Fun)
+    Fun = Fun or function() end
     
     local body = vgui.Create("DPanel", Panel)
     body:SetSize(RL_hudScale(W,H))
     body:SetPos(RL_hudScale(X,Y))
     body.Paint = function() end
 
-    RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
+    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
 
     local TE = vgui.Create("DTextEntry", body)
     TE:Dock(RIGHT)
     TE:SetWide(RL_hudScaleX(TEW))
     TE:SetFont("OPPOSans_"..FontSize)
     TE.OnEnter = function(self,text)
-        OnEnter(text)
+        Fun(text)
     end
 
-    return body,TE
+    return body,TE,label
 end
+
+function RL.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
+    Fun = Fun or function() end
+    
+    local body = vgui.Create("DPanel", Panel)
+    body:SetSize(RL_hudScale(W,H))
+    body:SetPos(RL_hudScale(X,Y))
+    body.Paint = function() end
+
+    local CB = vgui.Create("DCheckBox", body)
+    CB:Dock(LEFT)
+    CB:SetWide(body:GetTall())
+    CB:SetFont("OPPOSans_"..FontSize)
+    function CB:OnChange(bool)
+        Fun(bool) 
+    end
+
+    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0)
+    label:Dock(LEFT)
+    label:DockMargin(RL.hudScaleX(5),0,0,0)
+
+    return body,CB,label
+end
+
+function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,TEW,Fun)
+    Fun = Fun or function() end
+    
+    local body = vgui.Create("DPanel", Panel)
+    body:SetSize(RL_hudScale(W,H))
+    body:SetPos(RL_hudScale(X,Y))
+    body.Paint = function() end
+
+    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
+
+    local CB = vgui.Create("DComboBox", body)
+    CB:Dock(RIGHT)
+    CB:SetWide(RL_hudScaleX(TEW))
+    CB:SetFont("OPPOSans_"..FontSize)
+    function CB:OnSelect(index,value)
+        Fun(value)
+    end
+
+    return body,TE,label
+end
+
+function RL.VGUI.ModernNumberWang(Text,Panel,FontSize,X,Y,W,H,TEW,Fun)
+    Fun = Fun or function() end
+    
+    local body = vgui.Create("DPanel", Panel)
+    body:SetSize(RL_hudScale(W,H))
+    body:SetPos(RL_hudScale(X,Y))
+    body.Paint = function() end
+
+    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
+
+    local CB = vgui.Create("DNumberWang", body)
+    CB:Dock(RIGHT)
+    CB:SetWide(RL_hudScaleX(TEW))
+    CB:SetFont("OPPOSans_"..FontSize)
+    function CB:OnValueChanged(value)
+        Fun(value)
+    end
+
+    return body,TE,label
+end
+
 
 hook.Add("StartChat","RiceLib_StartChat",function()
     RICELIB_PLAYERCHAT = true

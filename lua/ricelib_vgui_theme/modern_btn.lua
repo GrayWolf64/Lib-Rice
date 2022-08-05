@@ -1,7 +1,7 @@
 local Theme = {}
 
 Theme.Paint = function(self, w, h)
-    local color = Color(210,210,210,255)
+    local color = Color(220,220,220,255)
     local r = 7
 
     if h <= 25 then r = 5 end
