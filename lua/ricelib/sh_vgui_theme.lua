@@ -15,7 +15,7 @@ function RL.VGUI.ReloadTheme()
             local Name,Theme = include("ricelib_vgui_theme/" .. v)
             if !Name or !Theme then return end
 
-            print("[RiceLib VGUI Theme] Loaded [" .. Name .. "]")
+            RL.MessageAs("Loaded " .. Name,"RiceLib VGUI Theme")
             
             RL.VGUI.RegisterTheme(Name,Theme)
         end
@@ -74,6 +74,33 @@ else
     end
 
     RL.VGUI.SetGlobalTheme("Default")
+
+    concommand.Add("RiceLib_VGUI_ReloadTheme",function()
+        RL.VGUI.ReloadTheme()
+    end)
+
+    concommand.Add("RiceLib_VGUI_ThemeView",function()
+        local frame = vgui.Create("DFrame")
+        frame:SetSize(RL.hudScale(500,500))
+        frame:Center()
+        frame:MakePopup()
+        frame:SetTitle("RiceLib VGUI Theme Viewer")
+        frame:SetTheme("ModernDark")
+
+        local panel = vgui.Create("DScrollPanel",frame)
+        panel:Dock(FILL)
+
+        for k,v in SortedPairs(RL.VGUI.Theme) do
+            local button = vgui.Create("DButton",panel)
+            button:Dock(TOP)
+            button:DockMargin(0,RL.hudScaleY(5),0,0)
+            button:SetText(k)
+            button:SetTheme(k)
+            button:SetTall(RL.hudScaleY(50))
+
+            panel:AddItem(button)
+        end
+    end)
 end
 
 RL.VGUI.ReloadTheme()

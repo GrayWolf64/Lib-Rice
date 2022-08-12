@@ -1,4 +1,3 @@
-RL.VGUI = RL.VGUI or {}
 RICELIB_PLAYERCHAT = false
 
 // HUD/UI 位置/大小 缩放
@@ -68,7 +67,9 @@ function RL.Clear_HUDOffset(profile,x,y)
 end
 
 // HUD位置更改按钮
-function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName)
+function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName,resetFun)
+    resetFun = resetFun or function() end
+
     local btn = vgui.Create("DButton",panel)
     btn:SetSize(btn:GetParent():GetSize())
     btn:SetText("")
@@ -110,7 +111,11 @@ function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName)
         panel:SetPos(RL.hudScale(x,y))
 
         RL.Clear_HUDOffset(profile,0,0)
+
+        self.OnPosReset()
+        self:SetSize(self:GetParent():GetSize())
     end
+    btn.OnPosReset = resetFun
 
     panel.Think = function(self)
         if not self.Dragging then return end
@@ -119,159 +124,8 @@ function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName)
     
         self:SetPos(self.DragOrgX + x, self.DragOrgY + y)
     end
-end
-
-// 一键创建 10 - 100 大小的字体
-function RL.VGUI.RegisterFont(FontName, CodeName, addData)
-    for i=1,10 do
-        local data = {
-            font = FontName,
-            size = i*10*(ScrH()/1080),
-            weight = 500,
-            antialias = true,
-            additive = false,
-            outline = false
-        }
-
-        table.Merge(data, (addData or {}))
-
-        surface.CreateFont(CodeName.."_"..i*10,data)
-    end
-
-    print("[Ricelib Font] RegisterFont: "..CodeName.." ("..FontName..")")
-end
-
-function RL.VGUI.RegisterFontFixed(FontName, CodeName, addData)
-    for i=1,10 do
-        local data = {
-            font = FontName,
-            size = i*10,
-            weight = 500,
-            antialias = true,
-            additive = false,
-            outline = false
-        }
-
-        table.Merge(data, (addData or {}))
-
-        surface.CreateFont(CodeName.."_"..i*10,data)
-    end
-
-    print("[Ricelib Font] Register Fixed Font: "..CodeName.." ("..FontName..")")
-end
-
-// 现代VGUI组件
-function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y)
-    local lb = Label(Text, Panel)
-    lb:SetPos(RL_hudScale(X,Y))
-    lb:SetFont("OPPOSans_"..FontSize)
-    lb:SetColor(Color(30,30,30))
-    lb:SizeToContents()
-
-    return lb
-end
-
-function RL.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
-    local var = {...}
-    DoClickFun = DoClickFun or function() end
-
-    local btn = vgui.Create("DButton", Panel)
-    btn:SetPos(RL_hudScale(X,Y))
-    btn:SetSize(RL_hudScale(W,H))
-    btn:SetText(Text)
-    btn:SetTheme("ModernButton")
-    btn:SetFont("OPPOSans_"..FontSize)
-    btn.DoClick = function()
-        DoClickFun(unpack(var))
-    end
 
     return btn
-end
-
-function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,TEW,Fun)
-    Fun = Fun or function() end
-    
-    local body = vgui.Create("DPanel", Panel)
-    body:SetSize(RL_hudScale(W,H))
-    body:SetPos(RL_hudScale(X,Y))
-    body.Paint = function() end
-
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
-
-    local TE = vgui.Create("DTextEntry", body)
-    TE:Dock(RIGHT)
-    TE:SetWide(RL_hudScaleX(TEW))
-    TE:SetFont("OPPOSans_"..FontSize)
-    TE.OnEnter = function(self,text)
-        Fun(text)
-    end
-
-    return body,TE,label
-end
-
-function RL.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
-    Fun = Fun or function() end
-    
-    local body = vgui.Create("DPanel", Panel)
-    body:SetSize(RL_hudScale(W,H))
-    body:SetPos(RL_hudScale(X,Y))
-    body.Paint = function() end
-
-    local CB = vgui.Create("DCheckBox", body)
-    CB:Dock(LEFT)
-    CB:SetWide(body:GetTall())
-    CB:SetFont("OPPOSans_"..FontSize)
-    function CB:OnChange(bool)
-        Fun(bool) 
-    end
-
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0)
-    label:Dock(LEFT)
-    label:DockMargin(RL.hudScaleX(5),0,0,0)
-
-    return body,CB,label
-end
-
-function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,TEW,Fun)
-    Fun = Fun or function() end
-    
-    local body = vgui.Create("DPanel", Panel)
-    body:SetSize(RL_hudScale(W,H))
-    body:SetPos(RL_hudScale(X,Y))
-    body.Paint = function() end
-
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
-
-    local CB = vgui.Create("DComboBox", body)
-    CB:Dock(RIGHT)
-    CB:SetWide(RL_hudScaleX(TEW))
-    CB:SetFont("OPPOSans_"..FontSize)
-    function CB:OnSelect(index,value)
-        Fun(value)
-    end
-
-    return body,TE,label
-end
-
-function RL.VGUI.ModernNumberWang(Text,Panel,FontSize,X,Y,W,H,TEW,Fun)
-    Fun = Fun or function() end
-    
-    local body = vgui.Create("DPanel", Panel)
-    body:SetSize(RL_hudScale(W,H))
-    body:SetPos(RL_hudScale(X,Y))
-    body.Paint = function() end
-
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
-
-    local CB = vgui.Create("DNumberWang", body)
-    CB:Dock(RIGHT)
-    CB:SetWide(RL_hudScaleX(TEW))
-    CB:SetFont("OPPOSans_"..FontSize)
-    function CB:OnValueChanged(value)
-        Fun(value)
-    end
-
-    return body,TE,label
 end
 
 
