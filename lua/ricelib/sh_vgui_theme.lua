@@ -60,6 +60,13 @@ else
 
         pcall(function(panel) panel:SetTextColor(RL.VGUI.Theme[Name].TextColor) end,self)
         pcall(function(panel) panel:SetFont(RL.VGUI.Theme[Name].TextFont) end,self)
+
+        pcall(function(panel)
+            local bar = panel:GetVBar()
+
+            bar:SetTheme(Name)
+            bar.btnGrip:SetTheme(Name.."ScrollBar")
+        end,self)
     end
 
     function meta:UseThemeSet(Name)
@@ -87,8 +94,9 @@ else
         frame:SetTitle("RiceLib VGUI Theme Viewer")
         frame:SetTheme("ModernDark")
 
-        local panel = vgui.Create("DScrollPanel",frame)
+        local panel = RL.VGUI.ScrollPanel(frame)
         panel:Dock(FILL)
+        panel:SetTheme("ModernDark")
 
         for k,v in SortedPairs(RL.VGUI.Theme) do
             local button = vgui.Create("DButton",panel)

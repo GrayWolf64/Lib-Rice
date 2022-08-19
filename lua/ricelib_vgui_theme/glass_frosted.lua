@@ -2,6 +2,12 @@ local Theme = {}
 local mat = Material("pp/blurscreen")
 
 Theme.Paint = function(self, w, h)
+    local root = RL.VGUI.GetRoot(self)
+    local rx,ry = root:GetPos()
+    local ox,oy = root:GetChildPosition(self)
+    local x,y = rx+ox,ry+oy
+
+
     surface.SetMaterial(mat)
 
     surface.SetDrawColor(255,255,255,50)
@@ -9,7 +15,7 @@ Theme.Paint = function(self, w, h)
 
     surface.SetDrawColor(255,255,255,25)
     for i = 1, 32 do
-        surface.DrawTexturedRect(-self:GetX()+math.cos(360/i)*4,-self:GetY()+math.sin(360/i)*4,ScrW(),ScrH())
+        surface.DrawTexturedRect(-x+math.cos(360/i)*4,-y+math.sin(360/i)*4,ScrW(),ScrH())
     end
 
     surface.SetDrawColor(255,255,255,5)
