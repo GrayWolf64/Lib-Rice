@@ -111,8 +111,11 @@ function RL.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
     return body,CB,label
 end
 
-function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
+function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun,DarkMode)
     Fun = Fun or function() end
+
+    local darkmode = "Dark"
+    if not DarkMode then darkmode = "" end
 
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
@@ -130,8 +133,38 @@ function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     CB:Dock(RIGHT)
     CB:SetWide(RL_hudScaleX(CW))
     CB:SetFont("OPPOSans_"..FontSize)
+    CB:SetTheme("Modern")
+
+    local main,hover,text = Color(230,230,230,255),Color(255,255,255,255),nil
+    if DarkMode then
+        main,hover,text = Color(60,60,60,255),Color(90,90,90,255),Color(250,250,250)
+    end
+    CB:ThemeColorOverride(main,hover,text)
+
     function CB:OnSelect(index,value)
         Fun(value)
+    end
+    function CB:OnMenuOpened(menu)
+        menu:SetTheme("Modern")
+
+        local main,hover = Color(220,220,220,255),Color(255,255,255,255)
+        if DarkMode then
+            main,hover = Color(50,50,50,255),Color(90,90,90,255)
+        end
+        menu:ThemeColorOverride(main,hover)
+
+        for i=1,menu:ChildCount() do
+            local child = menu:GetChild(i)
+            child:SetTheme("ModernRect")
+
+            local main,hover,text = Color(220,220,220,0),Color(255,255,255,255),nil
+            if DarkMode then
+                main,hover,text = Color(50,50,50,0),Color(80,80,80,255),Color(250,250,250)
+            end
+            child:ThemeColorOverride(main,hover,text)
+            child:SetFont("OPPOSans_"..tonumber(FontSize)-10)
+            child:SizeToContents()
+        end
     end
 
     return body,CB,label

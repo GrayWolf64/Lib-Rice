@@ -11,4 +11,4 @@ end
 Theme.TextColor = Color(20, 20, 20)
 Theme.TextFont = "OPPOSans_30"
 
-return "Modern", Theme
+return "ModernLight", Theme

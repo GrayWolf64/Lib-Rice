@@ -57,6 +57,7 @@ else
         if !RL.VGUI.Theme[Name] then return end
 
         self.Paint = RL.VGUI.Theme[Name].Paint
+        self.Theme = table.Copy(RL.VGUI.Theme[Name])
 
         pcall(function(panel) panel:SetTextColor(RL.VGUI.Theme[Name].TextColor) end,self)
         pcall(function(panel) panel:SetFont(RL.VGUI.Theme[Name].TextFont) end,self)
@@ -67,6 +68,15 @@ else
             bar:SetTheme(Name)
             bar.btnGrip:SetTheme(Name.."ScrollBar")
         end,self)
+    end
+
+    function meta:ThemeColorOverride(Main,Hover,Text,Outline)
+        self.Theme.MainColor = Main or self.Theme.MainColor
+        self.Theme.HoverColor = Hover or self.Theme.HoverColor
+        self.Theme.TextColor = Text or self.Theme.TextColor
+        self.Theme.OutlineColor = Outline or self.Theme.OutlineColor
+
+        if Text then self:SetTextColor(Text) end
     end
 
     function meta:UseThemeSet(Name)
