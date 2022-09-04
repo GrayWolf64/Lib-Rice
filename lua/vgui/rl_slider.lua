@@ -4,6 +4,8 @@ function PANEL:Init()
 
     self.Decimals = 0
     self.c_Color = Color( 0, 190, 0, 255 )
+    self.c_TextBackGroundColor = Color(50,50,50,255)
+    self.c_BackGroundColor = Color(100,100,100,255)
 
     self.ValueMin = 0
     self.ValueMax = 100
@@ -20,13 +22,13 @@ function PANEL:Init()
         RL.Draw.Circle(0+w/2,0+h/2,h/2-RL.hudScaleY(2),64,Color(200,200,200,255))
     end
     function self:Paint(w,h)
-        draw.RoundedBox(5,0,h/4,w,h/2,Color(100,100,100,255))
+        draw.RoundedBox(5,0,h/4,w,h/2,self.c_BackGroundColor)
         draw.RoundedBox(5,0,h/4,w*self:GetSlideX(),h/2,self.c_Color)
 
         if self:IsEditing() then
             local size = RL.hudScaleX(#tostring(self:GetValue())*10)+RL.hudScaleX(10)
 
-            draw.RoundedBox(5,w*self:GetSlideX()-size/2,RL.hudScaleY(-25),size,20,Color(50,50,50,255))
+            draw.RoundedBox(5,w*self:GetSlideX()-size/2,RL.hudScaleY(-25),size,20,self.c_TextBackGroundColor)
             draw.SimpleText(self:GetValue(),"OPPOSans_20",w*self:GetSlideX(),RL.hudScaleY(-5),Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_BOTTOM)
         end
     end

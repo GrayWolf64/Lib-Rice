@@ -1,5 +1,6 @@
 RL.VGUI = RL.VGUI or {}
 RL.VGUI.Theme = {}
+RL.VGUI.ColorTheme = RL.VGUI.ColorTheme or {}
 RL.VGUI.GlobalTheme = {}
 RL.VGUI.ThemeSet = "SciFi"
 
@@ -29,6 +30,10 @@ else
         if !Theme.Paint then return end
 
         RL.VGUI.Theme[Name] = Theme
+    end
+
+    function RL.VGUI.RegisterColorTheme(Name,Theme)
+        RL.VGUI.ColorTheme[Name] = Theme
     end
 
     function RL.VGUI.SetGlobalTheme(Name)
@@ -76,7 +81,11 @@ else
         self.Theme.TextColor = Text or self.Theme.TextColor
         self.Theme.OutlineColor = Outline or self.Theme.OutlineColor
 
-        if Text then self:SetTextColor(Text) end
+        if Text then pcall(function(panel) panel:SetTextColor(Text) end,self) end
+    end
+
+    function meta:SetColorTheme(Name)
+        self:ThemeColorOverride(unpack(RL.VGUI.ColorTheme[Name]))
     end
 
     function meta:UseThemeSet(Name)
@@ -115,6 +124,33 @@ else
             button:SetText(k)
             button:SetTheme(k)
             button:SetTall(RL.hudScaleY(50))
+
+            panel:AddItem(button)
+        end
+    end)
+
+    concommand.Add("RiceLib_VGUI_ColorThemeView",function()
+        local frame = vgui.Create("DFrame")
+        frame:SetSize(RL.hudScale(500,500))
+        frame:Center()
+        frame:MakePopup()
+        frame:SetTitle("RiceLib VGUI ColorTheme Viewer")
+        frame:SetTheme("Modern")
+        frame:SetColorTheme("Dark1")
+
+        local panel = RL.VGUI.ScrollPanel(frame)
+        panel:Dock(FILL)
+        panel:SetTheme("Modern")
+        panel:SetColorTheme("Dark1")
+
+        for k,v in SortedPairs(RL.VGUI.ColorTheme) do
+            local button = vgui.Create("DButton",panel)
+            button:Dock(TOP)
+            button:DockMargin(0,RL.hudScaleY(5),0,0)
+            button:SetText(k)
+            button:SetTheme("Modern")
+            button:SetTall(RL.hudScaleY(50))
+            button:SetColorTheme(k)
 
             panel:AddItem(button)
         end

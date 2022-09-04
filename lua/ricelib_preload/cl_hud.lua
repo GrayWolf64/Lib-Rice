@@ -1,5 +1,19 @@
 RICELIB_PLAYERCHAT = false
 
+if file.Exists("ricelib/settings/hud_offset.json", "DATA") then
+    RL.VGUI.HUDOffset = util.JSONToTable(file.Read("ricelib/settings/hud_offset.json", "DATA")) or {}
+else
+    RL.VGUI.HUDOffset = {}
+    file.Write("ricelib/settings/hud_offset.json", util.TableToJSON({}))
+end
+
+if file.Exists("ricelib/settings/scale.json", "DATA") then
+    RL.VGUI.ScaleProfile = util.JSONToTable(file.Read("ricelib/settings/scale.json", "DATA")) or {}
+else
+    RL.VGUI.ScaleProfile = {}
+    file.Write("ricelib/settings/scale.json", util.TableToJSON({}))
+end
+
 // HUD/UI 位置/大小 缩放
 
 // 兼容旧版本
@@ -15,23 +29,28 @@ RICELIB_PLAYERCHAT = false
         return y*(ScrH()/1080)
     end
 
-function RL.hudScale(x,y)
+function RL.hudScale(x,y,profile)
+    if RL.VGUI.ScaleProfile[profile] then
+        return x * (ScrW()/1920) * RL.VGUI.ScaleProfile[profile], y * (ScrH()/1080) * RL.VGUI.ScaleProfile[profile]
+    end 
+
     return x*(ScrW()/1920),y*(ScrH()/1080)
 end
 
-function RL.hudScaleX(x)
+function RL.hudScaleX(x,profile)
+    if RL.VGUI.ScaleProfile[profile] then
+        return x * (ScrW()/1920) * RL.VGUI.ScaleProfile[profile]
+    end 
+
     return x*(ScrW()/1920)
 end
 
-function RL.hudScaleY(y)
-    return y*(ScrH()/1080)
-end
+function RL.hudScaleY(y,profile)
+    if RL.VGUI.ScaleProfile[profile] then
+        return y * (ScrH()/1080) * RL.VGUI.ScaleProfile[profile]
+    end 
 
-if file.Exists("ricelib/settings/hud_offset.json", "DATA") then
-    RL.VGUI.HUDOffset = util.JSONToTable(file.Read("ricelib/settings/hud_offset.json", "DATA")) or {}
-else
-    RL.VGUI.HUDOffset = {}
-    file.Write("ricelib/settings/hud_offset.json", util.TableToJSON(RL.VGUI.HUDOffset))
+    return y*(ScrH()/1080)
 end
 
 function RL.hudOffset(x,y,profile)

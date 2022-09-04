@@ -1,8 +1,13 @@
 RL = RL or {}
 RL.VGUI = RL.VGUI or {}
+RL.Functions = RL.Functions or {}
 
 file.CreateDir("ricelib")
 file.CreateDir("ricelib/settings")
+
+if SERVER then
+    resource.AddWorkshop( "2829757059" )
+end
 
 function RL.Message(msg)
     if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
@@ -46,17 +51,17 @@ function RL.Message_WarnAs(msg,name)
     MsgC(Color(255, 150, 0), msg .. "\n")
 end
 
-local function AddFile(File, directory)
+local function AddFile(File, directory, silence)
     local prefix = string.lower(string.Left(File, 3))
 
     if SERVER and prefix == "sv_" then
         include(directory .. File)
-        RL.Message("Server Load: " .. File)
+        if not silence then RL.Message("Server Load: " .. File) end
     elseif prefix == "sh_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
-            RL.Message("Shared AddCS: " .. File)
+            if not silence then RL.Message("Shared AddCS: " .. File) end
         end
 
         include(directory .. File)
@@ -64,24 +69,31 @@ local function AddFile(File, directory)
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
-            RL.Message("Client AddCS: " .. File)
+            if not silence then RL.Message("Client AddCS: " .. File) end
         elseif CLIENT then
             include(directory .. File)
-            RL.Message("Client Load: " .. File)
+            if not silence then RL.Message("Client Load: " .. File) end
         end
+    else
+        include(directory .. File)
+
+        if not silence then RL.Message("Load: " .. File) end
     end
 end
 
-function RL.IncludeDir(directory)
+function RL.IncludeDir(directory,silence,nosub)
+    if not string.EndsWith(directory,"/") then directory = directory.."/" end
     local files, directories = file.Find(directory .. "*", "LUA")
 
     for _, v in ipairs(files) do
-        AddFile(v, directory)
+        AddFile(v, directory, silence)
     end
 
+    if nosub then return end
+
     for _, v in ipairs(directories) do
-        RL.Message("Loading Directory: " .. directory .. v)
-        RL.IncludeDir(directory .. v)
+        if not silence then RL.Message("Loading Directory: " .. directory .. v) end
+        RL.IncludeDir(directory .. v, silence)
     end
 end
 
@@ -108,15 +120,22 @@ local function AddFileAs(File, directory, name)
             include(directory .. File)
             RL.MessageAs("Client Load: " .. File, name)
         end
+    else
+        include(directory .. File)
+
+        if not silence then RL.MessageAs("Load: " .. File, name) end
     end
 end
 
-function RL.IncludeDirAs(directory, name)
+function RL.IncludeDirAs(directory, name, nosub)
+    if not string.EndsWith(directory,"/") then directory = directory.."/" end
     local files, directories = file.Find(directory .. "*", "LUA")
 
     for _, v in ipairs(files) do
         AddFileAs(v, directory, name)
     end
+
+    if nosub then return end
 
     for _, v in ipairs(directories) do
         RL.MessageAs("Loading Directory: " .. directory .. v, name)
@@ -125,21 +144,22 @@ function RL.IncludeDirAs(directory, name)
 end
 
 if SERVER then
-    function RL.AddCSFiles(directory, name)
+    function RL.AddCSFiles(directory, name, silence, nosub)
+        if not string.EndsWith(directory,"/") then directory = directory.."/" end
         local files, directories = file.Find(directory .. "*", "LUA")
     
         for _, v in ipairs(files) do
-            RL.MessageAs("AddCSFiles: " .. directory .. v,name)
+            if not silence then RL.MessageAs("AddCSFiles: " .. directory .. v,name) end
             AddCSLuaFile(directory .. v)
         end
+
+        if nosub then return end
     
         for _, v in ipairs(directories) do
-            RL.MessageAs("AddCSFiles Dir: " .. directory .. v,name)
+            if not silence then RL.MessageAs("AddCSFiles Dir: " .. directory .. v,name) end
             RL.AddCSFiles(directory .. v, name)
         end
     end
-
-    resource.AddWorkshop( "2829757059" )
 end
 
-RL.IncludeDir("ricelib/")
+RL.IncludeDir("ricelib_preload")
