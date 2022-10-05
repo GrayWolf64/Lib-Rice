@@ -1,5 +1,6 @@
 RL = RL or {}
 RL.VGUI = RL.VGUI or {}
+RL.VGUI.Anim = RL.VGUI.Anim or {}
 RL.Functions = RL.Functions or {}
 
 file.CreateDir("ricelib")

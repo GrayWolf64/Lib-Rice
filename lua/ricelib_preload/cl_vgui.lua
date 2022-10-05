@@ -63,3 +63,10 @@ function RL.VGUI.Notify(Text,FontSize,X,Y,Time)
 
     return notify,label
 end
+
+function RL.VGUI.DM(l,t,r,b)
+    local left,up = RL_hudScale(l or 0,t or 0)
+    local right,down = RL_hudScale(r or 0,b or 0)
+
+    return left,up,right,down
+end

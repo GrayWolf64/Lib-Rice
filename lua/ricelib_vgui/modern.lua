@@ -4,7 +4,8 @@ function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
         FontSize = tostring(FontSize)
     end
 
-    local lb = Label(Text, Panel)
+    local lb = vgui.Create("DLabel",Panel)
+    lb:SetText(Text)
     lb:SetPos(RL_hudScale(X,Y))
     lb:SetFont("OPPOSans_"..FontSize)
     lb:SetColor(color or Color(30,30,30))
