@@ -38,7 +38,7 @@ function RL.VGUI.RegisterFontFixed(FontName, CodeName, addData)
 end
 
 function RL.VGUI.RegisterFontAdv(FontName, CodeName, addData)
-    for i=1,20 do
+    for i=1,60 do
         local data = {
             font = FontName,
             size = i*5*(ScrH()/1080),
@@ -57,7 +57,7 @@ function RL.VGUI.RegisterFontAdv(FontName, CodeName, addData)
 end
 
 function RL.VGUI.RegisterFontFixedAdv(FontName, CodeName, addData)
-    for i=1,20 do
+    for i=1,60 do
         local data = {
             font = FontName,
             size = i*5,

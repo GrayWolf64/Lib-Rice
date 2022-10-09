@@ -4,6 +4,8 @@ function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
         FontSize = tostring(FontSize)
     end
 
+    if string.StartWith(Text,"#") then Text = RL.Language.Get(string.sub(Text,2)) or Text end
+
     local lb = vgui.Create("DLabel",Panel)
     lb:SetText(Text)
     lb:SetPos(RL_hudScale(X,Y))

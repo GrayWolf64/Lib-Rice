@@ -1,6 +1,8 @@
 RL = RL or {}
 RL.VGUI = RL.VGUI or {}
 RL.VGUI.Anim = RL.VGUI.Anim or {}
+RL.Language = RL.Language or {}
+RL.Language.Words = RL.Language.Words or {}
 RL.Functions = RL.Functions or {}
 
 file.CreateDir("ricelib")
@@ -11,6 +13,8 @@ if SERVER then
 end
 
 function RL.Message(msg)
+    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+
     if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
     
     MsgC(color, "[RiceLib] ")
@@ -18,6 +22,8 @@ function RL.Message(msg)
 end
 
 function RL.Message_Error(msg)
+    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+
     if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
 
     MsgC(color, "[RiceLib] ")
@@ -25,6 +31,8 @@ function RL.Message_Error(msg)
 end
 
 function RL.Message_Warn(msg)
+    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+
     if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
 
     MsgC(color, "[RiceLib] ")
@@ -32,6 +40,8 @@ function RL.Message_Warn(msg)
 end
 
 function RL.MessageAs(msg,name)
+    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+
     if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
 
     MsgC(color, "["..name.."] ")
@@ -39,6 +49,8 @@ function RL.MessageAs(msg,name)
 end
 
 function RL.Message_ErrorAs(msg,name)
+    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+
     if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
 
     MsgC(color, "["..name.."] ")
@@ -46,6 +58,8 @@ function RL.Message_ErrorAs(msg,name)
 end
 
 function RL.Message_WarnAs(msg,name)
+    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+
     if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
     
     MsgC(color, "["..name.."] ")
@@ -76,6 +90,7 @@ local function AddFile(File, directory, silence)
             if not silence then RL.Message("Client Load: " .. File) end
         end
     else
+        AddCSLuaFile(directory .. File)
         include(directory .. File)
 
         if not silence then RL.Message("Load: " .. File) end
@@ -122,9 +137,10 @@ local function AddFileAs(File, directory, name)
             RL.MessageAs("Client Load: " .. File, name)
         end
     else
+        AddCSLuaFile(directory .. File)
         include(directory .. File)
 
-        if not silence then RL.MessageAs("Load: " .. File, name) end
+        RL.MessageAs("Load: " .. File, name)
     end
 end
 

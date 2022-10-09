@@ -136,12 +136,12 @@ function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName,resetFun)
     end
     btn.OnPosReset = resetFun
 
-    panel.Think = function(self)
-        if not self.Dragging then return end
+    btn.Think = function(self)
+        if not self:GetParent().Dragging then return end
     
         local x,y = input.GetCursorPos()
     
-        self:SetPos(self.DragOrgX + x, self.DragOrgY + y)
+        self:GetParent():SetPos(self:GetParent().DragOrgX + x, self:GetParent().DragOrgY + y)
     end
 
     return btn
