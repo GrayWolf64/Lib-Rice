@@ -18,6 +18,8 @@ function RL.VGUI.IconRaw(name)
 end
 
 local blur = Material("pp/blurscreen")
+local matBlurScreen = Material("pp/blurscreen")
+
 
 function RL.VGUI.blurPanel(panel, amount)
     local x, y = panel:LocalToScreen(0, 0)
@@ -31,6 +33,26 @@ function RL.VGUI.blurPanel(panel, amount)
         render.UpdateScreenEffectTexture()
         surface.DrawTexturedRect(x * -1, y * -1, scrW, scrH)
     end
+end
+
+function RL.VGUI.blurBackground(self,amount)
+    local Fraction = 1
+
+    local x, y = self:LocalToScreen( 0, 0 )
+
+    local wasEnabled = DisableClipping( true )
+
+    surface.SetMaterial( matBlurScreen )
+    surface.SetDrawColor( 255, 255, 255, 255 )
+
+    for i=0.33, 1, 0.33 do
+        matBlurScreen:SetFloat( "$blur", Fraction * amount * i )
+        matBlurScreen:Recompute()
+        if ( render ) then render.UpdateScreenEffectTexture() end -- Todo: Make this available to menu Lua
+        surface.DrawTexturedRect( x * -1, y * -1, ScrW(), ScrH() )
+    end
+
+    DisableClipping( wasEnabled )
 end
 
 function RL.VGUI.FadeIn(panel,time,func)
@@ -69,4 +91,9 @@ function RL.VGUI.DM(l,t,r,b)
     local right,down = RL_hudScale(r or 0,b or 0)
 
     return left,up,right,down
+end
+
+function RL.VGUI.TextWide(font,text)
+    surface.SetFont( font )
+    return select( 2, surface.GetTextSize( text ) )
 end

@@ -16,6 +16,23 @@ function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
     return lb
 end
 
+function RL.VGUI.ModernLabelEditable(Text,Panel,FontSize,X,Y,color)
+    if isnumber(FontSize) then
+        FontSize = tostring(FontSize)
+    end
+
+    if string.StartWith(Text,"#") then Text = RL.Language.Get(string.sub(Text,2)) or Text end
+
+    local lb = vgui.Create("DLabelEditable",Panel)
+    lb:SetText(Text)
+    lb:SetPos(RL_hudScale(X,Y))
+    lb:SetFont("OPPOSans_"..FontSize)
+    lb:SetColor(color or Color(30,30,30))
+    lb:SizeToContents()
+
+    return lb
+end
+
 function RL.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
     local var = {...}
     DoClickFun = DoClickFun or function() end
@@ -36,6 +53,38 @@ function RL.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
     end
     btn.PaintOver = function(self,w,h)
         draw.SimpleText(self.Text,self.Font,w/2,h/2,self:GetTextColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+    end
+
+    return btn
+end
+
+function RL.VGUI.ModernImageButton(Text,Icon,Panel,FontSize,X,Y,W,H,DoClickFun,...)
+    local var = {...}
+    DoClickFun = DoClickFun or function() end
+
+    if isnumber(FontSize) then
+        FontSize = tostring(FontSize)
+    end
+
+    local btn = vgui.Create("DButton", Panel)
+    btn:SetPos(RL_hudScale(X,Y))
+    btn:SetSize(RL_hudScale(W,H))
+    btn:SetText("")
+    btn:SetTheme("ModernButton")
+    btn.Font = "OPPOSans_"..FontSize
+    btn.Text = Text
+    btn.DoClick = function()
+        DoClickFun(unpack(var))
+    end
+    btn.PaintOver = function(self,w,h)
+        if !self.Icont then self.Icon = Material(Icon) end
+        if not self.Icon:IsError() then
+            surface.SetMaterial(self.Icon)
+            surface.SetDrawColor(255,255,255,255)
+            surface.DrawTexturedRect(10,h/4,h/2,h/2)
+        end
+
+        draw.SimpleText(self.Text,self.Font,w/2+30,h/2,self:GetTextColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
     end
 
     return btn

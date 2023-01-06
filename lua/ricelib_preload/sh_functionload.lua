@@ -3,6 +3,8 @@ function RL.Functions.LoadFiles(tbl,dir)
     local files,_ = file.Find(dir.."/*","LUA")
 
     for _,file in ipairs(files) do
+        AddCSLuaFile(dir .."/".. file)
+
         tbl[string.StripExtension(file)] = include(dir .."/".. file)
     end
 end
@@ -12,7 +14,9 @@ function RL.Functions.LoadFilesRaw(loader,dir)
     local files,_ = file.Find(dir.."/*","LUA")
 
     for _,file in ipairs(files) do
-        loader(include(dir .."/".. file))
+        AddCSLuaFile(dir .."/".. file)
+
+        loader(string.StripExtension(file),include(dir .."/".. file))
     end
 end
 

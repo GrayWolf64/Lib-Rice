@@ -3,7 +3,7 @@ function RL.VGUI.RegisterFont(FontName, CodeName, addData)
     for i=1,10 do
         local data = {
             font = FontName,
-            size = i*10*(ScrH()/1080),
+            size = i*10*(ScrW()/1920),
             weight = 500,
             antialias = true,
             additive = false,
@@ -41,7 +41,7 @@ function RL.VGUI.RegisterFontAdv(FontName, CodeName, addData)
     for i=1,60 do
         local data = {
             font = FontName,
-            size = i*5*(ScrH()/1080),
+            size = i*5*(ScrW()/1920),
             weight = 500,
             antialias = true,
             additive = false,

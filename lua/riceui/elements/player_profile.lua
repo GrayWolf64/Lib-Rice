@@ -1,0 +1,19 @@
+local function main(data,parent)
+    table.Inherit(data,{
+        x = 10,
+        y = 10,
+        w = 500,
+        h = 300,
+    })
+
+    local panel = vgui.Create("AvatarImage",parent)
+    panel:SetPos(data.x,data.y)
+    panel:SetSize(data.w,data.h)
+    panel:SetPlayer(data.ply,data.w)
+
+    RiceUI.Process("panel",panel,data)
+
+    return panel
+end
+
+return main

@@ -109,6 +109,8 @@ function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName,resetFun)
         end
     end
     btn.DoClick = function(self)
+        if pace and pace.Active then return end
+
         if not panel.Dragging then
             panel.Dragging = true
             self.Dragging = true
@@ -125,14 +127,16 @@ function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName,resetFun)
         end
     end
     btn.DoRightClick = function(self)
+        if pace and pace.Active then return end
+
         panel.Dragging = false
         self.Dragging = false
         panel:SetPos(RL.hudScale(x,y))
 
         RL.Clear_HUDOffset(profile,0,0)
 
-        self.OnPosReset()
         self:SetSize(self:GetParent():GetSize())
+        self.OnPosReset(self)
     end
     btn.OnPosReset = resetFun
 
@@ -146,7 +150,6 @@ function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName,resetFun)
 
     return btn
 end
-
 
 hook.Add("StartChat","RiceLib_StartChat",function()
     RICELIB_PLAYERCHAT = true
