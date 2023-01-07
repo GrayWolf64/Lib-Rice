@@ -6,7 +6,10 @@ local function main(data,parent)
         h = 300,
     })
 
-    local _,panel = RL.VGUI.ModernComboBox(data.Text or "",parent,data.FontSize or 30,data.x,data.y,data.w,data.h,data.cw,data.OnSelect,data.DarkMode)
+    local x,y = RL.hudScale(data.x,data.y)
+    local w,h = RL.hudScale(data.w,data.h)
+
+    local _,panel = RL.VGUI.ModernComboBox(data.Text or "",parent,data.FontSize or 30,x,y,w,h,RL.hudScaleX(data.cw),data.OnSelect,data.DarkMode)
     panel:SetValue(data.Value)
     
     if data.options then

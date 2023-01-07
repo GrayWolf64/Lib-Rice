@@ -8,10 +8,11 @@ local function main(data,parent)
     })
 
     local panel = vgui.Create("DLabel",parent)
-    panel:SetPos(data.x,data.y)
+    panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetFont(data.Font)
     panel:SetColor(data.Color)
     panel:SetText(data.Text)
+    panel:SizeToContents()
 
     RiceUI.Process("label",panel,data)
 

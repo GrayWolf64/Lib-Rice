@@ -8,8 +8,8 @@ local function main(data,parent)
     })
 
     local panel = vgui.Create("DButton",parent)
-    panel:SetPos(data.x,data.y)
-    panel:SetSize(data.w,data.h)
+    panel:SetPos(RL.hudScale(data.x,data.y))
+    panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
 
     if file.Exists("riceui/web_image"..util.SHA256(data.Image),"DATA") then

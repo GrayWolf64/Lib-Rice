@@ -6,7 +6,10 @@ local function main(data,parent)
         h = 300,
     })
 
-    local panel = RL.VGUI.ScrollPanel(parent,data.x,data.y,data.w,data.h)
+    local x,y = RL.hudScale(data.x,data.y)
+    local w,h = RL.hudScale(data.w,data.h)
+
+    local panel = RL.VGUI.ScrollPanel(parent,x,y,w,h)
 
     RiceUI.Process("panel",panel,data)
 

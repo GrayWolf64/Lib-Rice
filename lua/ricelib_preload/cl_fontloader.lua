@@ -7,7 +7,8 @@ function RL.VGUI.RegisterFont(FontName, CodeName, addData)
             weight = 500,
             antialias = true,
             additive = false,
-            outline = false
+            outline = false,
+            extended = true
         }
 
         table.Merge(data, (addData or {}))
@@ -26,7 +27,8 @@ function RL.VGUI.RegisterFontFixed(FontName, CodeName, addData)
             weight = 500,
             antialias = true,
             additive = false,
-            outline = false
+            outline = false,
+            extended = true
         }
 
         table.Merge(data, (addData or {}))
@@ -45,7 +47,8 @@ function RL.VGUI.RegisterFontAdv(FontName, CodeName, addData)
             weight = 500,
             antialias = true,
             additive = false,
-            outline = false
+            outline = false,
+            extended = true
         }
 
         table.Merge(data, (addData or {}))
@@ -64,7 +67,8 @@ function RL.VGUI.RegisterFontFixedAdv(FontName, CodeName, addData)
             weight = 500,
             antialias = true,
             additive = false,
-            outline = false
+            outline = false,
+            extended = true
         }
 
         table.Merge(data, (addData or {}))

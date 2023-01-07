@@ -8,8 +8,8 @@ local function main(data,parent)
     })
 
     local panel = vgui.Create("DComboBox",parent)
-    panel:SetPos(data.x,data.y)
-    panel:SetSize(data.w,data.h)
+    panel:SetPos(RL.hudScale(data.x,data.y))
+    panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetValue(data.Value)
     panel:SetFont(data.Font)
     panel.OnSelect = data.OnSelect or function()end

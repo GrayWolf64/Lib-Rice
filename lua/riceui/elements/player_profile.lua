@@ -7,8 +7,8 @@ local function main(data,parent)
     })
 
     local panel = vgui.Create("AvatarImage",parent)
-    panel:SetPos(data.x,data.y)
-    panel:SetSize(data.w,data.h)
+    panel:SetPos(RL.hudScale(data.x,data.y))
+    panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetPlayer(data.ply,data.w)
 
     RiceUI.Process("panel",panel,data)
