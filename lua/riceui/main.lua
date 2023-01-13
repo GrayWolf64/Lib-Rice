@@ -2,6 +2,7 @@ RiceUI = {}
 RiceUI.Elements = {}
 RiceUI.UniProcess = {}
 RiceUI.Theme = {}
+RiceUI.UI = {}
 
 RL.Functions.LoadFiles(RiceUI.Elements,"riceui/elements")
 RL.Functions.LoadFiles(RiceUI.UniProcess,"riceui/uniprocess")
@@ -11,19 +12,25 @@ file.CreateDir("riceui")
 file.CreateDir("riceui/web_image")
 
 function RiceUI.Create(tbl,parent)
-    local returns = {}
+    local returnpnl
 
-    for _,data in ipairs(tbl) do
+    for i,data in ipairs(tbl) do
         if not RiceUI.Elements[data.type] then RiceUI.Elements["error"](data,parent) continue end
 
         local pnl = RiceUI.Elements[data.type](data,parent)
 
-        table.insert(returns,pnl)
+        if i==1 then returnpnl = pnl end
+
+        if data.Root then returnpnl = pnl end
 
         if data.children then
             RiceUI.Create(data.children,pnl)
         end
     end
+
+    table.insert(RiceUI.UI,returnpnl)
+
+    return returnpnl
 end
 
 function RiceUI.SimpleCreate(data,parent)
@@ -35,6 +42,8 @@ function RiceUI.SimpleCreate(data,parent)
         RiceUI.Create(data.children,pnl)
     end
 
+    table.insert(RiceUI.UI,pnl)
+
     return pnl
 end
 
@@ -44,8 +53,32 @@ end
 
 function RiceUI.GetTheme(name) return RiceUI.Theme[name] end
 
-concommand.Add("RiceUI_Example",function()
-    RiceUI.Create({
+function RiceUI.GetColor(tbl,pnl,name,default)
+    local name = name or ""
+    local default = default or "white1"
+
+    return pnl.Theme["Raw"..name.."Color"] or tbl[name.."Color"][pnl.Theme.Color] or tbl[name.."Color"][default]
+end
+
+concommand.Add("RiceUI_Panic",function()
+    for _,v in ipairs(RiceUI.UI) do
+        if IsValid(v) then v:Remove() end
+    end
+end)
+
+concommand.Add("RiceUI_All",function() PrintTable(RiceUI.UI) end)
+
+concommand.Add("RiceUI_Create",function(ply,cmd,args,argstr)
+    PrintTable(util.JSONToTable(argstr))
+    RiceUI.SimpleCreate(util.JSONToTable(argstr))
+end)
+
+concommand.Add("RiceUI_Create_Adv",function(ply,cmd,args,argstr)
+    RiceUI.Create(util.JSONToTable(argstr))
+end)
+
+Examples = {
+    Basic = {
         {type = "frame",w = 500,h = 1000,Root = true,Center = true,Alpha = 0,
             Anim = {{type = "alpha",time = 0.075,alpha = 255}},
             children = {
@@ -113,5 +146,23 @@ concommand.Add("RiceUI_Example",function()
                 }
             }
         }
-    })
+    },
+
+    Modern = {
+        {type="rl_frame",Center=true,Root=true,children = {
+            {type="button",Center=true}
+        }}
+    }
+}
+
+concommand.Add("RiceUI_Example",function(ply,_,_,str)
+    RiceUI.Create(Examples[str])
+end,function()
+    local tbl = {}
+
+    for _,v in ipairs(table.GetKeys(Examples)) do
+        table.insert(tbl,"RiceUI_Example "..v)
+    end
+
+    return tbl
 end)
