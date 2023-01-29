@@ -3,6 +3,7 @@ RiceUI.Elements = {}
 RiceUI.UniProcess = {}
 RiceUI.Theme = {}
 RiceUI.UI = {}
+RiceUI.Prefab = {}
 
 RL.Functions.LoadFiles(RiceUI.Elements,"riceui/elements")
 RL.Functions.LoadFiles(RiceUI.UniProcess,"riceui/uniprocess")
@@ -22,10 +23,24 @@ function RiceUI.Create(tbl,parent)
         if i==1 then returnpnl = pnl end
 
         if data.Root then returnpnl = pnl end
+        if data.ID then
+            if parent then
+                parent.Elements = parent.Elements or {}
+
+                parent.Elements[data.ID] = pnl
+            else
+                returnpnl.Elements = returnpnl.Elements or {}
+
+                returnpnl.Elements[data.ID] = pnl
+            end
+        end
 
         if data.children then
             RiceUI.Create(data.children,pnl)
         end
+
+        if pnl.ChildCreated then pnl.ChildCreated() end
+        if data.OnCreated then data.OnCreated(pnl) end
     end
 
     table.insert(RiceUI.UI,returnpnl)
@@ -41,6 +56,8 @@ function RiceUI.SimpleCreate(data,parent)
     if data.children then
         RiceUI.Create(data.children,pnl)
     end
+
+    if pnl.ChildCreated then pnl.ChildCreated() end
 
     table.insert(RiceUI.UI,pnl)
 
@@ -66,7 +83,15 @@ concommand.Add("RiceUI_Panic",function()
     end
 end)
 
+concommand.Add("RiceUI_Elements",function() PrintTable(RiceUI.Elements) end)
+concommand.Add("RiceUI_Theme",function() PrintTable(RiceUI.Theme) end)
 concommand.Add("RiceUI_All",function() PrintTable(RiceUI.UI) end)
+
+concommand.Add("RiceUI_Reload",function()
+    RL.Functions.LoadFiles(RiceUI.Elements,"riceui/elements")
+    RL.Functions.LoadFiles(RiceUI.UniProcess,"riceui/uniprocess")
+    RL.Functions.LoadFiles(RiceUI.Theme,"riceui/theme")
+end)
 
 concommand.Add("RiceUI_Create",function(ply,cmd,args,argstr)
     PrintTable(util.JSONToTable(argstr))
@@ -120,7 +145,7 @@ Examples = {
                         },
     
                         {type = "label",x = 10,y = 130,Resize = true},
-                        {type = "textentry",x = 10,y = 175},
+                        {type = "entry",x = 10,y = 175},
     
                         {type = "button",x = 10,y = 220,
                             DoClick = function() surface.PlaySound("buttons/button22.wav") end,
@@ -149,9 +174,32 @@ Examples = {
     },
 
     Modern = {
-        {type="rl_frame",Center=true,Root=true,children = {
-            {type="button",Center=true}
-        }}
+        {type="rl_frame",Center=true,Root=true,Alpha=0,w=520,h=800,
+            GTheme = {name = "modern",Theme = {color = "white1"}},
+
+            Anim = {{type = "alpha",time = 0.075,alpha = 255}},
+            children = {
+                {type="button",x=10,y=40,w=100,h=50},
+
+                {type="button",x=120,y=40,w=100,h=50,NoGTheme=true,Color=Color(250,250,250),
+                    Paint = RiceUI.GetTheme("modern").Button,
+                    Theme = {Color="black1"},
+                },
+
+                {type="entry",x=10,y=100,w=300,h=30},
+
+                {type="switch",x=230,y=38,w=50,h=25},
+                {type="switch",x=230,y=67,w=50,h=25,Value=true},
+
+                {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
+                {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
+
+                {type="panel",x=10,y=140,h=400},
+                {type="scrollpanel",ID="ScrollPanel",x=10,y=140,h=400,OnCreated = function(pnl)
+                    for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={5,5,5,0}},pnl)) end
+                end},
+            },
+        }
     }
 }
 
@@ -166,3 +214,5 @@ end,function()
 
     return tbl
 end)
+
+RL.IncludeDir("riceui/prefabs",true)

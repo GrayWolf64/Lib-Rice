@@ -76,13 +76,13 @@ end
 function RL.Change_HUDOffset(profile,x,y)
     RL.VGUI.HUDOffset[profile] = {x=x,y=y}
 
-    file.Write("ricelib/settings/hud_offset.json", util.TableToJSON(RL.VGUI.HUDOffset))
+    file.Write("ricelib/settings/hud_offset.json", util.TableToJSON(RL.VGUI.HUDOffset,true))
 end
 
 function RL.Clear_HUDOffset(profile,x,y)
     RL.VGUI.HUDOffset[profile] = nil
 
-    file.Write("ricelib/settings/hud_offset.json", util.TableToJSON(RL.VGUI.HUDOffset))
+    file.Write("ricelib/settings/hud_offset.json", util.TableToJSON(RL.VGUI.HUDOffset,true))
 end
 
 // HUD位置更改按钮

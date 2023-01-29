@@ -30,7 +30,7 @@ function tbl.Button(pnl,w,h)
     surface.SetDrawColor(color)
     surface.DrawRect(2,2,w-4,h-4)
 
-    draw.SimpleText(pnl:GetText(),pnl:GetFont(),w/2,h/2,pnl:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+    --draw.SimpleText(pnl:GetText(),pnl:GetFont(),w/2,h/2,pnl:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
 return tbl

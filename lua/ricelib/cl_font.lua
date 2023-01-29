@@ -1,5 +1,7 @@
-RL.VGUI.RegisterFont("DS-Digital", "Digi")
+RL.VGUI.RegisterFontAdv("DS-Digital", "Digi")
 RL.VGUI.RegisterFontFixed("OPPOSans M", "OPPOSans_F")
 RL.VGUI.RegisterFontAdv("OPPOSans M", "OPPOSans")
+RL.VGUI.RegisterFontAdv("OPlusSans 3.0 Medium", "OPSans_M")
+RL.VGUI.RegisterFontAdv("OPlusSans 3.0", "OPSans")
 RL.VGUI.RegisterFontAdv("Source Han Sans SC", "SourceHan")
 RL.VGUI.RegisterFontAdv("Smiley Sans Oblique", "SmileySans")

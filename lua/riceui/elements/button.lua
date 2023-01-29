@@ -4,7 +4,7 @@ local function main(data,parent)
         y = 10,
         w = 100,
         h = 50,
-        Font = "OPPOSans_30",
+        Font = "OPSans_30",
         Color = Color(30,30,30),
         Text = "按钮",
     })
@@ -15,6 +15,8 @@ local function main(data,parent)
     panel:SetFont(data.Font)
     panel:SetColor(data.Color)
     panel:SetText(data.Text)
+    panel.GThemeType = "Button"
+    panel.NoGTheme = data.NoGTheme
 
     RiceUI.Process("panel",panel,data)
     RiceUI.Process("button",panel,data)

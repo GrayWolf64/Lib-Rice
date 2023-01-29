@@ -95,5 +95,5 @@ end
 
 function RL.VGUI.TextWide(font,text)
     surface.SetFont( font )
-    return select( 2, surface.GetTextSize( text ) )
+    return select( 1, surface.GetTextSize( text ) )
 end

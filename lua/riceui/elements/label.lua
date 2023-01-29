@@ -13,6 +13,7 @@ local function main(data,parent)
     panel:SetColor(data.Color)
     panel:SetText(data.Text)
     panel:SizeToContents()
+    panel.NoGTheme = data.NoGTheme
 
     RiceUI.Process("label",panel,data)
 

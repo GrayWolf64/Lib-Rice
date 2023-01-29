@@ -58,6 +58,7 @@ function PANEL:SetMin(min) self.ValueMin = min end
 function PANEL:SetMax(max) self.ValueMax = max end
 
 function PANEL:OnValueChanged(val)
+    return self:GetValue()
 end
 
 derma.DefineControl( "RL_Slider", "More Modern Slider", PANEL, "DSlider" )

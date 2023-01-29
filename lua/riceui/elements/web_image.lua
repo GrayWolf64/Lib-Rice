@@ -4,21 +4,22 @@ local function main(data,parent)
         y = 10,
         w = 50,
         h = 50,
-        Image = "vgui/cursors/hand"
+        Image = "https://i.328888.xyz/2023/01/29/jM97x.jpeg"
     })
 
     local panel = vgui.Create("DButton",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
+    panel.Image = data.Image
 
-    if file.Exists("riceui/web_image"..util.SHA256(data.Image),"DATA") then
-        panel.Mat = Material("riceui/web_image"..util.SHA256(data.Image))
+    if file.Exists("riceui/web_image/"..util.SHA256(data.Image)..".png","DATA") then
+        panel.Mat = Material("data/riceui/web_image/"..util.SHA256(data.Image)..".png")
     else
         http.Fetch(panel.Image,function(body)
-            file.Write("riceui/web_image"..util.SHA256(data.Image),body)
+            file.Write("riceui/web_image/"..util.SHA256(data.Image)..".png",body)
 
-            panel.Mat = Material("riceui/web_image"..util.SHA256(data.Image))
+            panel.Mat = Material("data/riceui/web_image/"..util.SHA256(data.Image)..".png")
         end)
     end
 

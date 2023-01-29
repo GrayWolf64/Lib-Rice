@@ -10,7 +10,7 @@ function RL.VGUI.Button(Text,Panel,Font,FontSize,X,Y,W,H,DoClickFun,...)
     btn:SetPos(RL_hudScale(X,Y))
     btn:SetSize(RL_hudScale(W,H))
     btn:SetText(Text)
-    btn:SetFont(Font..FontSize or "OPPOSans_"..FontSize)
+    btn:SetFont(Font..FontSize or "OPSans_"..FontSize)
     btn.DoClick = function()
         DoClickFun(unpack(var))
     end

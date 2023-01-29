@@ -13,6 +13,7 @@ local function main(data,parent)
     panel:SetValue(data.Value)
     panel:SetFont(data.Font)
     panel.OnSelect = data.OnSelect or function()end
+    panel.NoGTheme = data.NoGTheme
     
     if data.options then
         for _,value in ipairs(data.options) do

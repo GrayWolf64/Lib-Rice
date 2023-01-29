@@ -6,13 +6,13 @@ local function main(data,parent)
         h = 300,
     })
 
-    local panel = vgui.Create("DButton",parent)
+    local panel = vgui.Create("EditablePanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
-    panel:SetCursor("arrow")
     panel.Paint = RiceUI.GetTheme("modern").RL_Frame
     panel.Theme = {Color = "white1"}
+    panel.GTheme = data.GTheme
 
     function panel:Think()
         local mousex = math.Clamp( gui.MouseX(), 1, ScrW() - 1 )
@@ -44,16 +44,32 @@ local function main(data,parent)
     end
 
     panel.Title = RiceUI.SimpleCreate({type="label",Font="OPPOSans_20",Text=data.Text or "标题",x=5,y=5,Color = Color(25,25,25)},panel)
-    panel.CloseButton = RiceUI.SimpleCreate({type="button",Font=panel.Title:GetFont(),Text="X",x=data.w-52.5,y=2.5,w=50,h=panel.Title:GetTall()+5,
+    panel.CloseButton = RiceUI.SimpleCreate({type="button",Font=panel.Title:GetFont(),Text="X",x=data.w-52.5,y=2.5,w=50,h=panel.Title:GetTall()+5,NoGTheme=true,
         Paint = RiceUI.GetTheme("modern").TransButton,
         Theme={Color="closeButton"},
         DoClick = function()
-            panel:Remove()
+            panel:AlphaTo(0,0.075,0,function() panel:Remove() end)
         end
     },panel)
 
     function panel.CloseButton:Resize()
         self:SetTall(panel.Title:GetTall()+5)
+    end
+
+    function panel.ChildCreated()
+        if !panel.GTheme then return end
+
+        local Theme = RiceUI.GetTheme(panel.GTheme.name)
+
+        for _,child in ipairs(panel:GetChildren()) do
+            if !child.GThemeType then continue end
+            if child.NoGTheme then continue end
+
+            if Theme[child.GThemeType] then
+                child.Paint = Theme[child.GThemeType]
+                child.Theme = panel.GTheme.Theme
+            end
+        end
     end
 
     RiceUI.Process("panel",panel,data)
