@@ -9,6 +9,7 @@ local function main(data,parent)
     local panel = vgui.Create("DPanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
+    panel.GThemeType = "Panel"
 
     RiceUI.Process("panel",panel,data)
 

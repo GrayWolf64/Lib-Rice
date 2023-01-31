@@ -4,15 +4,17 @@ local function main(data,parent)
         y = 10,
         w = 100,
         h = 50,
+        DisableColor = Color(200,200,200),
     })
 
     local panel = vgui.Create("DButton",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
-    panel:SetColor(Color(255,0,0))
+    panel:SetColor(data.DisableColor)
     panel.GThemeType = "Switch"
     panel.NoGTheme = data.NoGTheme
+    panel.DisableColor = data.DisableColor
 
     panel.Paint = RiceUI.GetTheme("modern").Switch
     panel.Theme = {Color="white"}
@@ -40,10 +42,10 @@ local function main(data,parent)
         if noanim then
             if val then
                 self.togglePos = self:GetWide()/2
-                self:SetColor(Color(0,255,0))
+                self:SetColor(Color(64, 158, 255))
             else
                 self.togglePos = 0
-                self:SetColor(Color(255,0,0))
+                self:SetColor(self.DisableColor)
             end
 
             return
@@ -55,12 +57,12 @@ local function main(data,parent)
             anim.StartPos = 0
             anim.TargetPos = self:GetWide()/2
             
-            self:ColorTo(Color(0,255,0),0.15,0.05)
+            self:ColorTo(Color(64, 158, 255),0.15,0.05)
         else
             anim.StartPos = self:GetWide()/2
             anim.TargetPos = 0
 
-            self:ColorTo(Color(255,0,0,255),0.15,0.05)
+            self:ColorTo(self.DisableColor,0.15,0.05)
         end
     
         anim.Think = function( anim, pnl, fraction )

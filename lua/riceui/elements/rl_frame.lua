@@ -4,6 +4,8 @@ local function main(data,parent)
         y = 10,
         w = 500,
         h = 300,
+        TitleColor = Color(25,25,25),
+        CloseColor = "white"
     })
 
     local panel = vgui.Create("EditablePanel",parent)
@@ -43,10 +45,10 @@ local function main(data,parent)
         self:MouseCapture( false )
     end
 
-    panel.Title = RiceUI.SimpleCreate({type="label",Font="OPPOSans_20",Text=data.Text or "标题",x=5,y=5,Color = Color(25,25,25)},panel)
+    panel.Title = RiceUI.SimpleCreate({type="label",Font="OPPOSans_20",Text=data.Text or "标题",x=5,y=5,Color = data.TitleColor},panel)
     panel.CloseButton = RiceUI.SimpleCreate({type="button",Font=panel.Title:GetFont(),Text="X",x=data.w-52.5,y=2.5,w=50,h=panel.Title:GetTall()+5,NoGTheme=true,
         Paint = RiceUI.GetTheme("modern").TransButton,
-        Theme={Color="closeButton"},
+        Theme={Color="closeButton",TextColor=data.CloseColor},
         DoClick = function()
             panel:AlphaTo(0,0.075,0,function() panel:Remove() end)
         end

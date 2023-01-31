@@ -4,27 +4,34 @@ tbl.Color = {
     white1 = Color(250,250,250),
     white2 = Color(240,240,240),
     white3 = Color(230,230,230),
-    black = Color(70,70,70),
-    black1 = Color(70,70,70),
-    black2 = Color(50,50,50),
-    black3 = Color(30,30,30),
+    black = HSLToColor(0,0,0.2),
+    black1 = HSLToColor(0,0,0.2),
+    black2 = HSLToColor(0,0,0.18),
+    black3 = HSLToColor(0,0,0.16),
+}
+tbl.TextColor = {
+    white = Color(50,50,50),
+    black = Color(250,250,250),
 }
 tbl.OutlineColor = {
-    white1 = Color(230,230,230),
-    white2 = Color(220,220,220),
-    white3 = Color(210,210,210),
-    black1 = Color(50,50,50),
-    black2 = Color(30,30,30),
-    black3 = Color(10,10,10),
+    white = HSLToColor(0,0,0.9),
+    white1 = HSLToColor(0,0,0.9),
+    white1 = HSLToColor(0,0,0.85),
+    white1 = HSLToColor(0,0,0.8),
+    black = HSLToColor(0,0,0.3),
+    black1 = HSLToColor(0,0,0.3),
+    black2 = HSLToColor(0,0,0.3),
+    black3 = HSLToColor(0,0,0.3),
 }
 
 tbl.BarColor = {
     white1 = Color(230,230,230),
     white2 = Color(220,220,220),
     white3 = Color(210,210,210),
-    black1 = Color(90,90,90),
-    black2 = Color(70,70,70),
-    black3 = Color(50,50,50),
+    black = HSLToColor(0,0,0.25),
+    black1 = HSLToColor(0,0,0.25),
+    black2 = HSLToColor(0,0,0.2),
+    black3 = HSLToColor(0,0,0.15),
 }
 
 tbl.HoverColor = {
@@ -38,17 +45,34 @@ tbl.HoverColor = {
 }
 
 tbl.FocusColor = {
-    white1 = Color(0,150,255),
-    white2 = Color(0,150,255),
-    white3 = Color(0,150,255),
-    black1 = Color(0,150,255),
-    black2 = Color(0,150,255),
-    black3 = Color(0,150,255),
+    white1 = Color(64, 158, 255),
+    white2 = Color(64, 158, 255),
+    white3 = Color(64, 158, 255),
+    black1 = Color(64, 158, 255),
+    black2 = Color(64, 158, 255),
+    black3 = Color(64, 158, 255),
+}
+
+tbl.DisableColor = {
+    white = Color(200,200,200),
+    white1 = Color(200,200,200),
+    white2 = Color(200,200,200),
+    white3 = Color(200,200,200),
+    black = Color(70,70,70),
+    black1 = Color(70,70,70),
+    black2 = Color(70,70,70),
+    black3 = Color(70,70,70),
 }
 
 function tbl.Panel(pnl,w,h)
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,pnl.Theme.RawColor or tbl.Color[pnl.Theme.Color] or tbl.Color.white1)
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,pnl.Theme.RawColor or tbl.Color[pnl.Theme.Color] or tbl.Color.white1)
+    if pnl:GetParent():GetClassName() != "CGModBase" then
+        draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,RiceUI.GetColor(tbl,pnl,"Outline"))
+        draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,RiceUI.GetColor(tbl,pnl))
+
+        return
+    end
+
+    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,RiceUI.GetColor(tbl,pnl))
 end
 
 function tbl.RL_Frame(pnl,w,h)
@@ -75,7 +99,11 @@ function tbl.Button(pnl,w,h)
         draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
     end
 
-    --draw.SimpleText(pnl:GetText(),pnl:GetFont(),w/2,h/2,pnl:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+    local color = RiceUI.GetColorBase(tbl,pnl,"Text")
+
+    if pnl:IsDown() then color = RiceUI.GetColor(tbl,pnl,"Focus") end
+
+    draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,color,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
 function tbl.TransButton(pnl,w,h)
@@ -91,7 +119,7 @@ function tbl.TransButton(pnl,w,h)
 
     draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(color,pnl.HoverAlpha))
 
-    --draw.SimpleText(pnl:GetText(),pnl:GetFont(),w/2,h/2,pnl:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+    draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
 function tbl.TransButton_F(pnl,w,h)
@@ -105,7 +133,7 @@ function tbl.TransButton_F(pnl,w,h)
 
     draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(color,pnl.HoverAlpha))
 
-    --draw.SimpleText(pnl:GetText(),pnl:GetFont(),w/2,h/2,pnl:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+    draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
 function tbl.Entry(pnl,w,h)
@@ -125,7 +153,7 @@ function tbl.Entry(pnl,w,h)
         draw.SimpleText(pnl:GetPlaceholderText(),pnl:GetFont(),10,h/2,pnl:GetPlaceholderColor(),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
     end
 
-    draw.SimpleText(pnl:GetText(),pnl:GetFont(),10,h/2,pnl:GetTextColor(),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+    draw.SimpleText(pnl:GetText(),pnl:GetFont(),10,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 
     if pnl:HasFocus() then
         surface.SetDrawColor(50,50,50,255*math.sin(SysTime()*8%360))
@@ -141,6 +169,22 @@ function tbl.Switch(pnl,w,h)
     surface.DrawRect(h/2/2+4,0,w-h/2-8,h)
 
     RL.Draw.Circle(h/2+pnl.togglePos,h/2,h/2-2,32,Color(250,250,250))
+end
+
+function tbl.Slider(pnl,w,h)
+    local pos = w*pnl:GetSlideX()
+
+    draw.RoundedBox(32,0,h/3,pos,h/3,RiceUI.GetColor(tbl,pnl,"Focus"))
+    draw.RoundedBox(32,pos,h/3,w-pos,h/3,RiceUI.GetColor(tbl,pnl,"Disable"))
+
+    DisableClipping(true)
+    RL.Draw.Circle(pos,h/2,h/2,32,RiceUI.GetColor(tbl,pnl,"Focus"))
+    RL.Draw.Circle(pos,h/2,h/2-2,32,Color(250,250,250))
+
+    if pnl:GetDragging() then
+        draw.SimpleText(tostring(pnl:GetValue()),"OPPOSans_"..tostring(h),pos,-h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+    end
+    DisableClipping(false)
 end
 
 return tbl
