@@ -67,6 +67,7 @@ local function main(data,parent)
     
         anim.Think = function( anim, pnl, fraction )
             self.togglePos = Lerp( fraction, anim.StartPos, anim.TargetPos )
+            self.animFraction = fraction
         end
     end
 

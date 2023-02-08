@@ -187,4 +187,17 @@ function tbl.Slider(pnl,w,h)
     DisableClipping(false)
 end
 
+function tbl.ScrollPanel_VBar(pnl,w,h)
+    surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"Bar"))
+    surface.DrawRect(0,0,w,h)
+end
+
+function tbl.ScrollPanel_VBar_Grip(pnl,w,h)
+    surface.SetDrawColor(RiceUI.GetColor(tbl,pnl))
+    surface.DrawRect(0,0,w,h)
+
+    surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"Bar"))
+    surface.DrawOutlinedRect(0,0,w,h,1)
+end
+
 return tbl

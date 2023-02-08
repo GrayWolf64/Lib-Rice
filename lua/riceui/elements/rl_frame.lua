@@ -5,7 +5,8 @@ local function main(data,parent)
         w = 500,
         h = 300,
         TitleColor = Color(25,25,25),
-        CloseColor = "white"
+        CloseButtonColor = Color(255,255,255),
+        ThemeName = "modern",
     })
 
     local panel = vgui.Create("EditablePanel",parent)
@@ -15,6 +16,7 @@ local function main(data,parent)
     panel.Paint = RiceUI.GetTheme("modern").RL_Frame
     panel.Theme = {Color = "white1"}
     panel.GTheme = data.GTheme
+    panel.ThemeName = data.ThemeName
 
     function panel:Think()
         local mousex = math.Clamp( gui.MouseX(), 1, ScrW() - 1 )
@@ -47,8 +49,8 @@ local function main(data,parent)
 
     panel.Title = RiceUI.SimpleCreate({type="label",Font="OPPOSans_20",Text=data.Text or "标题",x=5,y=5,Color = data.TitleColor},panel)
     panel.CloseButton = RiceUI.SimpleCreate({type="button",Font=panel.Title:GetFont(),Text="X",x=data.w-52.5,y=2.5,w=50,h=panel.Title:GetTall()+5,NoGTheme=true,
-        Paint = RiceUI.GetTheme("modern").TransButton,
-        Theme={Color="closeButton",TextColor=data.CloseColor},
+        Paint = RiceUI.GetTheme(panel.ThemeName).TransButton,
+        Theme={Color="closeButton",RawTextColor=data.CloseButtonColor},
         DoClick = function()
             panel:AlphaTo(0,0.075,0,function() panel:Remove() end)
         end

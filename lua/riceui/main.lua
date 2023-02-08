@@ -4,6 +4,7 @@ RiceUI.UniProcess = {}
 RiceUI.Theme = {}
 RiceUI.UI = {}
 RiceUI.Prefab = {}
+RiceUI.Examples = {}
 
 RL.Functions.LoadFiles(RiceUI.Elements,"riceui/elements")
 RL.Functions.LoadFiles(RiceUI.UniProcess,"riceui/uniprocess")
@@ -110,77 +111,7 @@ concommand.Add("RiceUI_Create_Adv",function(ply,cmd,args,argstr)
     RiceUI.Create(util.JSONToTable(argstr))
 end)
 
-Examples = {
-    Basic = {
-        {type = "frame",w = 500,h = 1000,Root = true,Center = true,Alpha = 0,
-            Anim = {{type = "alpha",time = 0.075,alpha = 255}},
-            children = {
-                {type = "panel",w = 480,h = 955,x = 10,y = 35,
-                    children = {
-                        {type = "panel",w = 330,h = 120,x = 5,y = 5,
-                            Paint = RiceUI.GetTheme("modern").Panel,
-                            Theme = {RawColor = Color(200,200,200)},
-                        },
-    
-                        {type = "panel",w = 100,h = 50,x = 10,y = 10,
-                            Paint = RiceUI.GetTheme("modern").Panel,
-                            Theme = {Color = "black1"},
-                        },
-    
-                        {type = "panel",w = 100,h = 50,x = 120,y = 10,
-                            Paint = RiceUI.GetTheme("modern").Panel,
-                            Theme = {Color = "black2"},
-                        },
-    
-                        {type = "panel",w = 100,h = 50,x = 230,y = 10,
-                            Paint = RiceUI.GetTheme("modern").Panel,
-                            Theme = {Color = "black3"},
-                        },
-    
-                        {type = "panel",w = 100,h = 50,x = 10,y = 70,
-                            Paint = RiceUI.GetTheme("modern").Panel,
-                            Theme = {Color = "white1"},
-                        },
-    
-                        {type = "panel",w = 100,h = 50,x = 120,y = 70,
-                            Paint = RiceUI.GetTheme("modern").Panel,
-                            Theme = {Color = "white2"},
-                        },
-    
-                        {type = "panel",w = 100,h = 50,x = 230,y = 70,
-                            Paint = RiceUI.GetTheme("modern").Panel,
-                            Theme = {Color = "white3"},
-                        },
-    
-                        {type = "label",x = 10,y = 130,Resize = true},
-                        {type = "entry",x = 10,y = 175},
-    
-                        {type = "button",x = 10,y = 220,
-                            DoClick = function() surface.PlaySound("buttons/button22.wav") end,
-                        },
-
-                        {type = "button",x = 180,y = 220,
-                            Paint = RiceUI.GetTheme("modern").Button,
-                            Theme = {Color = "white1"},
-                            DoClick = function() surface.PlaySound("buttons/button22.wav") end,
-                        },
-
-                        {type = "button",x = 285,y = 220,
-                            Paint = RiceUI.GetTheme("modern").Button,
-                            Theme = {Color = "black1"},
-                            Color = Color(200,200,200),
-                            DoClick = function() surface.PlaySound("buttons/button22.wav") end,
-                        },
-
-                        {type = "image",x = 120,y = 220,
-                            DoClick = function() surface.PlaySound("buttons/button22.wav") end,
-                        },
-                    }
-                }
-            }
-        }
-    },
-
+RiceUI.Examples = {
     Modern = {
         {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,
             GTheme = {name = "modern",Theme = {Color="white1"}},
@@ -253,16 +184,45 @@ Examples = {
     }
 }
 
+for k,v in pairs(RiceUI.Theme) do
+    if !v.OnLoaded then continue end
+
+    v.OnLoaded()
+end
+
 concommand.Add("RiceUI_Example",function(ply,_,_,str)
-    RiceUI.Create(Examples[str])
+    RiceUI.Create(RiceUI.Examples[str])
 end,function()
     local tbl = {}
 
-    for _,v in ipairs(table.GetKeys(Examples)) do
+    for _,v in ipairs(table.GetKeys(RiceUI.Examples)) do
         table.insert(tbl,"RiceUI_Example "..v)
     end
 
     return tbl
+end)
+
+concommand.Add("RiceUI_Examples",function()
+    RiceUI.SimpleCreate({type="rl_frame",Text="Examples",Center=true,Root=true,Alpha=0,w=400,h=600,TitleColor=Color(250,250,250),CloseColor="black",
+        Theme = {Color="black1",TextColor="black1"},
+        GTheme = {name = "modern",Theme = {Color="black1",TextColor="black1"}},
+
+        Anim = {{type = "alpha",time = 0.075,alpha = 255}},
+        children = {
+            {type="scrollpanel",ID="ScrollPanel",x=10,y=40,w=380,h=550,OnCreated = function(pnl)
+                for k,v in SortedPairs(RiceUI.Examples) do 
+                    pnl:AddItem(RiceUI.SimpleCreate({type="button",Dock=TOP,h=50,Margin={0,0,5,5},Text=k,
+                        Paint = RiceUI.GetTheme("modern_rect").Button,
+                        Theme = {Color = "white"},
+
+                        DoClick = function()
+                            RiceUI.Create(RiceUI.Examples[k])
+                        end
+                    },pnl))
+                end
+            end},
+        },
+    })
 end)
 
 RL.IncludeDir("riceui/prefabs",true)
