@@ -101,15 +101,19 @@ function RL.IncludeDir(directory,silence,nosub)
     if not string.EndsWith(directory,"/") then directory = directory.."/" end
     local files, directories = file.Find(directory .. "*", "LUA")
 
-    for _, v in ipairs(files) do
+    for i, v in ipairs(files) do
         AddFile(v, directory, silence)
+
+        if i==#files then print("\n") end
     end
 
     if nosub then return end
 
-    for _, v in ipairs(directories) do
+    for i, v in ipairs(directories) do
         if not silence then RL.Message("Loading Directory: " .. directory .. v) end
         RL.IncludeDir(directory .. v, silence)
+
+        if i==#directories then print("\n") end
     end
 end
 
@@ -148,15 +152,19 @@ function RL.IncludeDirAs(directory, name, nosub)
     if not string.EndsWith(directory,"/") then directory = directory.."/" end
     local files, directories = file.Find(directory .. "*", "LUA")
 
-    for _, v in ipairs(files) do
+    for i, v in ipairs(files) do
         AddFileAs(v, directory, name)
+
+        if i==#files then print(name.."\n") end
     end
 
     if nosub then return end
 
-    for _, v in ipairs(directories) do
+    for i, v in ipairs(directories) do
         RL.MessageAs("Loading Directory: " .. directory .. v, name)
         RL.IncludeDirAs(directory .. v, name)
+
+        if i==#directories then print(name.."\n") end
     end
 end
 
@@ -179,4 +187,31 @@ if SERVER then
     end
 end
 
+RL.Files = {}
+
+function RL.Files.GetAll(dir,path)
+    if not string.EndsWith(dir,"/") then dir = dir.."/" end
+
+    local files,_ = file.Find(dir.."*",path)
+
+    return files
+end
+
+function RL.Files.GetDir(dir,path)
+    if not string.EndsWith(dir,"/") then dir = dir.."/" end
+
+    local _,dir = file.Find(dir.."*",path)
+
+    return dir
+end
+
+function RL.Files.Iterator(dir,path,iterator)
+    if not string.EndsWith(dir,"/") then dir = dir.."/" end
+
+    for _,v in ipairs(RL.Files.GetAll(dir,path)) do
+        iterator(v,dir,path)
+    end
+end
+
+print("==================RL=================")
 RL.IncludeDir("ricelib_preload")

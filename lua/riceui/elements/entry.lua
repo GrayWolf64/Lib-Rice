@@ -8,6 +8,8 @@ local function main(data,parent)
         Text = "",
         TextColor = Color(30,30,30),
         Placeholder = "Input Text",
+        OnEnter = function()end,
+        Multline = false,
     })
 
     local panel = vgui.Create("DTextEntry",parent)
@@ -19,6 +21,8 @@ local function main(data,parent)
     panel:SetPlaceholderText(data.Placeholder)
     panel.GThemeType = "Entry"
     panel.NoGTheme = data.NoGTheme
+    panel.OnEnter = data.OnEnter
+    panel:SetMultiline(data.Multline)
 
     RiceUI.Process("panel",panel,data)
     RiceUI.Process("label",panel,data)

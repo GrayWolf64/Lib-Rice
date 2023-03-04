@@ -28,20 +28,22 @@ tbl.BarColor = {
     white1 = Color(230,230,230),
     white2 = Color(220,220,220),
     white3 = Color(210,210,210),
-    black = HSLToColor(0,0,0.25),
-    black1 = HSLToColor(0,0,0.25),
-    black2 = HSLToColor(0,0,0.2),
+    black = HSLToColor(0,0,0.15),
+    black1 = HSLToColor(0,0,0.15),
+    black2 = HSLToColor(0,0,0.15),
     black3 = HSLToColor(0,0,0.15),
 }
 
 tbl.HoverColor = {
     closeButton = Color(255,0,0),
-    white1 = Color(230,230,230),
-    white2 = Color(220,220,220),
-    white3 = Color(210,210,210),
-    black1 = Color(50,50,50),
-    black2 = Color(30,30,30),
-    black3 = Color(10,10,10),
+    white = HSLToColor(0,0,0.98),
+    white1 = HSLToColor(0,0,0.98),
+    white1 = HSLToColor(0,0,0.95),
+    white1 = HSLToColor(0,0,0.93),
+    black = HSLToColor(0,0,0.35),
+    black1 = HSLToColor(0,0,0.35),
+    black2 = HSLToColor(0,0,0.40),
+    black3 = HSLToColor(0,0,0.45),
 }
 
 tbl.FocusColor = {
@@ -156,7 +158,7 @@ function tbl.Entry(pnl,w,h)
     draw.SimpleText(pnl:GetText(),pnl:GetFont(),10,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 
     if pnl:HasFocus() then
-        surface.SetDrawColor(50,50,50,255*math.sin(SysTime()*8%360))
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.sin(SysTime()*8%360)))
         surface.DrawRect(10+RL.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
     end
 end

@@ -6,6 +6,9 @@ local function main(data,parent)
         h = 300,
         DefaultX = 100,
         DefaultX = 100,
+        RootName = "",
+        EnableOnChat = true,
+        Outline = true,
     })
 
     local panel = vgui.Create("DButton",parent)
@@ -17,9 +20,15 @@ local function main(data,parent)
     panel.Profile = data.Profile
     panel.DefaultX = data.DefaultX
     panel.DefaultY = data.DefaultY
+    panel.RootName = data.RootName
+    panel.EnableOnChat = data.EnableOnChat
+    panel.Outline = data.Outline
 
     function panel:Paint(w,h)
-        if not RICELIB_PLAYERCHAT then return end
+        if not panel.Outline then return end
+
+        local onChat = (panel.EnableOnChat and RICELIB_PLAYERCHAT)
+        if not (onChat or (RiceUI.RootName == panel.RootName)) then return end
 
         if self.Dragging then return end
 
@@ -40,6 +49,9 @@ local function main(data,parent)
     end
 
     function panel:OnMousePressed(code)
+        local onChat = (panel.EnableOnChat and RICELIB_PLAYERCHAT)
+        if not (onChat or (RiceUI.RootName == panel.RootName)) then return end
+
         if code == MOUSE_RIGHT then
             parent:SetPos(RL.hudScale(self.DefaultX,self.DefaultY))
 

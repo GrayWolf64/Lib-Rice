@@ -5,6 +5,14 @@ local function main(panel,data)
         panel:MakePopup()
     end
 
+    if data.Clicker then
+        gui.EnableScreenClicker(true)
+
+        function panel:OnRemove()
+            gui.EnableScreenClicker(false)
+        end
+    end
+
     if data.Center then panel:Center() end
     if data.Paint then panel.Paint = data.Paint end
     if data.PaintOver then panel.PaintOver = data.PaintOver end
@@ -14,6 +22,8 @@ local function main(panel,data)
     if data.Theme then panel.Theme = data.Theme end
     if data.Dock then panel:Dock(data.Dock) end
     if data.Margin then panel:DockMargin(data.Margin[1],data.Margin[2] or 0,data.Margin[3] or 0,data.Margin[4] or 0) end
+    if data.NoGTheme then panel.NoGTheme = data.NoGTheme end
+    if data.Data then panel.Data = data.Data end
 
     if !data.Anim then return end
     for _,AnimData in ipairs(data.Anim) do

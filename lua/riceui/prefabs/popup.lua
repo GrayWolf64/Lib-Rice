@@ -31,15 +31,37 @@ function RiceUI.Prefab.Notify_LOL(args)
     table.Inherit(args,{
         Text = "喜报",
         DoClick = function(self) self:Remove() end,
+        Scale = 1,
+        FontSize = 30,
     })
 
-    local frame = RiceUI.SimpleCreate({type = "button",w=467,h=350,Text="",Font="SourceHan_30",Center = true,Root = true,
+    local frame = RiceUI.SimpleCreate({type = "button",w=467*args.Scale,h=350*args.Scale,Text="",Font="SourceHan_"..tostring(args.FontSize),Center = true,Root = true,
         Paint = function(self,w,h)
             surface.SetDrawColor(255,255,255,255)
             surface.SetMaterial(lol)
             surface.DrawTexturedRect(0,0,w,h)
 
-            draw.SimpleText(args.Text,"SourceHan_40",w/2,h/2,Color(255,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            draw.DrawText(args.Text,"SourceHan_"..tostring(args.FontSize),w/2,h/2-(args.FontSize/2),Color(255,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+        end,
+
+        DoClick = args.DoClick
+    })
+end
+
+function RiceUI.Prefab.Notify_LOL_FullScreen(args)
+    table.Inherit(args,{
+        Text = "喜报",
+        DoClick = function(self) self:Remove() end,
+        FontSize = 30,
+    })
+
+    local frame = RiceUI.SimpleCreate({type = "button",w=ScrW(),h=ScrH(),Center = true,Root = true,
+        Paint = function(self,w,h)
+            surface.SetDrawColor(255,255,255,255)
+            surface.SetMaterial(lol)
+            surface.DrawTexturedRect(0,0,w,h)
+
+            draw.DrawText(args.Text,"SourceHan_"..tostring(args.FontSize),w/2,h/2-(args.FontSize/2),Color(255,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         end,
 
         DoClick = args.DoClick

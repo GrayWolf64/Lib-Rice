@@ -14,6 +14,11 @@ local function main(data,parent)
         surface.DrawRect(0,0,w,h)
     end
 
+    local delay = CurTime()+5
+    panel.Think = function()
+        if delay < CurTime() then panel:Remove() end
+    end
+
     RiceUI.Process("error",panel,data)
 
     return panel

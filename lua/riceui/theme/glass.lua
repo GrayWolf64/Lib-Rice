@@ -14,6 +14,11 @@ tbl.TextColor = {
     black = Color(255,255,255,255),
 }
 
+tbl.VBarColor = {
+    white = Color(255,255,255,50),
+    black = Color(0,0,0,50),
+}
+
 tbl.BarColor = {
     white = Color(255,255,255),
     black = Color(50,50,50),
@@ -125,7 +130,7 @@ function tbl.Entry(pnl,w,h)
     draw.SimpleText(pnl:GetText(),pnl:GetFont(),10,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 
     if pnl:HasFocus() then
-        surface.SetDrawColor(50,50,50,255*math.sin(SysTime()*8%360))
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.sin(SysTime()*8%360)))
         surface.DrawRect(10+RL.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
     end
 end
@@ -137,7 +142,7 @@ function tbl.Switch(pnl,w,h)
     local fraction = (pnl.togglePos/(pnl:GetWide()/2))
 
     surface.SetDrawColor(Color(250,250,250))
-    surface.DrawRect(fraction*w + 3 - ((h/1.5 + 5) *fraction),3,h/1.5,h-6)
+    surface.DrawRect(fraction*w + 3 - ((h/1.5 + 6) *fraction),3,h/1.5,h-6)
 end
 
 function tbl.Slider(pnl,w,h)
@@ -157,6 +162,16 @@ function tbl.Slider(pnl,w,h)
         draw.SimpleText(tostring(pnl:GetValue()),"OPPOSans_"..tostring(h),pos,-h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
     end
     DisableClipping(false)
+end
+
+function tbl.ScrollPanel_VBar(pnl,w,h)
+    surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"VBar"))
+    surface.DrawRect(0,0,w,h)
+end
+
+function tbl.ScrollPanel_VBar_Grip(pnl,w,h)
+    surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"Bar"))
+    surface.DrawRect(0,0,w,h)
 end
 
 function tbl.OnLoaded()
@@ -180,7 +195,7 @@ function tbl.OnLoaded()
                     {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
 
                     {type="panel",x=10,y=140,h=645},
-                    {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,OnCreated = function(pnl)
+                    {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,ThemeName="glass",Theme = {Color = "white"},OnCreated = function(pnl)
                         for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
                             Paint = RiceUI.GetTheme("glass").Panel,
                             Theme = {Color = "white"},
@@ -218,7 +233,7 @@ function tbl.OnLoaded()
                     {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
 
                     {type="panel",x=10,y=140,h=645},
-                    {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,Theme = {Color = "black1"},OnCreated = function(pnl)
+                    {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,ThemeName="glass",Theme = {Color = "black"},OnCreated = function(pnl)
                         for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
                             Paint = RiceUI.GetTheme("glass").Panel,
                             Theme = {Color = "black"},

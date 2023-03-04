@@ -5,6 +5,7 @@ RiceUI.Theme = {}
 RiceUI.UI = {}
 RiceUI.Prefab = {}
 RiceUI.Examples = {}
+RiceUI.RootName = "main"
 
 RL.Functions.LoadFiles(RiceUI.Elements,"riceui/elements")
 RL.Functions.LoadFiles(RiceUI.UniProcess,"riceui/uniprocess")
@@ -103,12 +104,16 @@ concommand.Add("RiceUI_Reload",function()
 end)
 
 concommand.Add("RiceUI_Create",function(ply,cmd,args,argstr)
-    PrintTable(util.JSONToTable(argstr))
-    RiceUI.SimpleCreate(util.JSONToTable(argstr))
-end)
+    RiceUI.SimpleCreate({type="rl_frame",h=80,Text="UI测试",Center=true,Root=true,
+        GTheme = {name = "modern",Theme = {Color="white1"}},
+        children={
+            {type="entry",y=40,w=480,OnEnter=function(self,text)
+                RiceUI.SimpleCreate(util.JSONToTable(text) or {})
 
-concommand.Add("RiceUI_Create_Adv",function(ply,cmd,args,argstr)
-    RiceUI.Create(util.JSONToTable(argstr))
+                PrintTable(util.JSONToTable(text))
+            end}
+        }
+    })
 end)
 
 RiceUI.Examples = {
@@ -164,7 +169,7 @@ RiceUI.Examples = {
                 {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
 
                 {type="panel",x=10,y=140,h=645},
-                {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,OnCreated = function(pnl)
+                {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,Theme = {Color = "black1"},OnCreated = function(pnl)
                     for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
                         Paint = RiceUI.GetTheme("modern").Panel,
                         Theme = {Color = "black2"},
@@ -212,12 +217,12 @@ concommand.Add("RiceUI_Examples",function()
             {type="scrollpanel",ID="ScrollPanel",x=10,y=40,w=380,h=550,OnCreated = function(pnl)
                 for k,v in SortedPairs(RiceUI.Examples) do 
                     pnl:AddItem(RiceUI.SimpleCreate({type="button",Dock=TOP,h=50,Margin={0,0,5,5},Text=k,
-                        Paint = RiceUI.GetTheme("modern_rect").Button,
-                        Theme = {Color = "white"},
+                    Paint = RiceUI.GetTheme("modern_rect").Button,
+                    Theme = {Color = "white"},
 
-                        DoClick = function()
-                            RiceUI.Create(RiceUI.Examples[k])
-                        end
+                    DoClick = function()
+                        RiceUI.Create(RiceUI.Examples[k])
+                    end
                     },pnl))
                 end
             end},

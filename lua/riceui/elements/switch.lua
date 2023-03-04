@@ -74,7 +74,7 @@ local function main(data,parent)
     panel:SetValue(data.Value or false)
 
     RiceUI.Process("panel",panel,data)
-    RiceUI.Process("button",panel,data)
+    RiceUI.Process("switch",panel,data)
 
     return panel
 end

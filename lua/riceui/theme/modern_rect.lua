@@ -164,7 +164,7 @@ function tbl.Entry(pnl,w,h)
     draw.SimpleText(pnl:GetText(),pnl:GetFont(),10,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 
     if pnl:HasFocus() then
-        surface.SetDrawColor(50,50,50,255*math.sin(SysTime()*8%360))
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.sin(SysTime()*8%360)))
         surface.DrawRect(10+RL.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
     end
 end

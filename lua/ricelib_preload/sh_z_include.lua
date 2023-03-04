@@ -6,5 +6,5 @@ if CLIENT then
 
 else
     RL.AddCSFiles("ricelib_vgui","RiceLib VGUI")
-    RL.AddCSFiles("riceui","RiceGUI")
+    RL.AddCSFiles("riceui","RiceGUI",true)
 end

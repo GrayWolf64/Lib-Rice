@@ -7,6 +7,7 @@ local function main(data,parent)
         TitleColor = Color(25,25,25),
         CloseButtonColor = Color(255,255,255),
         ThemeName = "modern",
+        OnClose = function()end,
     })
 
     local panel = vgui.Create("EditablePanel",parent)
@@ -17,6 +18,7 @@ local function main(data,parent)
     panel.Theme = {Color = "white1"}
     panel.GTheme = data.GTheme
     panel.ThemeName = data.ThemeName
+    panel.OnClose = data.OnClose
 
     function panel:Think()
         local mousex = math.Clamp( gui.MouseX(), 1, ScrW() - 1 )
@@ -53,6 +55,8 @@ local function main(data,parent)
         Theme={Color="closeButton",RawTextColor=data.CloseButtonColor},
         DoClick = function()
             panel:AlphaTo(0,0.075,0,function() panel:Remove() end)
+
+            panel.OnClose()
         end
     },panel)
 
