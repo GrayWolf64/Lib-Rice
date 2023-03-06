@@ -5,7 +5,6 @@ RL.Language = RL.Language or {}
 RL.Language.Words = RL.Language.Words or {}
 RL.Functions = RL.Functions or {}
 
-file.CreateDir("ricelib")
 file.CreateDir("ricelib/settings")
 
 if SERVER then
@@ -200,9 +199,9 @@ end
 function RL.Files.GetDir(dir,path)
     if not string.EndsWith(dir,"/") then dir = dir.."/" end
 
-    local _,dir = file.Find(dir.."*",path)
+    local _,ret_dir = file.Find(dir.."*",path)
 
-    return dir
+    return ret_dir
 end
 
 function RL.Files.Iterator(dir,path,iterator)
