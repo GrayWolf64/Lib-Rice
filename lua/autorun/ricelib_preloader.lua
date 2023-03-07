@@ -11,58 +11,26 @@ if SERVER then
     resource.AddWorkshop( "2829757059" )
 end
 
-function RL.Message(msg)
-    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+for k, v in pairs({["Message"] = Color(0, 255, 0), ["Message_Error"] = Color(255, 0, 0), ["Message_Warn"] = Color(255, 150, 0)}) do
+    RL[k] = function(msg)
+        if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
 
-    if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
-    
-    MsgC(color, "[RiceLib] ")
-    MsgC(Color(0, 255, 0), msg .. "\n")
+        if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
+
+        MsgC(color, "[RiceLib] ")
+        MsgC(v, msg .. "\n")
+    end
 end
 
-function RL.Message_Error(msg)
-    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
+for k, v in pairs({["MessageAs"] = Color(0, 255, 0), ["Message_ErrorAs"] = Color(255, 0, 0), ["Message_WarnAs"] = Color(255, 150, 0)}) do
+    RL[k] = function(msg, name)
+        if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
 
-    if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
+        if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
 
-    MsgC(color, "[RiceLib] ")
-    MsgC(Color(255, 0, 0), msg .. "\n")
-end
-
-function RL.Message_Warn(msg)
-    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
-
-    if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
-
-    MsgC(color, "[RiceLib] ")
-    MsgC(Color(255, 150, 0), msg .. "\n")
-end
-
-function RL.MessageAs(msg,name)
-    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
-
-    if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
-
-    MsgC(color, "["..name.."] ")
-    MsgC(Color(0, 255, 0), msg .. "\n")
-end
-
-function RL.Message_ErrorAs(msg,name)
-    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
-
-    if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
-
-    MsgC(color, "["..name.."] ")
-    MsgC(Color(255, 0, 0), msg .. "\n")
-end
-
-function RL.Message_WarnAs(msg,name)
-    if string.StartWith(msg,"#") then msg = RL.Language.Get(string.sub(msg,2)) or msg end
-
-    if SERVER then color = Color(0,150,255) else color = Color(255, 255, 150) end
-    
-    MsgC(color, "["..name.."] ")
-    MsgC(Color(255, 150, 0), msg .. "\n")
+        MsgC(color, "["..name.."] ")
+        MsgC(v, msg .. "\n")
+    end
 end
 
 local function AddFile(File, directory, silence)
