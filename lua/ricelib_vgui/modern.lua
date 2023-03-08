@@ -1,4 +1,4 @@
--- 现代VGUI组件
+// 现代VGUI组件
 function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
@@ -77,7 +77,7 @@ function RL.VGUI.ModernImageButton(Text,Icon,Panel,FontSize,X,Y,W,H,DoClickFun,.
         DoClickFun(unpack(var))
     end
     btn.PaintOver = function(self,w,h)
-        if not self.Icont then self.Icon = Material(Icon) end
+        if !self.Icont then self.Icon = Material(Icon) end
         if not self.Icon:IsError() then
             surface.SetMaterial(self.Icon)
             surface.SetDrawColor(255,255,255,255)
@@ -109,7 +109,7 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     TE:Dock(RIGHT)
     TE:SetWide(RL_hudScaleX(CW))
     TE:SetFont("OPSans_"..FontSize)
-    TE.OnEnter = function(_,text)
+    TE.OnEnter = function(self,text)
         Fun(text)
     end
 
@@ -174,7 +174,7 @@ function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun,DarkMode)
     CB:SetTheme("OutlineRect")
     CB:SetColorTheme(darkmode.."3")
 
-    function CB:OnSelect(_,value)
+    function CB:OnSelect(index,value)
         Fun(value)
     end
     function CB:OnMenuOpened(menu)

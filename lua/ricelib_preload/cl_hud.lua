@@ -14,9 +14,9 @@ else
     file.Write("ricelib/settings/scale.json", util.TableToJSON({}))
 end
 
--- HUD/UI 位置/大小 缩放
+// HUD/UI 位置/大小 缩放
 
--- 兼容旧版本
+// 兼容旧版本
     function RL_hudScale(x,y)
         return x*(ScrW()/1920),y*(ScrH()/1080)
     end
@@ -85,7 +85,7 @@ function RL.Clear_HUDOffset(profile,x,y)
     file.Write("ricelib/settings/hud_offset.json", util.TableToJSON(RL.VGUI.HUDOffset,true))
 end
 
--- HUD位置更改按钮
+// HUD位置更改按钮
 function RL.VGUI.OffsetButton(panel,profile,x,y,show,showName,resetFun)
     resetFun = resetFun or function() end
 

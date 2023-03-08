@@ -59,7 +59,7 @@ function RL.VGUI.Toggle(Panel,X,Y,W,H,Fun)
         draw.RoundedBox(RL.hudScaleY(r),0,0,w,h,self:GetColor())
         draw.RoundedBox(RL.hudScaleY(r),self.togglePos,2,h-2,h-4,CB.toggleColor)
     end
-    function CB:doToggle(bool)
+    function CB:doToggle(bool,setvalue)
         local anim = self:NewAnimation( self.a_length or 0.25, 0, self.a_ease or 0.25 )
 
         if bool then
@@ -74,7 +74,7 @@ function RL.VGUI.Toggle(Panel,X,Y,W,H,Fun)
             self:ColorTo(Color(180,180,180,255),0.15,0.05)
         end
     
-        anim.Think = function( anim, _, fraction )
+        anim.Think = function( anim, pnl, fraction )
             self.togglePos = Lerp( fraction, anim.StartPos, anim.TargetPos )
         end
     end
@@ -109,7 +109,7 @@ function RL.VGUI.LabelToggle(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
         draw.RoundedBox(RL.hudScaleY(r),0,0,w,h,self:GetColor())
         draw.RoundedBox(RL.hudScaleY(r),self.togglePos,2,h-2,h-4,CB.toggleColor)
     end
-    function CB:doToggle(bool)
+    function CB:doToggle(bool,setvalue)
         local anim = self:NewAnimation( self.a_length or 0.25, 0, self.a_ease or 0.25 )
 
         if bool then
@@ -124,7 +124,7 @@ function RL.VGUI.LabelToggle(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
             self:ColorTo(Color(180,180,180,255),0.15,0.05)
         end
     
-        anim.Think = function( anim, _, fraction )
+        anim.Think = function( anim, pnl, fraction )
             self.togglePos = Lerp( fraction, anim.StartPos, anim.TargetPos )
         end
     end

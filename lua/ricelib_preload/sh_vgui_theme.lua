@@ -14,7 +14,7 @@ function RL.VGUI.ReloadTheme()
     
         for _, v in ipairs(files) do
             local Name,Theme = include("ricelib_vgui_theme/" .. v)
-            if not Name or not Theme then return end
+            if !Name or !Theme then return end
 
             RL.MessageAs("Loaded " .. Name,"RiceLib VGUI Theme")
             
@@ -27,7 +27,7 @@ if SERVER then
     
 else
     function RL.VGUI.RegisterTheme(Name,Theme)
-        if not Theme.Paint then return end
+        if !Theme.Paint then return end
 
         RL.VGUI.Theme[Name] = Theme
     end
@@ -37,13 +37,13 @@ else
     end
 
     function RL.VGUI.SetGlobalTheme(Name)
-        if not RL.VGUI.Theme[Name] then return end
+        if !RL.VGUI.Theme[Name] then return end
 
         RL.VGUI.GlobalTheme = RL.VGUI.Theme[Name]
     end
 
     function RL.VGUI.SetThemeSet(Name)
-        if not RL.VGUI.Theme[Name] then return end
+        if !RL.VGUI.Theme[Name] then return end
 
         RL.VGUI.ThemeSet = Name
     end
@@ -59,7 +59,7 @@ else
     local meta = FindMetaTable("Panel")
     
     function meta:SetTheme(Name)
-        if not RL.VGUI.Theme[Name] then return end
+        if !RL.VGUI.Theme[Name] then return end
 
         self.Paint = RL.VGUI.Theme[Name].Paint
         self.Theme = table.Copy(RL.VGUI.Theme[Name])
@@ -117,7 +117,7 @@ else
         panel:Dock(FILL)
         panel:SetTheme("ModernDark")
 
-        for k,_ in SortedPairs(RL.VGUI.Theme) do
+        for k,v in SortedPairs(RL.VGUI.Theme) do
             local button = vgui.Create("DButton",panel)
             button:Dock(TOP)
             button:DockMargin(0,RL.hudScaleY(5),0,0)
@@ -143,7 +143,7 @@ else
         panel:SetTheme("Modern")
         panel:SetColorTheme("Dark1")
 
-        for k,_ in SortedPairs(RL.VGUI.ColorTheme) do
+        for k,v in SortedPairs(RL.VGUI.ColorTheme) do
             local button = vgui.Create("DButton",panel)
             button:Dock(TOP)
             button:DockMargin(0,RL.hudScaleY(5),0,0)

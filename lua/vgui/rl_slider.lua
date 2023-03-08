@@ -39,7 +39,7 @@ end
 
 function PANEL:Think()
     if self:IsEditing() then
-        if self.ValueOld ~= self:GetValue() then
+        if self.ValueOld != self:GetValue() then
             self.ValueOld = self:GetValue()
             self:OnValueChanged(self:GetValue())
         end

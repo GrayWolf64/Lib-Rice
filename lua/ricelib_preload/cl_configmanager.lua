@@ -1,7 +1,7 @@
 RL.Config = RL.Config or {}
 RL.Config.Data = {}
 
-function RL.Config.LoadConfig(Config,Name)
+function RL.Config.LoadConfig(Config,Name,tbl)
     local root = "ricelib/settings/"..Config
     local dir = "ricelib/settings/"..Config.."/"..Name..".json"
 
