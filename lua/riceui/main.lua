@@ -14,42 +14,6 @@ RL.Functions.LoadFiles(RiceUI.Theme,"riceui/theme")
 file.CreateDir("riceui")
 file.CreateDir("riceui/web_image")
 
-function RiceUI.Create(tbl,parent)
-    local returnpnl
-
-    for i,data in ipairs(tbl) do
-        if not RiceUI.Elements[data.type] then RiceUI.Elements["error"](data,parent) continue end
-
-        local pnl = RiceUI.Elements[data.type](data,parent)
-
-        if i==1 then returnpnl = pnl end
-
-        if data.Root then returnpnl = pnl end
-        if data.ID then
-            if parent then
-                parent.Elements = parent.Elements or {}
-
-                parent.Elements[data.ID] = pnl
-            else
-                returnpnl.Elements = returnpnl.Elements or {}
-
-                returnpnl.Elements[data.ID] = pnl
-            end
-        end
-
-        if data.children then
-            RiceUI.Create(data.children,pnl)
-        end
-
-        if pnl.ChildCreated then pnl.ChildCreated() end
-        if data.OnCreated then data.OnCreated(pnl) end
-    end
-
-    table.insert(RiceUI.UI,returnpnl)
-
-    return returnpnl
-end
-
 function RiceUI.SimpleCreate(data,parent)
     if not RiceUI.Elements[data.type] then RiceUI.Elements["error"](data,parent) return end
 
@@ -63,7 +27,20 @@ function RiceUI.SimpleCreate(data,parent)
 
     table.insert(RiceUI.UI,pnl)
 
+    if data.OnCreated then data.OnCreated(pnl) end
+
     return pnl
+end
+
+function RiceUI.Create(tbl,parent)
+    for i,data in ipairs(tbl) do
+        local pnl = RiceUI.SimpleCreate(data,parent)
+        local parent = parent or pnl
+
+        parent.Elements = parent.Elements or {}
+
+        if data.ID then parent.Elements[data.ID] = pnl end
+    end
 end
 
 function RiceUI.Process(name,panel,data)
@@ -88,7 +65,7 @@ function RiceUI.GetColorBase(tbl,pnl,name,default)
 end
 
 concommand.Add("RiceUI_Panic",function()
-    for _,v in ipairs(RiceUI.UI) do
+    for _,v in pairs(RiceUI.UI) do
         if IsValid(v) then v:Remove() end
     end
 end)
@@ -195,18 +172,6 @@ for k,v in pairs(RiceUI.Theme) do
     v.OnLoaded()
 end
 
-concommand.Add("RiceUI_Example",function(ply,_,_,str)
-    RiceUI.Create(RiceUI.Examples[str])
-end,function()
-    local tbl = {}
-
-    for _,v in ipairs(table.GetKeys(RiceUI.Examples)) do
-        table.insert(tbl,"RiceUI_Example "..v)
-    end
-
-    return tbl
-end)
-
 concommand.Add("RiceUI_Examples",function()
     RiceUI.SimpleCreate({type="rl_frame",Text="Examples",Center=true,Root=true,Alpha=0,w=400,h=600,TitleColor=Color(250,250,250),CloseColor="black",
         Theme = {Color="black1",TextColor="black1"},
@@ -215,7 +180,7 @@ concommand.Add("RiceUI_Examples",function()
         Anim = {{type = "alpha",time = 0.075,alpha = 255}},
         children = {
             {type="scrollpanel",ID="ScrollPanel",x=10,y=40,w=380,h=550,OnCreated = function(pnl)
-                for k,v in SortedPairs(RiceUI.Examples) do 
+                for k,v in SortedPairs(RiceUI.Examples) do
                     pnl:AddItem(RiceUI.SimpleCreate({type="button",Dock=TOP,h=50,Margin={0,0,5,5},Text=k,
                     Paint = RiceUI.GetTheme("modern_rect").Button,
                     Theme = {Color = "white"},
