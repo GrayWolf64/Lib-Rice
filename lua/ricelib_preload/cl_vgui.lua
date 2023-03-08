@@ -1,4 +1,4 @@
-//省事函数
+-- 省事函数
 function RL.VGUI.GetRoot(vgui)
     local parent = vgui:GetParent()
 
@@ -56,7 +56,7 @@ function RL.VGUI.blurBackground(self,amount)
 end
 
 function RL.VGUI.FadeIn(panel,time,func)
-    local func = func or function()end
+    if not func or not isfunction(func) then return end
 
     panel:AlphaTo(0,time/2,0,function()
         panel:Clear()

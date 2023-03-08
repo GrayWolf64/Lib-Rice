@@ -1,5 +1,5 @@
 function RL.Functions.LoadFiles(tbl,dir)
-    if !tbl then return end
+    if not tbl then return end
     local files,_ = file.Find(dir.."/*","LUA")
 
     for _,file in ipairs(files) do
@@ -10,7 +10,7 @@ function RL.Functions.LoadFiles(tbl,dir)
 end
 
 function RL.Functions.LoadFilesRaw(loader,dir)
-    if !loader then return end
+    if not loader then return end
     local files,_ = file.Find(dir.."/*","LUA")
 
     for _,file in ipairs(files) do

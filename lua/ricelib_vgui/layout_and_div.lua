@@ -56,13 +56,13 @@ function RL.VGUI.ScrollPanel(Panel,X,Y,W,H)
     bar.a_ease = 0.25 -- easing animation IN and OUT.
     bar.a_amount = 30 -- scroll amount.
 
-    // Code From https://github.com/Minbird/Smooth_Scroll
+    -- Code From https://github.com/Minbird/Smooth_Scroll
     local function sign( num )
         return num > 0
     end
     
     local function getBiggerPos( signOld, signNew, old, new )
-        if signOld != signNew then return new end
+        if signOld ~= signNew then return new end
         if signNew then
             return math.max(old, new)
         else
@@ -79,7 +79,7 @@ function RL.VGUI.ScrollPanel(Panel,X,Y,W,H)
         self.Old_Sign = nil
     
         local OldScroll = self:GetScroll()
-    
+
         dlta = dlta * self.a_amount
         
         local anim = self:NewAnimation( self.a_length, 0, self.a_ease )
@@ -101,10 +101,10 @@ function RL.VGUI.ScrollPanel(Panel,X,Y,W,H)
                 self.Old_Sign = sign(dlta)
                 self.Old_Pos = nowpos
             end
-            if ctime != newerT then doing_scroll = false end
+            if ctime ~= newerT then doing_scroll = false end
         end
     
-        return math.Clamp( self:GetScroll() + tScroll, 0, self.CanvasSize ) != self:GetScroll()
+        return math.Clamp( self:GetScroll() + tScroll, 0, self.CanvasSize ) ~= self:GetScroll()
     
     end
 

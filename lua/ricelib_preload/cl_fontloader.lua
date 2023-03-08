@@ -1,4 +1,4 @@
-// 一键创建 10 - 100 大小的字体
+-- 一键创建 10 - 100 大小的字体
 function RL.VGUI.RegisterFont(FontName, CodeName, addData)
     for i=1,10 do
         local data = {
