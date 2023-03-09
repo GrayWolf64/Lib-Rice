@@ -105,3 +105,28 @@ concommand.Add("RiceLib_VGUI_FontView",function(ply,cmd,args)
         panel:AddItem(button)
     end
 end)
+
+concommand.Add("RiceLib_VGUI_FontView_Raw",function(ply,cmd,args)
+    local frame = vgui.Create("DFrame")
+    frame:SetSize(RL.hudScale(1800,900))
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("RiceLib VGUI Font Viewer "..args[1])
+    frame:SetTheme("ModernDark")
+
+    local panel,bar,barGrip = RL.VGUI.ScrollPanel(frame)
+    panel:Dock(FILL)
+    panel:SetTheme("ModernDark")
+
+    for i = 1,20 do
+        local button = vgui.Create("DLabel",panel)
+        button:Dock(TOP)
+        button:DockMargin(0,RL.hudScaleY(5),0,0)
+        button:SetText(" "..tostring(i*5).." Innovation in China 中国智造，慧及全球 0123456789")
+        button:SetTheme("ModernDark")
+        button:SetTall(RL.hudScaleY(i*5+10))
+        button:SetFont(args[1].."_"..i*5)
+
+        panel:AddItem(button)
+    end
+end)

@@ -1,4 +1,4 @@
-RiceUI = {}
+RiceUI = RiceUI or {}
 RiceUI.Elements = {}
 RiceUI.UniProcess = {}
 RiceUI.Theme = {}
@@ -23,11 +23,10 @@ function RiceUI.SimpleCreate(data,parent)
         RiceUI.Create(data.children,pnl)
     end
 
+    if data.OnCreated then data.OnCreated(pnl) end
     if pnl.ChildCreated then pnl.ChildCreated() end
 
     table.insert(RiceUI.UI,pnl)
-
-    if data.OnCreated then data.OnCreated(pnl) end
 
     return pnl
 end

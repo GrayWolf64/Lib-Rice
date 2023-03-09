@@ -11,7 +11,7 @@ local function main(data,parent)
 
     local _,panel = RL.VGUI.ModernComboBox(data.Text or "",parent,data.FontSize or 30,x,y,w,h,RL.hudScaleX(data.cw),data.OnSelect,data.DarkMode)
     panel:SetValue(data.Value)
-    
+
     if data.options then
         for _,value in ipairs(data.options) do
             panel:AddChoice(value)
