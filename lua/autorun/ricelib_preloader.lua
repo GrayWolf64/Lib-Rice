@@ -35,25 +35,31 @@ end
 
 local function AddFile(File, directory, silence)
     local prefix = string.lower(string.Left(File, 3))
+    local silence = silence or RL.Debug or true
 
     if SERVER and prefix == "sv_" then
         include(directory .. File)
+
         if not silence then RL.Message("Server Load: " .. File) end
     elseif prefix == "sh_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
+
             if not silence then RL.Message("Shared AddCS: " .. File) end
         end
 
         include(directory .. File)
-        RL.Message("Shared Load: " .. File)
+
+        if not silence then RL.Message("Shared Load: " .. File) end
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
+
             if not silence then RL.Message("Client AddCS: " .. File) end
         elseif CLIENT then
             include(directory .. File)
+
             if not silence then RL.Message("Client Load: " .. File) end
         end
     else
@@ -67,21 +73,27 @@ end
 function RL.IncludeDir(directory,silence,nosub)
     if not string.EndsWith(directory,"/") then directory = directory.."/" end
     local files, directories = file.Find(directory .. "*", "LUA")
+    local silence = silence or RL.Debug or true
 
     for i, v in ipairs(files) do
         AddFile(v, directory, silence)
-
-        if i==#files then print("\n") end
     end
 
-    if nosub then return end
+    if nosub then
+        if not silence then RL.Message("Done Loading: " .. name .. "\n") end
+
+        return
+    end
 
     for i, v in ipairs(directories) do
         if not silence then RL.Message("Loading Directory: " .. directory .. v) end
         RL.IncludeDir(directory .. v, silence)
 
-        if i==#directories then print("\n") end
+        if silence then continue end
+        if i==#directories then RL.Message("Done Loading Directory: " .. directory .. v) end
     end
+
+    if not silence then RL.Message("Done Loading: " .. name .. "\n") end
 end
 
 local function AddFileAs(File, directory, name)
@@ -94,6 +106,7 @@ local function AddFileAs(File, directory, name)
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
+
             RL.MessageAs("Shared AddCS: " .. File,name)
         end
 
@@ -102,9 +115,11 @@ local function AddFileAs(File, directory, name)
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
+
             RL.MessageAs("Client AddCS: " .. File, name)
         elseif CLIENT then
             include(directory .. File)
+
             RL.MessageAs("Client Load: " .. File, name)
         end
     else
@@ -121,36 +136,48 @@ function RL.IncludeDirAs(directory, name, nosub)
 
     for i, v in ipairs(files) do
         AddFileAs(v, directory, name)
-
-        if i==#files then print(name.."\n") end
     end
 
-    if nosub then return end
+    if nosub then
+        if not silence then RL.Message("Done Loading: " .. name .. "\n") end
+
+        return
+    end
 
     for i, v in ipairs(directories) do
         RL.MessageAs("Loading Directory: " .. directory .. v, name)
         RL.IncludeDirAs(directory .. v, name)
 
-        if i==#directories then print(name.."\n") end
+        if i==#directories then RL.MessageAs("Done Loading Directory: " .. directory .. v, name) end
     end
+
+    RL.MessageAs("Done Loading\n",name)
 end
 
 if SERVER then
-    function RL.AddCSFiles(directory, name, silence, nosub)
+    function RL.AddCSFiles(directory, name, _, nosub)
         if not string.EndsWith(directory,"/") then directory = directory.."/" end
         local files, directories = file.Find(directory .. "*", "LUA")
 
         for _, v in ipairs(files) do
-            if not silence then RL.MessageAs("AddCSFiles: " .. directory .. v,name) end
+            if name then RL.MessageAs("CSFiles: " .. directory .. v,name) end
+
             AddCSLuaFile(directory .. v)
         end
 
-        if nosub then return end
+        if nosub then
+            if name then RL.Message("Added CSFiles: " .. name .."\n") end
+
+            return
+        end
 
         for _, v in ipairs(directories) do
-            if not silence then RL.MessageAs("AddCSFiles Dir: " .. directory .. v,name) end
+            if name then RL.MessageAs("CSFiles Dir: " .. directory .. v,name) end
+
             RL.AddCSFiles(directory .. v, name)
         end
+
+        if name then RL.Message("Added CSFiles: " .. name .."\n") end
     end
 end
 
