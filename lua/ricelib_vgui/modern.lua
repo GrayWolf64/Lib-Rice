@@ -96,7 +96,7 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
     end
-    
+
     local body = vgui.Create("DPanel", Panel)
     body:SetSize(RL_hudScale(W,H))
     body:SetPos(RL_hudScale(X,Y))
@@ -122,7 +122,7 @@ function RL.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
     end
-    
+
     local body = vgui.Create("DPanel", Panel)
     body:SetSize(RL_hudScale(W,H))
     body:SetPos(RL_hudScale(X,Y))
@@ -139,7 +139,7 @@ function RL.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
         end
     end
     function CB:OnChange(bool)
-        Fun(bool) 
+        Fun(bool)
     end
 
     local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0)
@@ -158,7 +158,7 @@ function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun,DarkMode)
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
     end
-    
+
     local body = vgui.Create("DPanel", Panel)
     body:SetSize(RL_hudScale(W,H))
     body:SetPos(RL_hudScale(X,Y))
@@ -198,7 +198,7 @@ function RL.VGUI.ModernNumberWang(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
     end
-    
+
     local body = vgui.Create("DPanel", Panel)
     body:SetSize(RL_hudScale(W,H))
     body:SetPos(RL_hudScale(X,Y))

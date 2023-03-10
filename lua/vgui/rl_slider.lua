@@ -16,7 +16,7 @@ function PANEL:Init()
 	self:SetSlideX( 0 )
 	self:SetSlideY( 0.5 )
 	self:SetLockY( 0.5 )
-    
+
     function self.Knob.Paint( self, w, h )
         RL.Draw.Circle(0+w/2,0+h/2,h/2,64,self:GetParent().c_Color)
         RL.Draw.Circle(0+w/2,0+h/2,h/2-RL.hudScaleY(2),64,Color(200,200,200,255))
@@ -37,17 +37,21 @@ function PANEL:Init()
 
 end
 
+function PANEL:GetValue()
+    return math.Round(math.Remap(self:GetSlideX(),0,1,self.ValueMin,self.ValueMax),self.Decimals)
+end
+
 function PANEL:Think()
     if self:IsEditing() then
-        if self.ValueOld != self:GetValue() then
-            self.ValueOld = self:GetValue()
-            self:OnValueChanged(self:GetValue())
-        end
+        if self.ValueOld == self:GetValue() then return end
+
+        self.ValueOld = self:GetValue()
+        self:OnValueChanged(self:GetValue())
     end
 end
 
-function PANEL:GetValue()
-    return math.Round(math.Remap(self:GetSlideX(),0,1,self.ValueMin,self.ValueMax),self.Decimals)
+function PANEL:OnValuesChangedInternal()
+	self:InvalidateLayout()
 end
 
 function PANEL:SetValue(value)
@@ -58,7 +62,6 @@ function PANEL:SetMin(min) self.ValueMin = min end
 function PANEL:SetMax(max) self.ValueMax = max end
 
 function PANEL:OnValueChanged(val)
-    return self:GetValue()
 end
 
 derma.DefineControl( "RL_Slider", "More Modern Slider", PANEL, "DSlider" )
