@@ -17,6 +17,8 @@ for k, v in pairs({
     ["Message_Warn"] = Color(255, 150, 0)
 }) do
     RL[k] = function(msg)
+        local color
+
         if string.StartWith(msg, "#") then
             msg = RL.Language.Get(string.sub(msg, 2)) or msg
         end
@@ -38,6 +40,8 @@ for k, v in pairs({
     ["Message_WarnAs"] = Color(255, 150, 0)
 }) do
     RL[k] = function(msg, name)
+        local color
+
         if string.StartWith(msg, "#") then
             msg = RL.Language.Get(string.sub(msg, 2)) or msg
         end
