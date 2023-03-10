@@ -202,7 +202,7 @@ function RL.IncludeDirAs(directory, name, nosub)
 end
 
 if SERVER then
-    function RL.AddCSFiles(directory, name, _, nosub)
+    function RL.AddCSFiles(directory, name, nosub)
         if not string.EndsWith(directory, "/") then
             directory = directory .. "/"
         end
