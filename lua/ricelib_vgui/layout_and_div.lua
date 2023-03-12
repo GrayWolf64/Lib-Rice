@@ -79,7 +79,7 @@ function RL.VGUI.ScrollPanel(Panel,X,Y,W,H)
         self.Old_Sign = nil
     
         local OldScroll = self:GetScroll()
-    
+
         dlta = dlta * self.a_amount
         
         local anim = self:NewAnimation( self.a_length, 0, self.a_ease )
