@@ -13,7 +13,7 @@ end
 
 for k, v in pairs({
     ["Message"] = Color(0, 255, 0),
-    ["Message_Error"] = Color(255, 0, 0),
+    ["Message_Error"] = Color(255, 75, 75),
     ["Message_Warn"] = Color(255, 150, 0)
 }) do
     RL[k] = function(msg)
@@ -24,7 +24,7 @@ for k, v in pairs({
         end
 
         if SERVER then
-            color = Color(0, 150, 255)
+            color = Color(64, 158, 255)
         else
             color = Color(255, 255, 150)
         end
@@ -106,7 +106,7 @@ local function AddFile(File, directory, silence)
     end
 end
 
-function RL.IncludeDir(directory, silence, nosub, name)
+function RL.IncludeDir(directory, silence, nosub)
     if not string.EndsWith(directory, "/") then
         directory = directory .. "/"
     end
@@ -120,7 +120,7 @@ function RL.IncludeDir(directory, silence, nosub, name)
 
     if nosub then
         if not silence then
-            RL.Message("Done Loading: " .. name .. "\n")
+            RL.Message("Done Loading: " .. directory .. "\n")
         end
 
         return
@@ -140,7 +140,7 @@ function RL.IncludeDir(directory, silence, nosub, name)
     end
 
     if not silence then
-        RL.Message("Done Loading: " .. name .. "\n")
+        RL.Message("Done Loading: " .. directory .. "\n")
     end
 end
 
