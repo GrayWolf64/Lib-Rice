@@ -273,5 +273,15 @@ function RL.Files.Iterator(dir, path, iterator)
     end
 end
 
+function RL.Files.Iterator_Dir(dir, path, iterator)
+    if not string.EndsWith(dir, "/") then
+        dir = dir .. "/"
+    end
+
+    for _, v in ipairs(RL.Files.GetDir(dir, path)) do
+        iterator(v, dir, path)
+    end
+end
+
 print("==================RL=================")
 RL.IncludeDir("ricelib_preload")
