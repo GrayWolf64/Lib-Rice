@@ -14,10 +14,10 @@ tbl.TextColor = {
     black = Color(250,250,250),
 }
 tbl.OutlineColor = {
-    white = HSLToColor(0,0,0.9),
-    white1 = HSLToColor(0,0,0.9),
-    white2 = HSLToColor(0,0,0.85),
-    white3 = HSLToColor(0,0,0.8),
+    white = HSLToColor(0,0,0.8),
+    white1 = HSLToColor(0,0,0.8),
+    white2 = HSLToColor(0,0,0.75),
+    white3 = HSLToColor(0,0,0.7),
     black = HSLToColor(0,0,0.3),
     black1 = HSLToColor(0,0,0.3),
     black2 = HSLToColor(0,0,0.3),
@@ -36,10 +36,10 @@ tbl.BarColor = {
 
 tbl.HoverColor = {
     closeButton = Color(255,0,0),
-    white = HSLToColor(0,0,0.98),
-    white1 = HSLToColor(0,0,0.98),
-    white2 = HSLToColor(0,0,0.95),
-    white3 = HSLToColor(0,0,0.93),
+    white = HSLToColor(0,0,0.93),
+    white1 = HSLToColor(0,0,0.93),
+    white2 = HSLToColor(0,0,0.91),
+    white3 = HSLToColor(0,0,0.89),
     black = HSLToColor(0,0,0.35),
     black1 = HSLToColor(0,0,0.35),
     black2 = HSLToColor(0,0,0.40),
@@ -136,6 +136,41 @@ function tbl.TransButton_F(pnl,w,h)
     draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(color,pnl.HoverAlpha))
 
     draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+end
+
+local combo_point = Material("gui/point.png")
+function tbl.Combo(pnl,w,h)
+    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,pnl.Theme.RawOutlineColor or tbl.OutlineColor[pnl.Theme.Color] or tbl.OutlineColor.white1)
+
+    local color = RiceUI.GetColor(tbl,pnl)
+
+    draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,color)
+
+    if pnl:IsHovered() then
+        draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
+    end
+
+    if pnl.Value then
+        draw.SimpleText(pnl.Value,pnl:GetFont(),h/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+    else
+        draw.SimpleText(pnl.Text,pnl:GetFont(),h/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Disable"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+    end
+
+    surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
+    surface.SetMaterial(combo_point)
+    surface.DrawTexturedRectRotated(w-h/2,h/2,h/3,h/3,pnl.a_pointang)
+end
+
+function tbl.Choice(pnl,w,h)
+    if pnl:IsHovered() then
+        draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
+    end
+
+    local color = RiceUI.GetColorBase(tbl,pnl,"Text")
+
+    if pnl.Selected then color = RiceUI.GetColor(tbl,pnl,"Focus") end
+
+    draw.SimpleText(pnl.Text,pnl:GetFont(),h/2,h/2,color,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 end
 
 function tbl.Entry(pnl,w,h)

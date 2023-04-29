@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+Element.Editor = {Category="interact"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 100,
@@ -13,12 +15,11 @@ local function main(data,parent)
     panel:SetText("")
     panel:SetColor(data.DisableColor)
     panel.GThemeType = "Switch"
-    panel.NoGTheme = data.NoGTheme
-    panel.DisableColor = data.DisableColor
-
     panel.Paint = RiceUI.GetTheme("modern").Switch
     panel.Theme = {Color="white"}
     panel.togglePos = 0
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel:DoClick()
         panel.Value = !panel.Value
@@ -79,4 +80,4 @@ local function main(data,parent)
     return panel
 end
 
-return main
+return Element

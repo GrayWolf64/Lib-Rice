@@ -1,10 +1,11 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 200,
         h = 30,
-        Font = "OPSans_25",
+        Font = "OPSans_20",
         Text = "",
         TextColor = Color(30,30,30),
         Placeholder = "Input Text",
@@ -19,10 +20,12 @@ local function main(data,parent)
     panel:SetText(data.Text)
     panel:SetTextColor(data.TextColor)
     panel:SetPlaceholderText(data.Placeholder)
-    panel.GThemeType = "Entry"
-    panel.NoGTheme = data.NoGTheme
-    panel.OnEnter = data.OnEnter
     panel:SetMultiline(data.Multline)
+
+    panel.GThemeType = "Entry"
+    panel.ProcessID = "Entry"
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     RiceUI.Process("panel",panel,data)
     RiceUI.Process("label",panel,data)
@@ -30,4 +33,4 @@ local function main(data,parent)
     return panel
 end
 
-return main
+return Element

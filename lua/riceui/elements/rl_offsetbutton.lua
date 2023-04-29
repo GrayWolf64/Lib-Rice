@@ -1,11 +1,12 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
         h = 300,
         DefaultX = 100,
-        DefaultX = 100,
+        DefaultY = 100,
         RootName = "",
         EnableOnChat = true,
         Outline = true,
@@ -17,12 +18,8 @@ local function main(data,parent)
     panel:SetText("")
     panel:SetCursor("sizeall")
     panel:SetMouseInputEnabled(true)
-    panel.Profile = data.Profile
-    panel.DefaultX = data.DefaultX
-    panel.DefaultY = data.DefaultY
-    panel.RootName = data.RootName
-    panel.EnableOnChat = data.EnableOnChat
-    panel.Outline = data.Outline
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel:Paint(w,h)
         if not panel.Outline then return end
@@ -67,6 +64,8 @@ local function main(data,parent)
     end
 
     function panel:OnMouseReleased()
+        if !self.Profile then return end
+
         self.Dragging = nil
         self:MouseCapture( false )
 
@@ -78,4 +77,4 @@ local function main(data,parent)
     return panel
 end
 
-return main
+return Element

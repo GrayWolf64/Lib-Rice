@@ -1,4 +1,5 @@
-local function main(data,parent)
+local Element = {}
+function Element.Create(data,parent)
     table.Merge(data,{
         x = 10,
         y = 10,
@@ -9,6 +10,9 @@ local function main(data,parent)
     local panel = vgui.Create("DPanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
     panel.Paint = function(self,w,h)
         surface.SetDrawColor(150,0,255)
         surface.DrawRect(0,0,w,h)
@@ -24,4 +28,4 @@ local function main(data,parent)
     return panel
 end
 
-return main
+return Element

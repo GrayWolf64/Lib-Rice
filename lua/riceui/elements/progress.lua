@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 300,
@@ -23,9 +25,11 @@ local function main(data,parent)
         surface.DrawRect(0,0,w*RiceUI.Smooth(self,self:GetFraction()),h)
     end
 
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
     RiceUI.Process("panel",panel,data)
 
     return panel
 end
 
-return main
+return Element

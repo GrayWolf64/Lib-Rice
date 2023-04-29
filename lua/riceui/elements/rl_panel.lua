@@ -1,19 +1,19 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+Element.Editor = {Category="base"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
         h = 300,
-        TitleColor = Color(25,25,25),
-        CloseButtonColor = Color(255,255,255),
         ThemeName = "modern",
     })
 
     local panel = vgui.Create("DPanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
-    panel.GTheme = data.GTheme
-    panel.ThemeName = data.ThemeName
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel.ChildCreated()
         if !panel.GTheme then return end
@@ -26,8 +26,15 @@ local function main(data,parent)
 
             if Theme[child.GThemeType] then
                 child.Paint = Theme[child.GThemeType]
-                child.Theme = panel.GTheme.Theme
+                child.Theme = child.Theme or {}
+                table.Merge(child.Theme,panel.GTheme.Theme)
             end
+        end
+    end
+
+    function panel.RiceUI_Event(name,id,data)
+        if panel:GetParent().RiceUI_Event then
+            panel:GetParent().RiceUI_Event(name,id,data)
         end
     end
 
@@ -36,4 +43,4 @@ local function main(data,parent)
     return panel
 end
 
-return main
+return Element

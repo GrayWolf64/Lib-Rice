@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+Element.Editor = {Category="display"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 50,
@@ -11,7 +13,6 @@ local function main(data,parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
-    panel.Image = data.Image
 
     if file.Exists("riceui/web_image/"..util.SHA256(data.Image)..".png","DATA") then
         panel.Mat = Material("data/riceui/web_image/"..util.SHA256(data.Image)..".png")
@@ -34,10 +35,12 @@ local function main(data,parent)
         surface.DrawTexturedRect(0,0,w,h)
     end
 
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
     RiceUI.Process("panel",panel,data)
     RiceUI.Process("button",panel,data)
 
     return panel
 end
 
-return main
+return Element

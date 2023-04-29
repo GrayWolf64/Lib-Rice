@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
@@ -14,6 +16,8 @@ local function main(data,parent)
     panel:SetSpaceX(data.spaceX)
     panel:SetSpaceY(data.spaceY)
     panel.GThemeType = "Panel"
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel.ChildCreated()
         if !panel.GTheme then return end
@@ -36,4 +40,4 @@ local function main(data,parent)
     return panel
 end
 
-return main
+return Element

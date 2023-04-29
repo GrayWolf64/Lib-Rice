@@ -30,3 +30,28 @@ function RiceUI.Smooth(controller,val)
 
     return smoothVal
 end
+
+function RiceUI.MergeData(pnl,data)
+    pnl.RiceUI_Data = data
+
+    table.Merge(pnl:GetTable(),data)
+end
+
+function RiceUI.ProcessData(data)
+    local newData = table.Copy(data)
+
+    if data.Center then
+        newData.Center = nil
+        newData.center = true
+    end
+
+    if data.Dock then
+        newData.dock = data.Dock
+        newData.Dock = nil
+    end
+
+    newData.x = nil
+    newData.y = nil
+
+    return newData
+end

@@ -145,6 +145,42 @@ function tbl.TransButton_F(pnl,w,h)
     draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
+local combo_point = Material("gui/point.png")
+function tbl.Combo(pnl,w,h)
+    surface.SetDrawColor(RiceUI.GetColor(tbl,pnl))
+    surface.DrawRect(0,0,w,h)
+
+    local color = RiceUI.GetColor(tbl,pnl,"Outline")
+    if pnl:IsHovered() then
+        color = RiceUI.GetColor(tbl,pnl,"Hover")
+    end
+    surface.SetDrawColor(color)
+    surface.DrawOutlinedRect(0,0,w,h,1)
+
+    if pnl.Value then
+        draw.SimpleText(pnl.Value,pnl:GetFont(),h/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+    else
+        draw.SimpleText(pnl.Text,pnl:GetFont(),h/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Disable"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+    end
+
+    surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
+    surface.SetMaterial(combo_point)
+    surface.DrawTexturedRectRotated(w-h/2,h/2,h/3,h/3,pnl.a_pointang)
+end
+
+function tbl.Choice(pnl,w,h)
+    if pnl:IsHovered() then
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
+        surface.DrawRect(0,0,w,h)
+    end
+
+    local color = RiceUI.GetColorBase(tbl,pnl,"Text")
+
+    if pnl.Selected then color = RiceUI.GetColor(tbl,pnl,"Focus") end
+
+    draw.SimpleText(pnl.Text,pnl:GetFont(),h/2,h/2,color,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+end
+
 function tbl.Entry(pnl,w,h)
     surface.SetDrawColor(RiceUI.GetColor(tbl,pnl))
     surface.DrawRect(0,0,w,h)
@@ -209,82 +245,90 @@ function tbl.ScrollPanel_VBar_Grip(pnl,w,h)
 end
 
 function tbl.OnLoaded()
-    table.Merge(RiceUI.Examples,{
-        ModernRect = {
-            {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,ThemeName="modern_rect",
-                Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
-                GTheme = {name = "modern_rect",Theme = {Color="white1"}},
-    
-                Anim = {{type = "alpha",time = 0.075,alpha = 255}},
-                children = {
-                    {type="button",x=10,y=40,w=100,h=50},
-    
-                    {type="entry",x=10,y=100,w=300,h=30},
-    
-                    {type="switch",x=120,y=38,w=50,h=25},
-                    {type="switch",x=120,y=67,w=50,h=25,Value=true},
-    
-                    {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
-                    {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
-    
-                    {type="panel",x=10,y=140,h=645},
-                    {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,OnCreated = function(pnl)
-                        for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
-                            Paint = RiceUI.GetTheme("modern_rect").Panel,
-                            Theme = {Color = "white2"},
-                        },pnl)) end
-                    end},
-    
-                    {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",ThemeName="modern_rect",
-                        Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
-                        GTheme = {name = "modern_rect",Theme = {color = "white1"}},
-                        children={
-                            {type="slider",y=40}
-                        }
+    RiceUI.Examples.ModernRect = {
+        {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,ThemeName="modern_rect",
+            Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
+            GTheme = {name = "modern_rect",Theme = {Color="white1"}},
+
+            Anim = {{type = "alpha",time = 0.075,alpha = 255}},
+            children = {
+                {type="button",x=10,y=40,w=100,h=50},
+
+                {type="entry",x=10,y=100,w=300,h=30},
+
+                {type="switch",x=120,y=38,w=50,h=25},
+                {type="switch",x=120,y=67,w=50,h=25,Value=true},
+
+                {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
+                {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
+
+                {type="panel",x=10,y=140,h=645},
+                {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,OnCreated = function(pnl)
+                    for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
+                        Paint = RiceUI.GetTheme("modern_rect").Panel,
+                        Theme = {Color = "white2"},
+                    },pnl)) end
+                end},
+
+                {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",ThemeName="modern_rect",
+                    Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
+                    GTheme = {name = "modern_rect",Theme = {color = "white1"}},
+                    children={
+                        {type="slider",y=40},
+                        {type="rl_combo",y=80,Choice={
+                            {"选项1"},
+                            {"选项2"},
+                            {"选项3"}
+                        }}
                     }
-                },
-            }
-        },
-    
-        ModernRectBlack = {
-            {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,TitleColor=Color(250,250,250),CloseColor="black",ThemeName="modern_rect",
-                Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
-                Theme = {Color="black1",TextColor="black1"},
-                GTheme = {name = "modern_rect",Theme = {Color="black1",TextColor="black1"}},
-    
-                Anim = {{type = "alpha",time = 0.075,alpha = 255}},
-                children = {
-                    {type="button",x=10,y=40,w=100,h=50},
-    
-                    {type="entry",x=10,y=100,w=300,h=30},
-    
-                    {type="switch",x=120,y=38,w=50,h=25,DisableColor=Color(70,70,70)},
-                    {type="switch",x=120,y=67,w=50,h=25,DisableColor=Color(70,70,70),Value=true},
-    
-                    {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
-                    {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
-    
-                    {type="panel",x=10,y=140,h=645},
-                    {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,Theme = {Color = "black1"},OnCreated = function(pnl)
-                        for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
-                            Paint = RiceUI.GetTheme("modern_rect").Panel,
-                            Theme = {Color = "black2"},
-                        },pnl)) end
-                    end},
-    
-                    {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",TitleColor=Color(250,250,250),CloseColor="black",ThemeName="modern_rect",
-                        Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
-                        Theme = {Color="black1",TextColor="black1"},
-                        GTheme = {name = "modern_rect",Theme = {Color="black1",TextColor="black1"}},
-    
-                        children={
-                            {type="slider",y=40}
-                        }
-                    }
-                },
-            }
+                }
+            },
         }
-    })
+    }
+
+    RiceUI.Examples.ModernRectBlack = {
+        {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,TitleColor=Color(250,250,250),CloseColor="black",ThemeName="modern_rect",
+            Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
+            Theme = {Color="black1",TextColor="black1"},
+            GTheme = {name = "modern_rect",Theme = {Color="black1",TextColor="black1"}},
+
+            Anim = {{type = "alpha",time = 0.075,alpha = 255}},
+            children = {
+                {type="button",x=10,y=40,w=100,h=50},
+
+                {type="entry",x=10,y=100,w=300,h=30},
+
+                {type="switch",x=120,y=38,w=50,h=25,DisableColor=Color(70,70,70)},
+                {type="switch",x=120,y=67,w=50,h=25,DisableColor=Color(70,70,70),Value=true},
+
+                {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
+                {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
+
+                {type="panel",x=10,y=140,h=645},
+                {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,Theme = {Color = "black1"},OnCreated = function(pnl)
+                    for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
+                        Paint = RiceUI.GetTheme("modern_rect").Panel,
+                        Theme = {Color = "black2"},
+                    },pnl)) end
+                end},
+
+                {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",TitleColor=Color(250,250,250),CloseColor="black",ThemeName="modern_rect",
+                    Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
+                    Theme = {Color="black1",TextColor="black1"},
+                    GTheme = {name = "modern_rect",Theme = {Color="black1",TextColor="black1"}},
+
+                    children={
+                        {type="slider",y=40},
+                        {type="rl_combo",y=80,Choice={
+                            {"选项1"},
+                            {"选项2"},
+                            {"选项3"}
+                        }}
+                    }
+                }
+            },
+        }
+    }
 end
 
 return tbl

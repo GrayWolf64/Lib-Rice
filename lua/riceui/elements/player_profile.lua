@@ -1,5 +1,6 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
@@ -11,9 +12,11 @@ local function main(data,parent)
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetPlayer(data.ply,data.w)
 
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
     RiceUI.Process("panel",panel,data)
 
     return panel
 end
 
-return main
+return Element

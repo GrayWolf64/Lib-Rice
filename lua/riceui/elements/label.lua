@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+Element.Editor = {Category="display"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         Font = "OPPOSans_30",
@@ -13,11 +15,13 @@ local function main(data,parent)
     panel:SetColor(data.Color)
     panel:SetText(data.Text)
     panel:SizeToContents()
-    panel.NoGTheme = data.NoGTheme
+    panel.ProcessID = "Label"
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     RiceUI.Process("label",panel,data)
 
     return panel
 end
 
-return main
+return Element
