@@ -32,8 +32,6 @@ function Element.Create(data,parent)
         self:SetSlideX(math.Clamp(self:GetSlideX() + dlt/100,0,1))
     end
 
-    RiceUI.Process("panel",panel,data)
-
     return panel
 end
 

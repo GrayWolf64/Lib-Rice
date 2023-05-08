@@ -37,7 +37,6 @@ function Element.Create(data,parent)
     end
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
-    RiceUI.Process("panel",panel,data)
 
     return panel
 end

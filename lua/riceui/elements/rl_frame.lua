@@ -9,6 +9,7 @@ function Element.Create(data,parent)
         CloseButtonColor = Color(255,255,255),
         ThemeName = "modern",
         OnClose = function()end,
+        Padding = {5,35,5,5}
     })
 
     local panel = vgui.Create("EditablePanel",parent)

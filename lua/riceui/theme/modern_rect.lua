@@ -36,10 +36,10 @@ tbl.BarColor = {
 
 tbl.HoverColor = {
     closeButton = Color(255,0,0),
-    white = HSLToColor(0,0,0.85),
-    white1 = HSLToColor(0,0,0.85),
-    white1 = HSLToColor(0,0,0.8),
+    white = HSLToColor(0,0,0.8),
     white1 = HSLToColor(0,0,0.75),
+    white2 = HSLToColor(0,0,0.7),
+    white3 = HSLToColor(0,0,0.65),
     black = HSLToColor(0,0,0.35),
     black1 = HSLToColor(0,0,0.35),
     black2 = HSLToColor(0,0,0.40),
@@ -101,6 +101,10 @@ function tbl.Button(pnl,w,h)
     if pnl:IsHovered() then
         color = RiceUI.GetColor(tbl,pnl,"Hover")
     end
+
+    surface.SetDrawColor(ColorAlpha(color,150))
+    surface.DrawRect(0,0,w,h)
+
     if pnl:IsDown() then color = RiceUI.GetColor(tbl,pnl,"Focus") end
 
     surface.SetDrawColor(color)
@@ -248,7 +252,7 @@ function tbl.OnLoaded()
     RiceUI.Examples.ModernRect = {
         {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,ThemeName="modern_rect",
             Paint = RiceUI.GetTheme("modern_rect").RL_Frame,
-            GTheme = {name = "modern_rect",Theme = {Color="white1"}},
+            GTheme = {name = "modern_rect",Theme = {Color="white"}},
 
             Anim = {{type = "alpha",time = 0.075,alpha = 255}},
             children = {

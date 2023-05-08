@@ -35,8 +35,6 @@ function Element.Create(data,parent)
         end
     end
 
-    RiceUI.Process("panel",panel,data)
-
     return panel
 end
 

@@ -72,8 +72,6 @@ function Element.Create(data,parent)
         RL.Change_HUDOffset(self.Profile,parent:GetX(),parent:GetY())
     end
 
-    RiceUI.Process("panel",panel,data)
-
     return panel
 end
 

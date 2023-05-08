@@ -17,8 +17,6 @@ function Element.Create(data,parent)
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
-    RiceUI.Process("panel",panel,data)
-
     function panel.ChildCreated()
         local VBar = panel:GetVBar()
 

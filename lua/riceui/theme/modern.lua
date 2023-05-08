@@ -29,9 +29,9 @@ tbl.BarColor = {
     white2 = Color(220,220,220),
     white3 = Color(210,210,210),
     black = HSLToColor(0,0,0.15),
-    black1 = HSLToColor(0,0,0.15),
-    black2 = HSLToColor(0,0,0.15),
-    black3 = HSLToColor(0,0,0.15),
+    black1 = HSLToColor(0,0,0.12),
+    black2 = HSLToColor(0,0,0.9),
+    black3 = HSLToColor(0,0,0.6),
 }
 
 tbl.HoverColor = {
@@ -66,15 +66,49 @@ tbl.DisableColor = {
     black3 = Color(70,70,70),
 }
 
+function tbl.DrawOutline(pnl,w,h,Color)
+    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,Color or RiceUI.GetColor(tbl,pnl,"Outline"))
+end
+
+function tbl.DrawInnerBox(pnl,w,h,Color)
+    draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,Color or RiceUI.GetColor(tbl,pnl))
+end
+
+function tbl.DrawOutlineBox(pnl,w,h,Color)
+    tbl.DrawOutline(pnl,w,h,Color or RiceUI.GetColor(tbl,pnl,"Outline"))
+    tbl.DrawInnerBox(pnl,w,h)
+end
+
+function tbl.DrawBox(pnl,w,h,Color)
+    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,Color or RiceUI.GetColor(tbl,pnl))
+end
+
+function tbl.DrawButton(pnl,w,h,Color)
+    tbl.DrawOutlineBox(pnl,w,h)
+
+    if pnl:IsHovered() then
+        tbl.DrawBox(pnl,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
+    end
+end
+
+function tbl.DrawEntry(pnl,w,h,Color)
+    local color = RiceUI.GetColor(tbl,pnl,"Outline")
+
+    if pnl:HasFocus() then
+        color = RiceUI.GetColor(tbl,pnl,"Focus")
+    end
+
+    tbl.DrawOutlineBox(pnl,w,h,color)
+end
+
 function tbl.Panel(pnl,w,h)
     if pnl:GetParent():GetClassName() != "CGModBase" then
-        draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,RiceUI.GetColor(tbl,pnl,"Outline"))
-        draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,RiceUI.GetColor(tbl,pnl))
+        tbl.DrawOutlineBox(pnl,w,h)
 
         return
     end
 
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,RiceUI.GetColor(tbl,pnl))
+    tbl.DrawBox(pnl,w,h)
 end
 
 function tbl.RL_Frame(pnl,w,h)
@@ -86,20 +120,12 @@ function tbl.RL_Frame(pnl,w,h)
         DisableClipping(false)
     end
 
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,RiceUI.GetColor(tbl,pnl,"Bar"))
+    tbl.DrawBox(pnl,w,h,RiceUI.GetColor(tbl,pnl,"Bar"))
     draw.RoundedBox(pnl.Theme.Curver or 5,0,pnl.Title:GetTall()+10,w,h-pnl.Title:GetTall()-10,RiceUI.GetColor(tbl,pnl))
 end
 
 function tbl.Button(pnl,w,h)
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,pnl.Theme.RawOutlineColor or tbl.OutlineColor[pnl.Theme.Color] or tbl.OutlineColor.white1)
-
-    local color = RiceUI.GetColor(tbl,pnl)
-
-    draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,color)
-
-    if pnl:IsHovered() then
-        draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
-    end
+    tbl.DrawButton(pnl,w,h)
 
     local color = RiceUI.GetColorBase(tbl,pnl,"Text")
 
@@ -119,7 +145,7 @@ function tbl.TransButton(pnl,w,h)
         pnl.HoverAlpha = math.max(pnl.HoverAlpha-(pnl.Theme.Speed or 20)*(RealFrameTime()*100),0)
     end
 
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(color,pnl.HoverAlpha))
+    tbl.DrawBox(pnl,w,h,ColorAlpha(color,pnl.HoverAlpha))
 
     draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
@@ -133,22 +159,14 @@ function tbl.TransButton_F(pnl,w,h)
         pnl.HoverAlpha = 0
     end
 
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(color,pnl.HoverAlpha))
+    tbl.DrawBox(pnl,w,h,ColorAlpha(color,pnl.HoverAlpha))
 
     draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
 local point = Material("gui/point.png")
 function tbl.Combo(pnl,w,h)
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,pnl.Theme.RawOutlineColor or tbl.OutlineColor[pnl.Theme.Color] or tbl.OutlineColor.white1)
-
-    local color = RiceUI.GetColor(tbl,pnl)
-
-    draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,color)
-
-    if pnl:IsHovered() then
-        draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
-    end
+    tbl.DrawButton(pnl,w,h)
 
     if pnl.Value then
         draw.SimpleText(pnl.Value,pnl:GetFont(),h/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
@@ -163,7 +181,7 @@ end
 
 function tbl.Choice(pnl,w,h)
     if pnl:IsHovered() then
-        draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
+        tbl.DrawBox(pnl,w,h,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Hover"),150))
     end
 
     local color = RiceUI.GetColorBase(tbl,pnl,"Text")
@@ -179,8 +197,7 @@ function tbl.NumberWang(pnl,w,h)
         color = RiceUI.GetColor(tbl,pnl,"Focus")
     end
 
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,color)
-    draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,RiceUI.GetColor(tbl,pnl))
+    tbl.DrawOutlineBox(pnl,w,h,color)
 
     draw.SimpleText(pnl:GetValue(),pnl:GetFont(),10,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 
@@ -200,17 +217,7 @@ function tbl.NumberWang_Button(pnl,w,h)
 end
 
 function tbl.Entry(pnl,w,h)
-    local color = RiceUI.GetColor(tbl,pnl,"Outline")
-
-    if pnl:HasFocus() then
-        color = RiceUI.GetColor(tbl,pnl,"Focus")
-    end
-
-    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,color)
-
-    local color = RiceUI.GetColor(tbl,pnl)
-
-    draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,color)
+    tbl.DrawEntry(pnl,w,h)
 
     if pnl:GetValue() == "" then
         draw.SimpleText(pnl:GetPlaceholderText(),pnl:GetFont(),10,h/2,pnl:GetPlaceholderColor(),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)

@@ -1,14 +1,12 @@
 RiceUI = RiceUI or {}
 RiceUI.Elements = {}
 RiceUI.UniProcess = {}
-RiceUI.UniProcess_Legacy = {}
 RiceUI.Theme = {}
 RiceUI.UI = {}
 RiceUI.Prefab = {}
 RiceUI.RootName = "main"
 
 RL.Functions.LoadFiles(RiceUI.Elements,"riceui/elements")
-RL.Functions.LoadFiles(RiceUI.UniProcess_Legacy,"riceui/uniprocess_legacy")
 RL.Functions.LoadFiles(RiceUI.Theme,"riceui/theme")
 
 file.CreateDir("riceui")
@@ -42,10 +40,6 @@ function RiceUI.Create(tbl,parent)
 
         if data.ID then parent.Elements[data.ID] = pnl end
     end
-end
-
-function RiceUI.Process(name,panel,data)
-    RiceUI.UniProcess_Legacy[name](panel,data)
 end
 
 function RiceUI.GetTheme(name) return RiceUI.Theme[name] end

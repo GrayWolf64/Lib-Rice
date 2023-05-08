@@ -39,7 +39,40 @@ RiceUI.Examples = {
                         }},
                     },
                 },
+
+                {type="button",ID="btn_Anim_Expand",Text="Animation 1",x=10,y=180,w=200,h=50,},
+
+                {type="rl_panel",ID="Anim_Expand",w=0,h=0,
+                    NoGTheme=true,
+                    Theme={ThemeName="modern",ThemeType="Panel",Color="black"},
+                }
             },
+
+            RiceUI_Event = function(event,id,data)
+                if id ~= "btn_Anim_Expand" then return end
+
+                local frame = data:GetParent()
+
+                RiceUI.Animation.ExpandFromPos(frame.Elements.Anim_Expand,{
+                    StartX=gui.MouseX()-frame:GetX(),
+                    StartY=gui.MouseY()-frame:GetY(),
+                    EndX = 0,
+                    EndY = 30,
+                    SizeW = 1200,
+                    SizeH = 770,
+                    callback = function()
+                        RiceUI.SimpleCreate({type="rl_button",Center=true,
+                            DoClick=function()
+                                RiceUI.Animation.Shrink(frame.Elements.Anim_Expand,{
+                                    callback = function()
+                                        frame.Elements.Anim_Expand:Clear()
+                                    end
+                                })
+                            end
+                        },frame.Elements.Anim_Expand)
+                    end
+                })
+            end
         }
     },
 
@@ -102,13 +135,12 @@ concommand.Add("RiceUI_Examples",function()
         children = {
             {type="scrollpanel",ID="ScrollPanel",x=10,y=40,w=380,h=550,OnCreated = function(pnl)
                 for k,v in SortedPairs(RiceUI.Examples) do
-                    pnl:AddItem(RiceUI.SimpleCreate({type="button",Dock=TOP,h=50,Margin={0,0,5,5},Text=k,
-                    Paint = RiceUI.GetTheme("modern_rect").Button,
-                    Theme = {Color = "white"},
+                    pnl:AddItem(RiceUI.SimpleCreate({type="rl_button",Dock=TOP,h=50,Margin={0,0,5,5},Text=k,
+                        Theme = {ThemeType="Button",ThemeName="modern_rect",Color = "white"},
 
-                    DoClick = function()
-                        RiceUI.Create(RiceUI.Examples[k])
-                    end
+                        DoClick = function()
+                            RiceUI.Create(RiceUI.Examples[k])
+                        end
                     },pnl))
                 end
             end},
