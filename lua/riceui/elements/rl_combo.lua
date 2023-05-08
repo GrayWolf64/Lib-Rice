@@ -1,5 +1,5 @@
 local Element = {}
-Element.Editor = {Category="interact"}
+Element.Editor = {Category="input"}
 function Element.Create(data,parent)
     RL.table.Inherit(data,{
         x = 10,
@@ -89,6 +89,12 @@ function Element.Create(data,parent)
     function panel:RiceUI_Event(event,id,pnl)
         if event == "ComboSelect" then
             self.Value = id
+
+            return
+        end
+
+        if self:GetParent().RiceUI_Event then
+            self:GetParent():RiceUI_Event(name,id,pnl)
         end
     end
 

@@ -138,7 +138,7 @@ function tbl.TransButton_F(pnl,w,h)
     draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
-local combo_point = Material("gui/point.png")
+local point = Material("gui/point.png")
 function tbl.Combo(pnl,w,h)
     draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,pnl.Theme.RawOutlineColor or tbl.OutlineColor[pnl.Theme.Color] or tbl.OutlineColor.white1)
 
@@ -157,7 +157,7 @@ function tbl.Combo(pnl,w,h)
     end
 
     surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
-    surface.SetMaterial(combo_point)
+    surface.SetMaterial(point)
     surface.DrawTexturedRectRotated(w-h/2,h/2,h/3,h/3,pnl.a_pointang)
 end
 
@@ -171,6 +171,32 @@ function tbl.Choice(pnl,w,h)
     if pnl.Selected then color = RiceUI.GetColor(tbl,pnl,"Focus") end
 
     draw.SimpleText(pnl.Text,pnl:GetFont(),h/2,h/2,color,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+end
+
+function tbl.NumberWang(pnl,w,h)
+    local color = RiceUI.GetColor(tbl,pnl,"Outline")
+    if pnl:HasFocus() then
+        color = RiceUI.GetColor(tbl,pnl,"Focus")
+    end
+
+    draw.RoundedBox(pnl.Theme.Curver or 5,0,0,w,h,color)
+    draw.RoundedBox(pnl.Theme.Curver or 5,1,1,w-2,h-2,RiceUI.GetColor(tbl,pnl))
+
+    draw.SimpleText(pnl:GetValue(),pnl:GetFont(),10,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+
+    if pnl:HasFocus() then
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.sin(SysTime()*8%360)))
+        surface.DrawRect(10+RL.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
+    end
+end
+
+function tbl.NumberWang_Button(pnl,w,h)
+    surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
+    surface.SetMaterial(point)
+
+    local size = h/2 + RL.hudScaleY(pnl.Theme.Scale or 0)
+
+    surface.DrawTexturedRectRotated(w/2,h/2,size,size,pnl.Theme.Ang)
 end
 
 function tbl.Entry(pnl,w,h)

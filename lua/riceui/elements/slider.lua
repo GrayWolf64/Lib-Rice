@@ -28,6 +28,10 @@ function Element.Create(data,parent)
         return math.Round(math.Remap(panel:GetSlideX(),0,1,panel.Min,panel.Max),panel.Decimals)
     end
 
+    function panel:OnMouseWheeled(dlt)
+        self:SetSlideX(math.Clamp(self:GetSlideX() + dlt/100,0,1))
+    end
+
     RiceUI.Process("panel",panel,data)
 
     return panel

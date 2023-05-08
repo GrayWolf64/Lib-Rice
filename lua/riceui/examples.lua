@@ -17,13 +17,16 @@ RiceUI.Examples = {
                 {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
                 {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
 
-                {type="panel",x=10,y=140,h=645},
-                {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,OnCreated = function(pnl)
+                {type="panel",x=520,y=350,w=670,h=300},
+                {type="scrollpanel",ID="ScrollPanel",x=525,y=355,h=290,w=660,OnCreated = function(pnl)
                     for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
                         Paint = RiceUI.GetTheme("modern").Panel,
                         Theme = {Color = "white2"},
                     },pnl)) end
                 end},
+
+                {type="rl_numberwang",x=10,y=140},
+                {type="rl_numberwang",x=140,y=140,Step=5},
 
                 {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",
                     GTheme = {name = "modern",Theme = {color = "white1"}},
@@ -33,9 +36,9 @@ RiceUI.Examples = {
                             {"选项1"},
                             {"选项2"},
                             {"选项3"}
-                        }}
-                    }
-                }
+                        }},
+                    },
+                },
             },
         }
     },
@@ -57,17 +60,24 @@ RiceUI.Examples = {
                 {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
                 {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
 
-                {type="panel",x=10,y=140,h=645},
-                {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,Theme = {Color = "black1"},OnCreated = function(pnl)
+                {type="panel",x=520,y=350,w=670,h=300},
+                {type="scrollpanel",ID="ScrollPanel",x=525,y=355,h=290,w=660,Theme = {Color = "black1"},OnCreated = function(pnl)
                     for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
                         Paint = RiceUI.GetTheme("modern").Panel,
                         Theme = {Color = "black2"},
                     },pnl)) end
                 end},
 
-                {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",TitleColor=Color(250,250,250),CloseColor="black",
+                {type="rl_numberwang",x=10,y=140,
+                    Theme = {ThemeName = "modern",ThemeType="NumberWang",Color="black",TextColor="black"}
+                },
+                {type="rl_numberwang",x=140,y=140,Step=5,
+                    Theme = {ThemeName = "modern",ThemeType="NumberWang",Color="black",TextColor="black"}
+                },
+
+                {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",TitleColor=Color(250,250,250),CloseColor = "black",
+                    GTheme = {name = "modern",Theme = {Color = "black1",TextColor="black"}},
                     Theme = {Color="black1",TextColor="black1"},
-                    GTheme = {name = "modern",Theme = {Color="black1",TextColor="black1"}},
 
                     children={
                         {type="slider",y=40},
@@ -75,9 +85,9 @@ RiceUI.Examples = {
                             {"选项1"},
                             {"选项2"},
                             {"选项3"}
-                        }}
-                    }
-                }
+                        }},
+                    },
+                },
             },
         }
     }

@@ -6,14 +6,12 @@ function Element.Create(data,parent)
         y = 10,
         w = 500,
         h = 300,
-        ThemeName = "modern",
+        Theme= {ThemeName = "modern",ThemeType="Panel",Color="white",TextColor="white"}
     })
 
     local panel = vgui.Create("DPanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
-
-    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel.ChildCreated()
         if !panel.GTheme then return end
@@ -34,10 +32,11 @@ function Element.Create(data,parent)
 
     function panel.RiceUI_Event(name,id,data)
         if panel:GetParent().RiceUI_Event then
-            panel:GetParent().RiceUI_Event(name,id,data)
+            panel:GetParent():RiceUI_Event(name,id,data)
         end
     end
 
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
     RiceUI.Process("panel",panel,data)
 
     return panel
