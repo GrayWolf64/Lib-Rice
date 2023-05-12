@@ -30,7 +30,7 @@ function Element.Create(data,parent)
         end
     end
 
-    function panel.RiceUI_Event(name,id,data)
+    function panel.RiceUI_Event(self,name,id,data)
         if panel:GetParent().RiceUI_Event then
             panel:GetParent():RiceUI_Event(name,id,data)
         end

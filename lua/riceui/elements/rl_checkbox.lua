@@ -31,10 +31,18 @@ function Element.Create(data,parent)
         end
     end
 
+    function panel:SetValue(val)
+        self.Value = val
+
+        self:DoAnim()
+    end
+
     function panel:OnValueChange(val)
     end
 
     function panel:DoClick()
+        if self.Disable then return end
+
         self.Value = not self.Value
         self:OnValueChange(self.Value)
 
@@ -46,6 +54,8 @@ function Element.Create(data,parent)
     end
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
+    if panel.Value then panel.a_Alpha = 255 end
 
     return panel
 end
