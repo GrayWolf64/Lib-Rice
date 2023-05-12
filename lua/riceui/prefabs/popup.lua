@@ -17,9 +17,7 @@ function RiceUI.Prefab.Notify(args)
         }
     }})
 
-    frame.Elements["CloseButton"]:SizeToContents()
-    local w,h = frame.Elements["CloseButton"]:GetSize()
-    frame.Elements["CloseButton"]:SetSize(w+10,h+5)
+    frame.Elements["CloseButton"]:SetSize(RL.VGUI.TextWide("SourceHan_25",args.Text)+10,35)
 
     local w,h = frame.Elements["CloseButton"]:GetSize()
     frame.Elements["CloseButton"]:SetPos(frame:GetWide()/2-w/2,frame:GetTall()-h-10)

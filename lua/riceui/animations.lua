@@ -8,7 +8,7 @@ function RiceUI.Animation.ExpandFromPos(pnl,data)
 
     pnl:SetSize(0,0)
     pnl:SetPos(data.StartX,data.StartY)
-    pnl:SizeTo(data.SizeW, data.SizeH, data.time, data.delay, data.ease, data.callback)
+    pnl:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
     pnl:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
 
     pnl.AnimData = data

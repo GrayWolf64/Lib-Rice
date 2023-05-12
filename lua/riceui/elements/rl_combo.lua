@@ -90,11 +90,15 @@ function Element.Create(data,parent)
         if event == "ComboSelect" then
             self.Value = id
 
+            if self:GetParent().RiceUI_Event then
+                self:GetParent():RiceUI_Event("ComboSelect",id,pnl)
+            end
+
             return
         end
 
         if self:GetParent().RiceUI_Event then
-            self:GetParent():RiceUI_Event(name,id,pnl)
+            self:GetParent():RiceUI_Event(event,id,pnl)
         end
     end
 

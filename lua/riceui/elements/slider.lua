@@ -9,6 +9,7 @@ function Element.Create(data,parent)
         Min = 0,
         Max = 100,
         Decimals = 0,
+        Theme={ThemeName="modern",ThemeType="Slider",Color="white"},
     })
 
     local panel = vgui.Create("DSlider",parent)

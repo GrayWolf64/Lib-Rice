@@ -4,12 +4,12 @@ function Element.Create(data,parent)
         T_Height=100,
         T_Min=100,
         B_Min=100,
-        DivWidth = 4,
+        DivHeight = 4,
     })
 
     local panel = vgui.Create("DVerticalDivider",parent)
     panel:Dock(FILL)
-    panel:SetDividerWidth( data.DivWidth )
+    panel:SetDividerHeight( data.DivHeight )
     panel:SetTopMin( data.T_Min )
     panel:SetBottomMin( data.B_Min )
     panel:SetTopHeight( data.T_Height )
@@ -20,7 +20,7 @@ function Element.Create(data,parent)
         panel:SetTop(RiceUI.SimpleCreate(panel.Top))
     end
 
-    if panel.Buttom then
+    if panel.Bottom then
         panel:SetBottom(RiceUI.SimpleCreate(panel.Bottom))
     end
 

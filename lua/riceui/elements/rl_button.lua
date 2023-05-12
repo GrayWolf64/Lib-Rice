@@ -22,7 +22,7 @@ function Element.Create(data,parent)
 
     function panel:DoClick()
         if self:GetParent().RiceUI_Event then
-            self:GetParent().RiceUI_Event("Button_Click",self.ID,self)
+            self:GetParent():RiceUI_Event("Button_Click",self.ID,self)
         end
     end
 

@@ -6,7 +6,7 @@ function Element.Create(data,parent)
         y = 10,
         w = 50,
         h = 50,
-        Image = "https://i.328888.xyz/2023/01/29/jM97x.jpeg"
+        Image = "https://i.328888.xyz/2023/05/11/iYF9pU.png"
     })
 
     local panel = vgui.Create("DButton",parent)
@@ -14,14 +14,18 @@ function Element.Create(data,parent)
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
 
-    if file.Exists("riceui/web_image/"..util.SHA256(data.Image)..".png","DATA") then
-        panel.Mat = Material("data/riceui/web_image/"..util.SHA256(data.Image)..".png")
-    else
-        http.Fetch(panel.Image,function(body)
-            file.Write("riceui/web_image/"..util.SHA256(data.Image)..".png",body)
+    function panel:SetImage(url)
+        panel.Image = url
 
-            panel.Mat = Material("data/riceui/web_image/"..util.SHA256(data.Image)..".png")
-        end)
+        if file.Exists("riceui/web_image/"..util.SHA256(panel.Image)..".png","DATA") then
+            panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png")
+        else
+            http.Fetch(panel.Image,function(body)
+                file.Write("riceui/web_image/"..util.SHA256(panel.Image)..".png",body)
+
+                panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png")
+            end)
+        end
     end
 
     panel.Paint = function(self,w,h)
@@ -36,6 +40,8 @@ function Element.Create(data,parent)
     end
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
+    panel:SetImage(data.Image)
 
     return panel
 end

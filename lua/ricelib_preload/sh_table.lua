@@ -9,3 +9,12 @@ function RL.table.Inherit( t, base )
 	return t
 
 end
+
+function RL.table.GetByString(str)
+	local tbl = _G
+	for _,v in ipairs(string.Split(str,".")) do
+		tbl = tbl[v]
+	end
+
+	return tbl
+end

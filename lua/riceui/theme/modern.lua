@@ -2,8 +2,8 @@ local tbl = {}
 tbl.Color = {
     white = Color(250,250,250),
     white1 = Color(250,250,250),
-    white2 = Color(240,240,240),
-    white3 = Color(230,230,230),
+    white2 = Color(245,245,245),
+    white3 = Color(240,240,240),
     black = HSLToColor(0,0,0.2),
     black1 = HSLToColor(0,0,0.2),
     black2 = HSLToColor(0,0,0.18),
@@ -164,6 +164,17 @@ function tbl.TransButton_F(pnl,w,h)
     draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
+local cross = Material("rl_icons/xmark.png")
+function tbl.CloseButton(pnl,w,h)
+    local color = ColorAlpha(RiceUI.GetColorBase(tbl,pnl),150)
+
+    if pnl:IsHovered() then color = RiceUI.GetColorBase(tbl,pnl) end
+
+    surface.SetDrawColor(color)
+    surface.SetMaterial(cross)
+    surface.DrawTexturedRect(0,0,w,h)
+end
+
 local point = Material("gui/point.png")
 function tbl.Combo(pnl,w,h)
     tbl.DrawButton(pnl,w,h)
@@ -226,7 +237,27 @@ function tbl.Entry(pnl,w,h)
     draw.SimpleText(pnl:GetText(),pnl:GetFont(),10,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 
     if pnl:HasFocus() then
-        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.sin(SysTime()*8%360)))
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.abs(math.sin(SysTime()*6%360))))
+        surface.DrawRect(10+RL.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
+    end
+end
+
+local zoom = Material("icon16/zoom.png")
+function tbl.Entry_Search(pnl,w,h)
+    tbl.DrawEntry(pnl,w,h)
+
+    if pnl:GetValue() == "" then
+        draw.SimpleText(pnl:GetPlaceholderText(),pnl:GetFont(),10,h/2,pnl:GetPlaceholderColor(),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+    end
+
+    surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
+    surface.SetMaterial(zoom)
+    surface.DrawTexturedRect(0,0,w,h)
+
+    draw.SimpleText(pnl:GetText(),pnl:GetFont(),32,h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+
+    if pnl:HasFocus() then
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.abs(math.sin(SysTime()*6%360))))
         surface.DrawRect(10+RL.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
     end
 end
@@ -268,6 +299,12 @@ function tbl.ScrollPanel_VBar_Grip(pnl,w,h)
 
     surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"Bar"))
     surface.DrawOutlinedRect(0,0,w,h,1)
+end
+
+function tbl.CheckBox(pnl,w,h)
+    tbl.DrawButton(pnl,w,h)
+
+    draw.RoundedBox(pnl.Theme.Curver or 5,4,4,w-8,h-8,ColorAlpha(RiceUI.GetColor(tbl,pnl,"Focus"),pnl.a_Alpha))
 end
 
 return tbl

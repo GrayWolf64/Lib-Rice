@@ -1,0 +1,53 @@
+local Element = {}
+Element.Editor = {Category="interact"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
+        x = 10,
+        y = 10,
+        w = 30,
+        h = 30,
+        Theme = {ThemeName="modern",ThemeType="CheckBox",Color="white"}
+    })
+
+    local panel = vgui.Create("DButton",parent)
+    panel:SetPos(RL.hudScale(data.x,data.y))
+    panel:SetSize(RL.hudScale(data.w,data.h))
+    panel:SetText("")
+    panel.GThemeType = "CheckBox"
+    panel.ProcessID = "CheckBox"
+    panel.Value = false
+    panel.a_Alpha = 0
+
+    function panel:DoAnim()
+        local anim = self:NewAnimation(0.075,0,0.3)
+
+        anim.Think = function(_,pnl,fraction)
+            if not self.Value then
+                self.a_Alpha = 255 - 255 * fraction
+                return
+            end
+
+            self.a_Alpha = 255 * fraction
+        end
+    end
+
+    function panel:OnValueChange(val)
+    end
+
+    function panel:DoClick()
+        self.Value = not self.Value
+        self:OnValueChange(self.Value)
+
+        self:DoAnim()
+
+        if self:GetParent().RiceUI_Event then
+            self:GetParent():RiceUI_Event("CheckBox_Check",self.ID,self)
+        end
+    end
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
+    return panel
+end
+
+return Element
