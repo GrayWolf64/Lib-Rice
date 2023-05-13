@@ -1,4 +1,5 @@
 local Element = {}
+Element.Editor = {Category="interact"}
 function Element.Create(data,parent)
     RL.table.Inherit(data,{
         x = 10,
@@ -16,10 +17,12 @@ function Element.Create(data,parent)
     panel:SetText("")
     panel.GThemeType = "Button"
     panel.ProcessID = "Button"
+    panel.Paint = RiceUI.GetTheme("modern").Button
+    panel.Theme = {Color = "white1"}
 
     function panel:DoClick()
         if self:GetParent().RiceUI_Event then
-            self:GetParent().RiceUI_Event("Button_Click",self.ID,self)
+            self:GetParent():RiceUI_Event("Button_Click",self.ID,self)
         end
     end
 

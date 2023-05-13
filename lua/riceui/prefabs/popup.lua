@@ -17,9 +17,7 @@ function RiceUI.Prefab.Notify(args)
         }
     }})
 
-    frame.Elements["CloseButton"]:SizeToContents()
-    local w,h = frame.Elements["CloseButton"]:GetSize()
-    frame.Elements["CloseButton"]:SetSize(w+10,h+5)
+    frame.Elements["CloseButton"]:SetSize(RL.VGUI.TextWide("SourceHan_25",args.Text)+10,35)
 
     local w,h = frame.Elements["CloseButton"]:GetSize()
     frame.Elements["CloseButton"]:SetPos(frame:GetWide()/2-w/2,frame:GetTall()-h-10)
@@ -65,5 +63,61 @@ function RiceUI.Prefab.Notify_LOL_FullScreen(args)
         end,
 
         DoClick = args.DoClick
+    })
+end
+
+function RiceUI.Prefab.RequestInput(args)
+    table.Inherit(args,{
+        Title = "请求输入",
+        ButtonText = "取消",
+        OnEnter = function(self,value) self:GetParent():Remove() end,
+        FontSize = 30,
+        Theme = {ThemeName="modern",ThemeType="RL_Frame",Color="white",TextColor="white"},
+        GTheme = {name = "modern",Theme = {Color="white",TextColor="white"}},
+    })
+
+    local frame = RiceUI.SimpleCreate({type = "rl_frame",w=400,h=120,Text = args.Title,Center = true,Root = true,
+        Theme = args.Theme,
+        GTheme = args.GTheme,
+
+        children = {
+            {type = "entry",x=12,y=40,w=375,h=30,OnEnter = args.OnEnter},
+
+            {type = "button",ID = "CloseButton",Text=args.ButtonText,Font="SourceHan_25",x=400/2-25,y=80,w=50,h=30,
+                DoClick=function(self)
+                    self:GetParent():Remove()
+                end,
+
+                Paint = RiceUI.GetTheme("modern_rect").Button,
+            }
+        }
+    })
+end
+
+function RiceUI.Prefab.RequestInput(args)
+    table.Inherit(args,{
+        Title = "请求输入",
+        ButtonText = "取消",
+        OnEnter = function(self,value) self:GetParent():Remove() end,
+        FontSize = 30,
+        Theme = {ThemeName="modern",ThemeType="RL_Frame",Color="white",TextColor="white"},
+        GTheme = {name = "modern",Theme = {Color="white",TextColor="white"}},
+    })
+
+    local frame = RiceUI.SimpleCreate({type = "rl_frame",w=400,h=120,Text = args.Title,Center = true,Root = true,
+        Theme = args.Theme,
+        GTheme = args.GTheme,
+
+        children = {
+            {type = "entry",x=12,y=40,w=375,h=30, OnEnter = args.OnEnter, Numeric=args.Numeric},
+
+            {type = "button",ID = "CloseButton",Text=args.ButtonText,Font="SourceHan_25",x=400/2-25,y=80,w=50,h=30,
+                DoClick=function(self)
+                    self:GetParent():Remove()
+                end,
+
+                Paint = RiceUI.GetTheme("modern_rect").Button,
+            }
+        }
     })
 end

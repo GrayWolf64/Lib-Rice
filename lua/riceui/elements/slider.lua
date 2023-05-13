@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+Element.Editor = {Category="interact"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 20,
         y = 10,
         w = 300,
@@ -7,17 +9,16 @@ local function main(data,parent)
         Min = 0,
         Max = 100,
         Decimals = 0,
+        Theme={ThemeName="modern",ThemeType="Slider",Color="white"},
     })
 
     local panel = vgui.Create("DSlider",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetSlideX(0)
-    panel.Min = data.Min
-    panel.Max = data.Max
-    panel.Decimals = data.Decimals
     panel.GThemeType = "Slider"
-    panel.NoGTheme = data.NoGTheme
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     panel.Knob.Paint = function()end
 
@@ -28,9 +29,11 @@ local function main(data,parent)
         return math.Round(math.Remap(panel:GetSlideX(),0,1,panel.Min,panel.Max),panel.Decimals)
     end
 
-    RiceUI.Process("panel",panel,data)
+    function panel:OnMouseWheeled(dlt)
+        self:SetSlideX(math.Clamp(self:GetSlideX() + dlt/100,0,1))
+    end
 
     return panel
 end
 
-return main
+return Element

@@ -1,5 +1,6 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
@@ -8,6 +9,7 @@ local function main(data,parent)
         CloseButtonColor = Color(255,255,255),
         ThemeName = "modern",
         OnClose = function()end,
+        Padding = {5,35,5,5}
     })
 
     local panel = vgui.Create("EditablePanel",parent)
@@ -16,9 +18,8 @@ local function main(data,parent)
     panel:SetText("")
     panel.Paint = RiceUI.GetTheme("modern").RL_Frame
     panel.Theme = {Color = "white1"}
-    panel.GTheme = data.GTheme
-    panel.ThemeName = data.ThemeName
-    panel.OnClose = data.OnClose
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel:Think()
         local mousex = math.Clamp( gui.MouseX(), 1, ScrW() - 1 )
@@ -51,9 +52,11 @@ local function main(data,parent)
 
     panel.Title = RiceUI.SimpleCreate({type="label",Font="OPPOSans_20",Text=data.Text or "标题",x=5,y=5,Color = data.TitleColor},panel)
     panel.CloseButton = RiceUI.SimpleCreate({type="button",Font=panel.Title:GetFont(),Text="X",x=data.w-52.5,y=2.5,w=50,h=panel.Title:GetTall()+5,NoGTheme=true,
-        Paint = RiceUI.GetTheme(panel.ThemeName).TransButton,
+        Paint = RiceUI.GetTheme(data.ThemeName).TransButton,
         Theme={Color="closeButton",RawTextColor=data.CloseButtonColor},
         DoClick = function()
+            if panel.NoClose then return end
+
             panel:AlphaTo(0,0.075,0,function() panel:Remove() end)
 
             panel.OnClose()
@@ -75,14 +78,13 @@ local function main(data,parent)
 
             if Theme[child.GThemeType] then
                 child.Paint = Theme[child.GThemeType]
-                child.Theme = panel.GTheme.Theme
+                child.Theme = child.Theme or {}
+                table.Merge(child.Theme,panel.GTheme.Theme)
             end
         end
     end
 
-    RiceUI.Process("panel",panel,data)
-
     return panel
 end
 
-return main
+return Element

@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+Element.Editor = {Category="input"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 200,
@@ -19,15 +21,14 @@ local function main(data,parent)
     panel:SetText(data.Text)
     panel:SetTextColor(data.TextColor)
     panel:SetPlaceholderText(data.Placeholder)
-    panel.GThemeType = "Entry"
-    panel.NoGTheme = data.NoGTheme
-    panel.OnEnter = data.OnEnter
     panel:SetMultiline(data.Multline)
 
-    RiceUI.Process("panel",panel,data)
-    RiceUI.Process("label",panel,data)
+    panel.GThemeType = "Entry"
+    panel.ProcessID = "Entry"
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     return panel
 end
 
-return main
+return Element

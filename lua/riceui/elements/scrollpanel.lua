@@ -1,5 +1,7 @@
-local function main(data,parent)
-    table.Inherit(data,{
+local Element = {}
+Element.Editor = {Category="base"}
+function Element.Create(data,parent)
+    RL.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
@@ -13,7 +15,7 @@ local function main(data,parent)
 
     local panel = RL.VGUI.ScrollPanel(parent,x,y,w,h)
 
-    RiceUI.Process("panel",panel,data)
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel.ChildCreated()
         local VBar = panel:GetVBar()
@@ -30,4 +32,4 @@ local function main(data,parent)
     return panel
 end
 
-return main
+return Element
