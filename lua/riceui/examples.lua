@@ -41,6 +41,11 @@ RiceUI.Examples = {
                 },
 
                 {type="button",ID="btn_Anim_Expand",Text="Animation 1",x=10,y=180,w=200,h=50,},
+                {type="button",ID="btn_Menu",Text="Menu 1",x=10,y=240,w=200,h=50,
+                    DoClick = function(self)
+                        RiceUI.SimpleCreate({type="rl_menu"})
+                    end
+                },
 
                 {type="rl_panel",ID="Anim_Expand",w=0,h=0,
                     NoGTheme=true,

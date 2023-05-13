@@ -17,6 +17,7 @@ function Element.Create(data,parent)
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetSlideX(0)
     panel.GThemeType = "Slider"
+    panel.ProcessID = "Slider"
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 

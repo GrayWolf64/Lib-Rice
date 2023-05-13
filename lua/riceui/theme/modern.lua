@@ -134,6 +134,16 @@ function tbl.Button(pnl,w,h)
     draw.SimpleText(pnl.Text,pnl:GetFont(),w/2,h/2,color,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 end
 
+function tbl.Button_TextLeft(pnl,w,h)
+    tbl.DrawButton(pnl,w,h)
+
+    local color = RiceUI.GetColorBase(tbl,pnl,"Text")
+
+    if pnl:IsDown() then color = RiceUI.GetColor(tbl,pnl,"Focus") end
+
+    draw.SimpleText(pnl.Text,pnl:GetFont(),RL.hudScaleX(10),h/2,color,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+end
+
 function tbl.TransButton(pnl,w,h)
     local color = RiceUI.GetColor(tbl,pnl,"Hover","closeButton")
 

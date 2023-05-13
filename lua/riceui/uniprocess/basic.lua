@@ -74,3 +74,9 @@ RiceUI.DefineUniProcess("Anim",function(pnl,data)
         end
     end
 end)
+
+RiceUI.DefineUniProcess("Value",{
+    Slider = function(pnl,data)
+        pnl:SetSlideX(math.Remap(data,pnl.Min,pnl.Max,0,1))
+    end
+})
