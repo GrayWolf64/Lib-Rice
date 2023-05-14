@@ -6,27 +6,33 @@ function Element.Create(data,parent)
         y = 10,
         w = 500,
         h = 300,
-        Theme= {ThemeName = "modern",ThemeType="Panel",Color="white",TextColor="white"}
+        Theme = {ThemeName = "modern",ThemeType="Panel",Color="white",TextColor="white"}
     })
 
     local panel = vgui.Create("DPanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
+    panel.ProcessID = "Panel"
 
-    function panel.ChildCreated()
-        if !panel.GTheme then return end
+    function panel:ChildCreated()
+        if self.UseNewTheme then
+            RiceUI.ApplyTheme(self)
 
-        local Theme = RiceUI.GetTheme(panel.GTheme.name)
+            return
+        end
 
-        for _,child in ipairs(panel:GetChildren()) do
+        if !self.GTheme then return end
+
+        local Theme = RiceUI.GetTheme(self.GTheme.name)
+
+        for _,child in ipairs(self:GetChildren()) do
             if !child.GThemeType then continue end
             if child.NoGTheme then continue end
 
             if Theme[child.GThemeType] then
-                table.Merge(child.Theme,panel.GTheme.Theme)
-
-                child.Paint = Theme[child.Theme.ThemeType or child.GThemeType]
+                child.Paint = Theme[child.GThemeType]
                 child.Theme = child.Theme or {}
+                table.Merge(child.Theme,self.GTheme.Theme)
             end
         end
     end

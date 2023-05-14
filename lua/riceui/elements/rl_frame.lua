@@ -9,17 +9,15 @@ function Element.Create(data,parent)
         CloseButtonColor = Color(255,255,255),
         ThemeName = "modern",
         OnClose = function()end,
-        Padding = {5,35,5,5}
+        Padding = {5,35,5,5},
+        Theme = {ThemeName = "modern",ThemeType="RL_Frame",Color="white",TextColor="white"},
     })
 
     local panel = vgui.Create("EditablePanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
-    panel.Paint = RiceUI.GetTheme("modern").RL_Frame
-    panel.Theme = {Color = "white1"}
-
-    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+    panel.ProcessID = "RL_Frame"
 
     function panel:Think()
         local mousex = math.Clamp( gui.MouseX(), 1, ScrW() - 1 )
@@ -67,22 +65,30 @@ function Element.Create(data,parent)
         self:SetTall(panel.Title:GetTall()+5)
     end
 
-    function panel.ChildCreated()
-        if !panel.GTheme then return end
+    function panel:ChildCreated()
+        if self.UseNewTheme then
+            RiceUI.ApplyTheme(self)
 
-        local Theme = RiceUI.GetTheme(panel.GTheme.name)
+            return
+        end
 
-        for _,child in ipairs(panel:GetChildren()) do
+        if !self.GTheme then return end
+
+        local Theme = RiceUI.GetTheme(self.GTheme.name)
+
+        for _,child in ipairs(self:GetChildren()) do
             if !child.GThemeType then continue end
             if child.NoGTheme then continue end
 
             if Theme[child.GThemeType] then
                 child.Paint = Theme[child.GThemeType]
                 child.Theme = child.Theme or {}
-                table.Merge(child.Theme,panel.GTheme.Theme)
+                table.Merge(child.Theme,self.GTheme.Theme)
             end
         end
     end
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     return panel
 end

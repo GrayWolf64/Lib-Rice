@@ -1,5 +1,5 @@
 local Element = {}
-Element.Editor = {Category="interact"}
+Element.Editor = {Category = "interact"}
 function Element.Create(data,parent)
     RL.table.Inherit(data,{
         x = 10,
@@ -8,6 +8,7 @@ function Element.Create(data,parent)
         h = 50,
         Font = "OPSans_30",
         Text = "按钮",
+        Theme = {ThemeName = "modern",ThemeType = "Button",Color = "white",TextColor = "white"},
     })
 
     local panel = vgui.Create("DButton",parent)
@@ -17,8 +18,6 @@ function Element.Create(data,parent)
     panel:SetText("")
     panel.GThemeType = "Button"
     panel.ProcessID = "Button"
-    panel.Paint = RiceUI.GetTheme("modern").Button
-    panel.Theme = {Color = "white1"}
 
     function panel:DoClick()
         if self:GetParent().RiceUI_Event then

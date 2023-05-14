@@ -1,63 +1,90 @@
 local Element = {}
-function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+
+function Element.Create(data, parent)
+    RL.table.Inherit(data, {
+        x = 10,
+        y = 10,
         w = 300,
         h = 40,
+        Text = "Form 1",
         Font = "OPSans_30",
-        Theme = {ThemeName = "modern",ThemeType="Panel",Color="white",TextColor="white"},
-        GTheme= {name = "modern",Theme = {ThemeName = "modern",Color="white",TextColor="white"}},
+
+        Theme = {
+            ThemeName = "modern",
+            ThemeType = "Form",
+            Color = "white",
+            TextColor = "white"
+        },
     })
 
-    local panel = vgui.Create("DButton")
-    panel:SetSize(RL.hudScale(data.w,data.h))
-    panel:SetPos(gui.MouseX(),gui.MouseY())
+    local panel = vgui.Create("DButton", parent)
+    panel:SetSize(RL.hudScale(data.w, data.h))
+    panel:SetPos(RL.hudScale(data.x, data.y))
     panel:SetText("")
+    panel:DockPadding(RL.hudScaleX(5), RL.hudScaleY(data.h), RL.hudScaleX(5), 0)
     panel.ProcessID = "RL_Form"
-    panel:DockPadding(0,RL.hudScaleY(data.h),0,0)
+    panel.a_pointang = 0
 
-    function panel.ChildCreated()
-        if !panel.GTheme then return end
+    panel.Header = RiceUI.SimpleCreate({
+        type = "label",
+        Font = data.Font,
+        Text = data.Text,
+        x = 10,
+        y = 5
+    }, panel)
 
-        local Theme = RiceUI.GetTheme(panel.GTheme.name)
+    function panel:ChildCreated()
+        RiceUI.ApplyTheme(self)
+    end
 
-        for _,child in ipairs(panel:GetChildren()) do
-            if !child.GThemeType then continue end
-            if child.NoGTheme then continue end
-
-            if Theme[child.GThemeType] then
-                table.Merge(child.Theme,panel.GTheme.Theme)
-
-                child.Paint = Theme[child.Theme.ThemeType or child.GThemeType]
-                child.Theme = child.Theme or {}
-            end
+    function panel:Clear()
+        for _, v in pairs(self:GetChildren()) do
+            if v == self.Header then continue end
+            v:Remove()
         end
     end
 
     function panel:DoClick()
+        if self.Expand then
+            self:SizeTo(-1, data.h, 0.3, 0, 0.3)
+        else
+            self:DoExpand()
+        end
+
+        local anim = self:NewAnimation(0.3, 0, 0.2)
         self.Expand = not self.Expand
 
-        if self.Expand then
-            self:SizeTo(-1,data.h,0.3,0,0.3)
-        else
-            local h = 0
-            for _,v in ipairs(self:GetChildren()) do
-                h = h + v:GetTall()
+        anim.Think = function(_, pnl, fraction)
+            if not self.Expand then
+                panel.a_pointang = -180 + (180 * fraction)
+
+                return
             end
 
-            self:SizeTo(-1,h,0.3,0,0.3)
+            panel.a_pointang = -180 * fraction
         end
     end
 
-    function panel.RiceUI_Event(self,name,id,data)
+    function panel:DoExpand()
+        local h = self:GetTall()
+
+        for _, v in ipairs(self:GetChildren()) do
+            if v:GetDock() < 1 then continue end
+            h = h + v:GetTall()
+        end
+
+        h = h + RL.hudScaleY(5)
+        self:SizeTo(-1, h, 0.3, 0, 0.3)
+    end
+
+    function panel.RiceUI_Event(self, name, id, pnl)
         if panel:GetParent().RiceUI_Event then
-            panel:GetParent():RiceUI_Event(name,id,data)
+            panel:GetParent():RiceUI_Event(name, id, pnl)
         end
     end
 
-    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
-
-    panel:Layout()
-    panel:MakePopup()
+    RiceUI.MergeData(panel, RiceUI.ProcessData(data))
+    panel.Text = ""
 
     return panel
 end

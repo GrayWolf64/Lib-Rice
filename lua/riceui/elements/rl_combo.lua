@@ -8,7 +8,7 @@ function Element.Create(data,parent)
         h = 30,
         Font = "OPSans_20",
         Text = "选择器",
-        Theme = {ThemeName="modern",ThemeType="Combo",Color="white",TextColor="white"},
+        Theme = {ThemeName="modern",ThemeType="RL_Combo",Color="white",TextColor="white"},
     })
 
     local panel = RiceUI.SimpleCreate({type="rl_button", Text=data.Text, x=data.x, y=data.y, w=data.w, h=data.h, Theme = data.Theme},parent)

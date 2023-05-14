@@ -6,7 +6,7 @@ function Element.Create(data,parent)
         y = 10,
         w = 120,
         h = 30,
-        Theme = {ThemeName = "modern",ThemeType="NumberWang",Color="white",TextColor="white"},
+        Theme = {ThemeName = "modern",ThemeType="RL_NumberWang",Color="white",TextColor="white"},
         Step = 1,
     })
 
