@@ -89,3 +89,6 @@ function RiceUI.DefineThemeProcess(name,data)
 end
 
 RL.IncludeDir("riceui/themeprocess",true)
+
+RiceUI.Theme = {}
+RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")

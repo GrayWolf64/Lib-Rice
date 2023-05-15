@@ -7,6 +7,14 @@ RiceUI.DefineUniProcess("Clipping",function(pnl,data) pnl:NoClipping(data) end)
 RiceUI.DefineUniProcess("Alpha",function(pnl,data) pnl:SetAlpha(data) end)
 RiceUI.DefineUniProcess("Paint",function(pnl,data) pnl.Paint = data end)
 
+RiceUI.DefineUniProcess("OnTop",function(pnl,data)
+    if not data then return end
+
+    pnl:SetDrawOnTop(true)
+    pnl:MakePopup()
+    pnl:DoModal()
+end)
+
 RiceUI.DefineUniProcess("Theme",function(pnl,data)
     if !data.ThemeName then return end
 

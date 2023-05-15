@@ -1,12 +1,10 @@
 RiceUI = RiceUI or {}
 RiceUI.Elements = {}
-RiceUI.Theme = {}
 RiceUI.UI = {}
 RiceUI.Prefab = {}
 RiceUI.RootName = "main"
 
 RL.Functions.LoadFiles(RiceUI.Elements, "riceui/elements")
-RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
 
 file.CreateDir("riceui")
 file.CreateDir("riceui/web_image")
@@ -32,6 +30,11 @@ function RiceUI.SimpleCreate(data, parent)
 
     if pnl.ChildCreated then
         pnl:ChildCreated()
+    end
+
+    if data.ID then
+        parent.Elements = parent.Elements or {}
+        parent.Elements[data.ID] = pnl
     end
 
     return pnl

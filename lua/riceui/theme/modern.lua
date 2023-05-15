@@ -115,7 +115,7 @@ function tbl.Panel(pnl, w, h)
 end
 
 function tbl.RL_Frame(pnl, w, h)
-    if pnl:GetParent():GetClassName() ~= "CGModBase" then
+    if pnl.DrawBorder or pnl:GetParent():GetClassName() ~= "CGModBase" then
         DisableClipping(true)
         draw.RoundedBox(pnl.Theme.Curver or 5, -1, -1, w + 2, h + 2, RiceUI.GetColor(tbl, pnl, "Bar"))
         DisableClipping(false)
