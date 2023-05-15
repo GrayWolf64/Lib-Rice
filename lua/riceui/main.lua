@@ -33,6 +33,8 @@ function RiceUI.SimpleCreate(data, parent)
     end
 
     if data.ID then
+        if not IsValid(parent) then return pnl end
+
         parent.Elements = parent.Elements or {}
         parent.Elements[data.ID] = pnl
     end

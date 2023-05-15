@@ -1,9 +1,9 @@
 local Element = {}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
-        T_Height=100,
-        T_Min=100,
-        B_Min=100,
+    RL.table.Inherit(data, {
+        T_Height = 100,
+        T_Min = 100,
+        B_Min = 100,
         DivHeight = 4,
     })
 
