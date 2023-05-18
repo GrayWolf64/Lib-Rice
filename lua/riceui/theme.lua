@@ -92,3 +92,8 @@ RL.IncludeDir("riceui/themeprocess",true)
 
 RiceUI.Theme = {}
 RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
+
+for k, v in pairs(RiceUI.Theme) do
+    if not isfunction(v.OnLoaded) then continue end
+    v.OnLoaded()
+end

@@ -7,6 +7,7 @@ function Element.Create(data,parent)
         Choice = {
             {"Option1",function() end},
             {"Option2",function() end},
+            {"-",function()end},
             {"Option3",function() end}
         },
         ChoiceH = 40,
@@ -23,6 +24,18 @@ function Element.Create(data,parent)
 
     function panel:Layout()
         for _,v in ipairs(self.Choice) do
+            if v[1] == "-" then
+                local pnl = RiceUI.SimpleCreate({type = "rl_panel",
+                    Theme = {ThemeType = "Spacer"},
+                    Dock = TOP,
+                    h = self.ChoiceH/2,
+                },self)
+
+                RiceUI.ApplyTheme(pnl,self.Theme)
+    
+                continue 
+            end
+
             local pnl = RiceUI.SimpleCreate({type = "rl_button",
                 Theme = {ThemeType = "Button_TextLeft"},
                 Text = v[1],
@@ -42,7 +55,12 @@ function Element.Create(data,parent)
             RiceUI.ApplyTheme(pnl,self.Theme)
         end
 
-        self:SizeTo(-1,#self.Choice * self.ChoiceH,0.1,0,0.3)
+        local h = 0
+        for _, v in ipairs(self:GetChildren()) do
+            h = h + v:GetTall()
+        end
+
+        self:SizeTo(-1,h,0.1,0,0.3)
     end
 
     function panel.RiceUI_Event(self,name,id,data)

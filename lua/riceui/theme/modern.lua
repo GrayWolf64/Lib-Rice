@@ -69,6 +69,12 @@ tbl.DisableColor = {
     black3 = Color(70, 70, 70),
 }
 
+/*
+
+    Drawing functions
+
+*/
+
 function tbl.DrawOutline(pnl, w, h, Color)
     draw.RoundedBox(pnl.Theme.Curver or 5, 0, 0, w, h, Color or RiceUI.GetColor(tbl, pnl, "Outline"))
 end
@@ -103,6 +109,26 @@ function tbl.DrawEntry(pnl, w, h, Color)
 
     tbl.DrawOutlineBox(pnl, w, h, color)
 end
+
+function tbl.DrawTextCursor(pnl,w,h)
+    if pnl:HasFocus() then
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl, pnl, "Text"), 255 * math.abs(math.sin(SysTime() * 6 % 360))))
+
+        local len = 0
+        for i=1,pnl:GetCaretPos() do
+            local w,_ = RL.VGUI.TextWide(pnl:GetFont(), utf8.sub(pnl:GetText(),i,i))
+
+            len = len + w
+        end
+        surface.DrawRect(RL.hudScaleX(10) + len, 4, 1, h - 8)
+    end
+end
+
+/*
+
+    Elements
+
+*/
 
 function tbl.Panel(pnl, w, h)
     if pnl:GetParent():GetClassName() ~= "CGModBase" then
@@ -253,10 +279,7 @@ function tbl.Entry(pnl, w, h)
 
     draw.SimpleText(pnl:GetText(), pnl:GetFont(), 10, h / 2, RiceUI.GetColorBase(tbl, pnl, "Text"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
-    if pnl:HasFocus() then
-        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl, pnl, "Text"), 255 * math.abs(math.sin(SysTime() * 6 % 360))))
-        surface.DrawRect(10 + RL.VGUI.TextWide(pnl:GetFont(), pnl:GetText()), 4, 1, h - 8)
-    end
+    tbl.DrawTextCursor(pnl,w,h)
 end
 
 local zoom = Material("icon16/zoom.png")
@@ -273,10 +296,7 @@ function tbl.Entry_Search(pnl, w, h)
     surface.DrawTexturedRect(0, 0, w, h)
     draw.SimpleText(pnl:GetText(), pnl:GetFont(), 32, h / 2, RiceUI.GetColorBase(tbl, pnl, "Text"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
-    if pnl:HasFocus() then
-        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl, pnl, "Text"), 255 * math.abs(math.sin(SysTime() * 6 % 360))))
-        surface.DrawRect(10 + RL.VGUI.TextWide(pnl:GetFont(), pnl:GetText()), 4, 1, h - 8)
-    end
+    tbl.DrawTextCursor(pnl,w,h)
 end
 
 function tbl.Switch(pnl, w, h)
@@ -332,6 +352,13 @@ function tbl.Form(pnl, w, h)
     surface.SetDrawColor(RiceUI.GetColorBase(tbl, pnl, "Text"))
     surface.SetMaterial(point)
     surface.DrawTexturedRectRotated(w - h / 2, h / 2, h / 3, h / 3, pnl.a_pointang)
+end
+
+function tbl.Spacer(pnl, w, h)
+    tbl.DrawBox(pnl,w,h)
+
+    surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
+    surface.DrawRect(0,h/2-RL.hudOffsetY(2),w,RL.hudOffsetY(2))
 end
 
 return tbl

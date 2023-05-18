@@ -90,7 +90,7 @@ RiceUI.Examples = {
 RiceUI.Examples.ModernBlack = table.Copy(RiceUI.Examples.Modern)
 RiceUI.Examples.ModernBlack[1].Theme = {ThemeName="modern",ThemeType="RL_Frame",Color="black",TextColor="black"}
 
-concommand.Add("RiceUI_Examples",function()
+concommand.Add("riceui_examples",function()
     RiceUI.SimpleCreate({type="rl_frame",Text="Examples",Center=true,Root=true,Alpha=0,w=400,h=600,TitleColor=Color(250,250,250),CloseColor="black",
         Theme = {ThemeName="modern",ThemeType="RL_Frame",Color="black1",TextColor="black1"},
         GTheme = {name = "modern",Theme = {Color="black1",TextColor="black1"}},

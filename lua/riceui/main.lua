@@ -54,7 +54,7 @@ function RiceUI.Create(tbl, parent)
     end
 end
 
-concommand.Add("RiceUI_Panic", function()
+concommand.Add("riceui_panic", function()
     for _, v in pairs(RiceUI.UI) do
         if IsValid(v) then
             v:Remove()
@@ -62,27 +62,22 @@ concommand.Add("RiceUI_Panic", function()
     end
 end)
 
-concommand.Add("RiceUI_Elements", function()
+concommand.Add("riceui_elements", function()
     PrintTable(RiceUI.Elements)
 end)
 
-concommand.Add("RiceUI_Theme", function()
+concommand.Add("riceui_theme", function()
     PrintTable(RiceUI.Theme)
 end)
 
-concommand.Add("RiceUI_All", function()
+concommand.Add("riceui_all", function()
     PrintTable(RiceUI.UI)
 end)
 
-concommand.Add("RiceUI_Reload", function()
+concommand.Add("riceui_reload", function()
     RL.Functions.LoadFiles(RiceUI.Elements, "riceui/elements")
     RL.Functions.LoadFiles(RiceUI.UniProcess, "riceui/uniprocess")
     RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
 end)
-
-for k, v in pairs(RiceUI.Theme) do
-    if not isfunction(v.OnLoaded) then continue end
-    v.OnLoaded()
-end
 
 RL.IncludeDir("riceui/prefabs", true)

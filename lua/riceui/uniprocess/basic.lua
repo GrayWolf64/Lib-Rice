@@ -78,7 +78,11 @@ RiceUI.DefineUniProcess("Anim",function(pnl,data)
         end
 
         if AnimData.type == "move" then
-            pnl:MoveTo(AnimData.x or 0,AnimData.y or 0,AnimData.time,AnimData.delay or 0,AnimData.ease or -1,AnimData.CallBack or function()end)
+            pnl:MoveTo(AnimData.x or 0,AnimData.y or 0,AnimData.time,AnimData.delay or 0,AnimData.ease or 0.3,AnimData.CallBack or function()end)
+        end
+
+        if AnimData.type == "resize" then
+            pnl:SizeTo(AnimData.w or 0,AnimData.h or 0,AnimData.time,AnimData.delay or 0,AnimData.ease or 0.3,AnimData.CallBack or function()end)
         end
     end
 end)
