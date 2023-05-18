@@ -86,6 +86,9 @@ function Element.Create(data,parent)
         table.insert(panel.d_Choice,{value,data,select})
     end
 
+    function panel:OnSelected()
+    end
+
     function panel:RiceUI_Event(event,id,pnl)
         if event == "ComboSelect" then
             self.Value = id
@@ -93,6 +96,8 @@ function Element.Create(data,parent)
             if self:GetParent().RiceUI_Event then
                 self:GetParent():RiceUI_Event("ComboSelect",id,pnl)
             end
+
+            self:OnSelected(id)
 
             return
         end
