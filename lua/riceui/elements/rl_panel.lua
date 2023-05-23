@@ -13,6 +13,7 @@ function Element.Create(data,parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel.ProcessID = "Panel"
+    panel.IsBase = true
 
     function panel:ChildCreated()
         if self.UseNewTheme then
@@ -40,6 +41,13 @@ function Element.Create(data,parent)
     function panel.RiceUI_Event(self,name,id,data)
         if panel:GetParent().RiceUI_Event then
             panel:GetParent():RiceUI_Event(name,id,data)
+        end
+
+        for _,pnl in ipairs(self:GetChildren()) do
+            if pnl.IsBase then continue end
+            if pnl.RiceUI_Event == nil then continue end
+
+            pnl:RiceUI_Event(name,id,data)
         end
     end
 

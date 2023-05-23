@@ -92,3 +92,7 @@ RiceUI.DefineUniProcess("Value",{
         pnl:SetSlideX(math.Remap(data,pnl.Min,pnl.Max,0,1))
     end
 })
+
+RiceUI.DefineUniProcess("OffsetProfile",function(pnl,data)
+    pnl:SetPos(RL.hudOffset(100,100,data))
+end)

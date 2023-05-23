@@ -1,7 +1,6 @@
 RiceUI = RiceUI or {}
 RiceUI.Elements = {}
 RiceUI.UI = {}
-RiceUI.Prefab = {}
 RiceUI.RootName = "main"
 
 RL.Functions.LoadFiles(RiceUI.Elements, "riceui/elements")
@@ -80,4 +79,5 @@ concommand.Add("riceui_reload", function()
     RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
 end)
 
+RiceUI.Prefab = {}
 RL.IncludeDir("riceui/prefabs", true)

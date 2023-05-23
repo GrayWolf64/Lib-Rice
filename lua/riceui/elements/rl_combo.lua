@@ -66,7 +66,10 @@ function Element.Create(data,parent)
 
                 DoClick = function()
                     self.OnAnim = true
-                    self:RiceUI_Event("ComboSelect",data[1])
+
+                    self.Value = data[1]
+                    self:OnSelected(data[1])
+
                     self:CloseMenu()
                     self:DoAnim()
                 end
@@ -87,24 +90,6 @@ function Element.Create(data,parent)
     end
 
     function panel:OnSelected()
-    end
-
-    function panel:RiceUI_Event(event,id,pnl)
-        if event == "ComboSelect" then
-            self.Value = id
-
-            if self:GetParent().RiceUI_Event then
-                self:GetParent():RiceUI_Event("ComboSelect",id,pnl)
-            end
-
-            self:OnSelected(id)
-
-            return
-        end
-
-        if self:GetParent().RiceUI_Event then
-            self:GetParent():RiceUI_Event(event,id,pnl)
-        end
     end
 
     function panel:GetSelected()

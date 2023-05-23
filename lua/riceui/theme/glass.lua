@@ -178,8 +178,9 @@ function tbl.OnLoaded()
     RiceUI.Examples.Glass = {
         {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,ThemeName="glass",CloseButtonColor=Color(50,50,50),
             Paint = RiceUI.GetTheme("glass").RL_Frame,
-            Theme = {Color="white",Blur=5},
-            GTheme = {name = "glass",Theme = {Blur=2,Color="white"}},
+
+            UseNewTheme = true,
+            Theme = {ThemeName="glass",ThemeType="RL_Frame",Color="white",TextColor="white",Blur=5},
 
             Anim = {{type = "alpha",time = 0.075,alpha = 255}},
             children = {
@@ -205,44 +206,6 @@ function tbl.OnLoaded()
                     Paint = RiceUI.GetTheme("glass").RL_Frame,
                     Theme = {Color="white",Blur=2},
                     GTheme = {name = "glass",Theme = {color = "white"}},
-                    children={
-                        {type="slider",y=60}
-                    }
-                }
-            },
-        }
-    }
-
-    RiceUI.Examples.GlassDark = {
-        {type="rl_frame",Text="Example",Center=true,Root=true,Alpha=0,w=1200,h=800,ThemeName="glass",TitleColor=Color(250,250,250),CloseButtonColor=Color(250,250,250),
-            Paint = RiceUI.GetTheme("glass").RL_Frame,
-            Theme = {Color="black",Blur=5},
-            GTheme = {name = "glass",Theme = {Blur=2,Color="black"}},
-
-            Anim = {{type = "alpha",time = 0.075,alpha = 255}},
-            children = {
-                {type="button",x=10,y=40,w=100,h=50},
-
-                {type="entry",x=10,y=100,w=300,h=30},
-
-                {type="switch",x=120,y=38,w=50,h=25,DisableColor = Color(50,50,50,50)},
-                {type="switch",x=120,y=67,w=50,h=25,DisableColor = Color(50,50,50,50),Value=true},
-
-                {type="image",x=320,y=40,w=90,h=90,Image="gui/dupe_bg.png"},
-                {type="web_image",x=420,y=40,w=90,h=90,Image="https://i.328888.xyz/2023/01/29/jM97x.jpeg"},
-
-                {type="panel",x=10,y=140,h=645},
-                {type="scrollpanel",ID="ScrollPanel",x=15,y=145,h=635,w=490,ThemeName="glass",Theme = {Color = "black"},OnCreated = function(pnl)
-                    for i=1,20 do pnl:AddItem(RiceUI.SimpleCreate({type="panel",Dock=TOP,h=150,Margin={0,0,5,5},
-                        Paint = RiceUI.GetTheme("glass").Panel,
-                        Theme = {Color = "black"},
-                    },pnl)) end
-                end},
-
-                {type="rl_frame",x=520,y=40,w=670,Text="Frame In Frame",ThemeName="glass",TitleColor=Color(250,250,250),CloseButtonColor=Color(250,250,250),
-                    Paint = RiceUI.GetTheme("glass").RL_Frame,
-                    Theme = {Color="black",Blur=2},
-                    GTheme = {name = "glass",Theme = {color = "black"}},
                     children={
                         {type="slider",y=60}
                     }

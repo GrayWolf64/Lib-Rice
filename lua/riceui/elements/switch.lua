@@ -7,6 +7,7 @@ function Element.Create(data,parent)
         w = 100,
         h = 50,
         DisableColor = Color(200,200,200),
+        Theme = {ThemeName="modern",ThemeType="Switch",Color="white"}
     })
 
     local panel = vgui.Create("DButton",parent)
@@ -14,9 +15,7 @@ function Element.Create(data,parent)
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
     panel:SetColor(data.DisableColor)
-    panel.GThemeType = "Switch"
-    panel.Paint = RiceUI.GetTheme("modern").Switch
-    panel.Theme = {Color="white"}
+    panel.ProcessID = "Switch"
     panel.togglePos = 0
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))

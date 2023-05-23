@@ -13,12 +13,21 @@ function Element.Create(data,parent)
     local s = RL.hudScaleY(data.size)
     panel:SetSize(s,s)
     panel:SetText("")
-    panel.GThemeType = "CheckBox"
     panel.ProcessID = "CheckBox"
     panel.Value = false
     panel.a_Alpha = 0
 
-    function panel:DoAnim()
+    function panel:DoAnim(noAnim)
+        if noAnim then
+            if self.Value then
+                self.a_Alpha = 255
+            else
+                self.a_Alpha = 0
+            end
+
+            return
+        end
+
         local anim = self:NewAnimation(0.075,0,0.3)
 
         anim.Think = function(_,pnl,fraction)
@@ -34,7 +43,8 @@ function Element.Create(data,parent)
     function panel:SetValue(val)
         self.Value = val
 
-        self:DoAnim()
+        self:DoAnim(true)
+        self:OnValueChange(val)
     end
 
     function panel:OnValueChange(val)
@@ -49,8 +59,17 @@ function Element.Create(data,parent)
         self:DoAnim()
 
         if self:GetParent().RiceUI_Event then
-            self:GetParent():RiceUI_Event("CheckBox_Check",self.ID,self)
+            self:GetParent():RiceUI_Event("Radio_Check",self.ID,self)
         end
+    end
+
+    function panel.RiceUI_Event(self,name,id,pnl)
+        if self == pnl then return end
+        if self.Group == nil then return end
+        if name ~= "Radio_Check" then return end
+        if pnl.Group ~= self.Group then return end
+
+        if pnl.Value then self:SetValue(false) end
     end
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))

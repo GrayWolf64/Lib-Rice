@@ -18,6 +18,7 @@ function Element.Create(data,parent)
     panel:SetSize(RL.hudScale(data.w,data.h))
     panel:SetText("")
     panel.ProcessID = "RL_Frame"
+    panel.IsBase = true
 
     function panel:Think()
         local mousex = math.Clamp( gui.MouseX(), 1, ScrW() - 1 )
@@ -85,6 +86,19 @@ function Element.Create(data,parent)
                 child.Theme = child.Theme or {}
                 table.Merge(child.Theme,self.GTheme.Theme)
             end
+        end
+    end
+
+    function panel.RiceUI_Event(self,name,id,data)
+        if panel:GetParent().RiceUI_Event then
+            panel:GetParent():RiceUI_Event(name,id,data)
+        end
+
+        for _,pnl in ipairs(self:GetChildren()) do
+            if pnl.IsBase then continue end
+            if pnl.RiceUI_Event == nil then continue end
+
+            pnl:RiceUI_Event(name,id,data)
         end
     end
 

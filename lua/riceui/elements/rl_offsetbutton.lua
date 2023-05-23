@@ -31,6 +31,11 @@ function Element.Create(data,parent)
 
         surface.SetDrawColor(0,255,0,255)
         surface.DrawOutlinedRect(0,0,w,h,2)
+
+        if self.Hint == nil then return end
+        if not self:IsHovered() then return end
+
+        draw.SimpleText(self.Hint,"OPSans_30",w / 2,h / 2,Color(0,255,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
     end
 
     function panel:Think()
