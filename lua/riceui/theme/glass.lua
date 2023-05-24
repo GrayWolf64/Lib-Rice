@@ -39,10 +39,10 @@ tbl.HoverColor = {
 }
 
 function tbl.Panel(pnl,w,h)
+    if pnl.Theme.Blur then RL.VGUI.blurPanel(pnl,pnl.Theme.Blur) end
+
     surface.SetDrawColor(RiceUI.GetColor(tbl,pnl))
     surface.DrawRect(0,0,w,h)
-    
-    if pnl.Theme.Blur then RL.VGUI.blurPanel(pnl,pnl.Theme.Blur) end
 end
 
 function tbl.RL_Frame(pnl,w,h)

@@ -57,7 +57,7 @@ function Element.Create(data,parent)
         if code == MOUSE_RIGHT then
             parent:SetPos(RL.hudScale(self.DefaultX,self.DefaultY))
 
-            RL.Clear_HUDOffset(self.Profile,0,0)
+            RL.Clear_HUDOffset(self.Profile,self.DefaultX,self.DefaultY)
 
             return
         end
@@ -69,7 +69,7 @@ function Element.Create(data,parent)
     end
 
     function panel:OnMouseReleased()
-        if !self.Profile then return end
+        if self.Profile == nil then return end
 
         self.Dragging = nil
         self:MouseCapture( false )

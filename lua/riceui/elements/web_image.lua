@@ -18,12 +18,12 @@ function Element.Create(data,parent)
         panel.Image = url
 
         if file.Exists("riceui/web_image/"..util.SHA256(panel.Image)..".png","DATA") then
-            panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png")
+            panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png","smooth")
         else
             http.Fetch(panel.Image,function(body)
                 file.Write("riceui/web_image/"..util.SHA256(panel.Image)..".png",body)
 
-                panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png")
+                panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png","smooth")
             end)
         end
     end
