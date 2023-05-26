@@ -17,6 +17,7 @@ function Element.Create(data,parent)
     panel:SetSize(RL.hudScaleX(data.w),0)
     panel:SetPos(gui.MouseX(),gui.MouseY())
     panel.ProcessID = "RL_Menu"
+    panel.DrawBorder = true
 
     function panel:OnFocusChanged(gained)
         if not gained then self:Remove() end
@@ -37,7 +38,7 @@ function Element.Create(data,parent)
             end
 
             local pnl = RiceUI.SimpleCreate({type = "rl_button",
-                Theme = {ThemeType = "Button_TextLeft"},
+                Theme = {ThemeType = "TransButton_TextLeft"},
                 Text = v[1],
                 Font = self.Font,
                 Dock = TOP,

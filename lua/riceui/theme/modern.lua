@@ -131,7 +131,7 @@ end
 */
 
 function tbl.Panel(pnl, w, h)
-    if pnl:GetParent():GetClassName() ~= "CGModBase" then
+    if pnl.DrawBorder or pnl:GetParent():GetClassName() ~= "CGModBase" then
         tbl.DrawOutlineBox(pnl, w, h)
 
         return
@@ -188,6 +188,30 @@ function tbl.TransButton(pnl, w, h)
 
     tbl.DrawBox(pnl, w, h, ColorAlpha(color, pnl.HoverAlpha))
     draw.SimpleText(pnl.Text, pnl:GetFont(), w / 2, h / 2, RiceUI.GetColorBase(tbl, pnl, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+function tbl.TransButton_TextLeft(pnl, w, h)
+    local color = RiceUI.GetColor(tbl, pnl, "Hover", "closeButton")
+
+    if not pnl.HoverAlpha then
+        pnl.HoverAlpha = 0
+    end
+
+    if pnl:IsHovered() then
+        pnl.HoverAlpha = math.min(pnl.HoverAlpha + (pnl.Theme.Speed or 20) * (RealFrameTime() * 100), 255)
+    else
+        pnl.HoverAlpha = math.max(pnl.HoverAlpha - (pnl.Theme.Speed or 20) * (RealFrameTime() * 100), 0)
+    end
+
+    tbl.DrawBox(pnl, w, h, ColorAlpha(color, pnl.HoverAlpha))
+
+    local color = RiceUI.GetColorBase(tbl, pnl, "Text")
+
+    if pnl:IsDown() then
+        color = RiceUI.GetColor(tbl, pnl, "Focus")
+    end
+
+    draw.SimpleText(pnl.Text, pnl:GetFont(), RL.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.TransButton_F(pnl, w, h)
@@ -355,10 +379,10 @@ function tbl.Form(pnl, w, h)
 end
 
 function tbl.Spacer(pnl, w, h)
-    tbl.DrawBox(pnl,w,h)
+    local len = pnl.Theme.SpacerLen or 5
 
     surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
-    surface.DrawRect(0,h/2-RL.hudOffsetY(2),w,RL.hudOffsetY(2))
+    surface.DrawRect(len,h/2-RL.hudOffsetY(2),w-len*2,RL.hudOffsetY(2))
 end
 
 return tbl

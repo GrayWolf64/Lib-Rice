@@ -1,5 +1,5 @@
 local Element = {}
-Element.Editor = {Category="input"}
+Element.Editor = {Category = "input"}
 function Element.Create(data,parent)
     RL.table.Inherit(data,{
         x = 10,
@@ -10,8 +10,9 @@ function Element.Create(data,parent)
         Text = "",
         TextColor = Color(30,30,30),
         Placeholder = "Input Text",
-        OnEnter = function()end,
+        OnEnter = function() end,
         Multline = false,
+        UpdateOnType = true,
     })
 
     local panel = vgui.Create("DTextEntry",parent)
@@ -22,6 +23,7 @@ function Element.Create(data,parent)
     panel:SetTextColor(data.TextColor)
     panel:SetPlaceholderText(data.Placeholder)
     panel:SetMultiline(data.Multline)
+    panel:SetUpdateOnType(data.UpdateOnType)
 
     panel.GThemeType = "Entry"
     panel.ProcessID = "Entry"

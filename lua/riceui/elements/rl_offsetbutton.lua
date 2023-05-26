@@ -10,6 +10,7 @@ function Element.Create(data,parent)
         RootName = "",
         EnableOnChat = true,
         Outline = true,
+        NoGTheme = true,
     })
 
     local panel = vgui.Create("DButton",parent)

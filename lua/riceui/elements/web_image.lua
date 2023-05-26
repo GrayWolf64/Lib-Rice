@@ -1,5 +1,5 @@
 local Element = {}
-Element.Editor = {Category="display"}
+Element.Editor = {Category = "display"}
 function Element.Create(data,parent)
     RL.table.Inherit(data,{
         x = 10,
@@ -17,13 +17,13 @@ function Element.Create(data,parent)
     function panel:SetImage(url)
         panel.Image = url
 
-        if file.Exists("riceui/web_image/"..util.SHA256(panel.Image)..".png","DATA") then
-            panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png","smooth")
+        if file.Exists("riceui/web_image/" .. util.SHA256(panel.Image) .. ".png","DATA") then
+            panel.Mat = Material("data/riceui/web_image/" .. util.SHA256(panel.Image) .. ".png","smooth")
         else
             http.Fetch(panel.Image,function(body)
-                file.Write("riceui/web_image/"..util.SHA256(panel.Image)..".png",body)
+                file.Write("riceui/web_image/" .. util.SHA256(panel.Image) .. ".png",body)
 
-                panel.Mat = Material("data/riceui/web_image/"..util.SHA256(panel.Image)..".png","smooth")
+                panel.Mat = Material("data/riceui/web_image/" .. util.SHA256(panel.Image) .. ".png","smooth")
             end)
         end
     end

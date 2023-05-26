@@ -37,14 +37,14 @@ function Element.Create(data,parent)
         self:DoAnim()
     end
 
-    function panel:OnValueChange(val)
+    function panel:OnValueChanged(val)
     end
 
     function panel:DoClick()
         if self.Disable then return end
 
         self.Value = not self.Value
-        self:OnValueChange(self.Value)
+        self:OnValueChanged(self.Value)
 
         self:DoAnim()
 
