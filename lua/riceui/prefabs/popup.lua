@@ -9,17 +9,22 @@ function RiceUI.Prefab.Notify(args)
     local frame = RiceUI.SimpleCreate({type = "rl_frame",w=400,h=200,Text = args.Title,
         Center = true,
         OnTop = true,
-        DrawBorder = true,
+
+        UseNewTheme = true,
+        Theme = {
+            ThemeName = "modern",
+            ThemeType = "RL_Frame",
+            Color = "white",
+            TextColor = "white",
+            Shadow = true
+        },
 
         children = {
             {type = "panel",x=0,y=30,w=400,h=120,Paint=function(self,w,h)
                 draw.SimpleText(args.Text,"SourceHan_35",w/2,h/2,Color(25,25,25),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             end},
 
-            {type = "button",ID = "CloseButton",Text=args.ButtonText,Font="SourceHan_25",x=0,y=30,w=50,h=30,DoClick=args.DoClick,
-                Paint = RiceUI.GetTheme("modern_rect").Button,
-                Theme = {Color="white1"},
-            }
+            {type = "rl_button",ID = "CloseButton",Text=args.ButtonText,Font="SourceHan_25",x=0,y=30,w=50,h=30,DoClick=args.DoClick,}
         }
     })
 

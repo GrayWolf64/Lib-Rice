@@ -23,6 +23,11 @@ function RiceUI.GetColorBase(tbl,pnl,name,default)
     return pnl.Theme["Raw" .. name .. "Color"] or tbl[name .. "Color"][color] or tbl[name .. "Color"][default]
 end
 
+function RiceUI.GetShadowAlpha(tbl,pnl)
+    color = string.match(pnl.Theme["Color"] or "white","^[a-zA-Z]*")
+
+    return tbl["ShadowAlpha"][color] or 50
+end
 /*
 
     Main Theme System

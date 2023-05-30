@@ -69,6 +69,11 @@ tbl.DisableColor = {
     black3 = Color(70, 70, 70),
 }
 
+tbl.ShadowAlpha = {
+    white = 50,
+    black = 150,
+}
+
 /*
 
     Drawing functions
@@ -76,11 +81,15 @@ tbl.DisableColor = {
 */
 
 function tbl.DrawOutline(pnl, w, h, Color)
-    draw.RoundedBox(pnl.Theme.Curver or 5, 0, 0, w, h, Color or RiceUI.GetColor(tbl, pnl, "Outline"))
+    local Corner = pnl.Theme.Corner or {true,true,true,true}
+
+    draw.RoundedBoxEx(pnl.Theme.Curver or 5, 0, 0, w, h, Color or RiceUI.GetColor(tbl, pnl, "Outline"),unpack(Corner))
 end
 
 function tbl.DrawInnerBox(pnl, w, h, Color)
-    draw.RoundedBox(pnl.Theme.Curver or 5, 1, 1, w - 2, h - 2, Color or RiceUI.GetColor(tbl, pnl))
+    local Corner = pnl.Theme.Corner or {true,true,true,true}
+
+    draw.RoundedBoxEx(pnl.Theme.Curver or 5, 1, 1, w - 2, h - 2, Color or RiceUI.GetColor(tbl, pnl),unpack(Corner))
 end
 
 function tbl.DrawOutlineBox(pnl, w, h, Color)
@@ -89,7 +98,9 @@ function tbl.DrawOutlineBox(pnl, w, h, Color)
 end
 
 function tbl.DrawBox(pnl, w, h, Color)
-    draw.RoundedBox(pnl.Theme.Curver or 5, 0, 0, w, h, Color or RiceUI.GetColor(tbl, pnl))
+    local Corner = pnl.Theme.Corner or {true,true,true,true}
+
+    draw.RoundedBoxEx(pnl.Theme.Curver or 5, 0, 0, w, h, Color or RiceUI.GetColor(tbl, pnl),unpack(Corner))
 end
 
 function tbl.DrawButton(pnl, w, h, Color)
@@ -115,7 +126,7 @@ function tbl.DrawTextCursor(pnl,w,h)
         surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl, pnl, "Text"), 255 * math.abs(math.sin(SysTime() * 6 % 360))))
 
         local len = 0
-        for i=1,pnl:GetCaretPos() do
+        for i = 1,pnl:GetCaretPos() do
             local w,_ = RL.VGUI.TextWide(pnl:GetFont(), utf8.sub(pnl:GetText(),i,i))
 
             len = len + w
@@ -132,9 +143,17 @@ end
 
 function tbl.Panel(pnl, w, h)
     if pnl.DrawBorder or pnl:GetParent():GetClassName() ~= "CGModBase" then
+        if pnl.Theme.Shadow then
+            RiceUI.Render.DrawShadow(tbl,pnl)
+        end
+
         tbl.DrawOutlineBox(pnl, w, h)
 
         return
+    end
+
+    if pnl.Theme.Shadow then
+        RiceUI.Render.DrawShadow(tbl,pnl)
     end
 
     tbl.DrawBox(pnl, w, h)
@@ -145,6 +164,10 @@ function tbl.RL_Frame(pnl, w, h)
         DisableClipping(true)
         draw.RoundedBox(pnl.Theme.Curver or 5, -1, -1, w + 2, h + 2, RiceUI.GetColor(tbl, pnl, "Bar"))
         DisableClipping(false)
+    end
+
+    if pnl.Theme.Shadow then
+        RiceUI.Render.DrawShadow(tbl,pnl)
     end
 
     tbl.DrawBox(pnl, w, h, RiceUI.GetColor(tbl, pnl, "Bar"))
@@ -255,20 +278,6 @@ function tbl.RL_Combo(pnl, w, h)
     surface.SetDrawColor(RiceUI.GetColorBase(tbl, pnl, "Text"))
     surface.SetMaterial(point)
     surface.DrawTexturedRectRotated(w - h / 2, h / 2, h / 3, h / 3, pnl.a_pointang)
-end
-
-function tbl.Choice(pnl, w, h)
-    if pnl:IsHovered() then
-        tbl.DrawBox(pnl, w, h, ColorAlpha(RiceUI.GetColor(tbl, pnl, "Hover"), 150))
-    end
-
-    local color = RiceUI.GetColorBase(tbl, pnl, "Text")
-
-    if pnl.Selected then
-        color = RiceUI.GetColor(tbl, pnl, "Focus")
-    end
-
-    draw.SimpleText(pnl.Text, pnl:GetFont(), h / 2, h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.RL_NumberWang(pnl, w, h)
@@ -382,7 +391,7 @@ function tbl.Spacer(pnl, w, h)
     local len = pnl.Theme.SpacerLen or 5
 
     surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
-    surface.DrawRect(len,h/2-RL.hudOffsetY(2),w-len*2,RL.hudOffsetY(2))
+    surface.DrawRect(len,h / 2-RL.hudOffsetY(2),w-len * 2,RL.hudOffsetY(2))
 end
 
 return tbl

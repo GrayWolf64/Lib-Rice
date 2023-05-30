@@ -62,7 +62,7 @@ function Element.Create(data,parent)
 
         for _,data in ipairs(self.d_Choice) do
             local choice = RiceUI.SimpleCreate({type="rl_button",Text=data[1],dock=TOP,h=self:GetTall(),Font=self.Font,ID=data[1],
-                Theme=table.Merge(table.Copy(self.Theme),{ThemeType="Choice"}),
+                Theme = table.Merge(table.Copy(self.Theme), {ThemeType="TransButton_TextLeft"}),
 
                 DoClick = function()
                     self.OnAnim = true
