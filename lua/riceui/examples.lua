@@ -16,7 +16,6 @@ RiceUI.Examples = {
                 ThemeType = "RL_Frame",
                 Color = "white",
                 TextColor = "white",
-                Shadow = true
             },
 
             Alpha = 0,
@@ -119,12 +118,16 @@ RiceUI.Examples = {
                         Color = "black"
                     },
                 },
+                {type = "rl_colorbutton",
+                    x = 10,
+                    y = 405,
+                },
                 {type = "rl_frame",
                     x = 520,
                     y = 40,
                     w = 670,
                     Text = "Frame In Frame",
-                    UseNewTheme = true,
+
                     children = {
                         {type = "slider",
                             y = 40
@@ -136,6 +139,23 @@ RiceUI.Examples = {
                                 {"选项2"},
                                 {"选项3"}
                             }
+                        },
+                        {type = "rl_button", x = 220, y = 80, h = 40,
+                            Text = "Message",
+
+                            DoClick = function() RunConsoleCommand("riceui_notify_message","Message") end
+                        },
+
+                        {type = "rl_button", x = 220, y = 130, h = 40,
+                            Text = "Warning",
+
+                            DoClick = function() RunConsoleCommand("riceui_notify_warn","WARNING!") end
+                        },
+
+                        {type = "rl_button", x = 220, y = 180, h = 40,
+                            Text = "Error",
+
+                            DoClick = function() RunConsoleCommand("riceui_notify_error","ERROR!") end
                         },
                     },
                 },
@@ -201,6 +221,32 @@ RiceUI.Examples = {
                     cam.End3D2D()
                 cam.End3D()
             end
+        }
+    },
+
+    Playground = {
+        {type = "rl_frame",
+            Center = true,
+            Root = true,
+
+            w = 1000,
+            h = 800,
+
+            children = {
+                {type = "rl_panel",
+                    y = 40,
+                    w = 64,
+                    h = 64,
+
+                    Theme = {},
+
+                    Paint = function(self,w,h)
+                        surface.SetDrawColor(255,255,255)
+                        surface.SetMaterial(Material("gui/colors_dark.png"))
+                        RL.Draw.TexturedCircle(w / 2, h / 2, h/2, h)
+                    end
+                }
+            }
         }
     }
 }

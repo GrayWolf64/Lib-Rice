@@ -1,5 +1,5 @@
 local Element = {}
-Element.Editor = {Category="interact"}
+Element.Editor = {Category = "interact"}
 function Element.Create(data,parent)
     RL.table.Inherit(data,{
         x = 10,
@@ -7,7 +7,7 @@ function Element.Create(data,parent)
         w = 100,
         h = 50,
         DisableColor = Color(200,200,200),
-        Theme = {ThemeName="modern",ThemeType="Switch",Color="white"}
+        Theme = {ThemeName = "modern", ThemeType = "Switch", Color = "white"}
     })
 
     local panel = vgui.Create("DButton",parent)
@@ -17,8 +17,6 @@ function Element.Create(data,parent)
     panel:SetColor(data.DisableColor)
     panel.ProcessID = "Switch"
     panel.togglePos = 0
-
-    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     function panel:DoClick()
         panel.Value = !panel.Value
@@ -70,6 +68,8 @@ function Element.Create(data,parent)
             self.animFraction = fraction
         end
     end
+
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     panel:SetValue(data.Value or false)
 

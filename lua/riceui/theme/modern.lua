@@ -32,9 +32,9 @@ tbl.BarColor = {
     white2 = Color(220, 220, 220),
     white3 = Color(210, 210, 210),
     black = HSLToColor(0, 0, 0.15),
-    black1 = HSLToColor(0, 0, 0.12),
-    black2 = HSLToColor(0, 0, 0.9),
-    black3 = HSLToColor(0, 0, 0.6),
+    black1 = HSLToColor(0, 0, 0.13),
+    black2 = HSLToColor(0, 0, 0.11),
+    black3 = HSLToColor(0, 0, 0.09),
 }
 
 tbl.HoverColor = {
@@ -392,6 +392,27 @@ function tbl.Spacer(pnl, w, h)
 
     surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
     surface.DrawRect(len,h / 2-RL.hudOffsetY(2),w-len * 2,RL.hudOffsetY(2))
+end
+
+function tbl.ShadowText(pnl, w, h)
+    local offsetx, offsety = RL.hudScale(2,2)
+    draw.SimpleText(pnl.Text,pnl.Font,offsetx,offsety,Color(0,0,0,50),TEXT_ALIGN_LEFT,TEXT_ALIGN_TOP)
+
+    draw.SimpleText(pnl.Text,pnl.Font,0,0,color_white,TEXT_ALIGN_LEFT,TEXT_ALIGN_TOP)
+end
+
+local alpha_grid = Material("gui/alpha_grid.png")
+function tbl.ColorButton(pnl, w, h)
+    tbl.DrawButton(pnl, w, h)
+
+    local x,y = RL.hudScale(10,10)
+
+    surface.SetMaterial(alpha_grid)
+    surface.SetDrawColor(255,255,255,255)
+    surface.DrawTexturedRect(x / 2, y / 2, w-x, h-y)
+
+    surface.SetDrawColor(pnl.Value)
+    surface.DrawRect(x / 2, y / 2, w-x, h-y)
 end
 
 return tbl

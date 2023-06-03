@@ -38,8 +38,17 @@ tbl.HoverColor = {
     closeButton = Color(255,0,0)
 }
 
+tbl.ShadowAlpha = {
+    white = 50,
+    black = 50,
+}
+
 function tbl.Panel(pnl,w,h)
     if pnl.Theme.Blur then RL.VGUI.blurPanel(pnl,pnl.Theme.Blur) end
+
+    if pnl.Theme.Shadow then
+        RiceUI.Render.DrawShadow(tbl,pnl)
+    end
 
     surface.SetDrawColor(RiceUI.GetColor(tbl,pnl))
     surface.DrawRect(0,0,w,h)
@@ -47,6 +56,10 @@ end
 
 function tbl.RL_Frame(pnl,w,h)
     if pnl.Theme.Blur then RL.VGUI.blurPanel(pnl,pnl.Theme.Blur) end
+
+    if pnl.Theme.Shadow then
+        RiceUI.Render.DrawShadow(tbl,pnl)
+    end
 
     surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"Bar"))
     surface.DrawRect(0,0,w,pnl.Title:GetTall()+10)

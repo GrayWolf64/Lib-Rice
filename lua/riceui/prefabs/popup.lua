@@ -20,9 +20,12 @@ function RiceUI.Prefab.Notify(args)
         },
 
         children = {
-            {type = "panel",x=0,y=30,w=400,h=120,Paint=function(self,w,h)
-                draw.SimpleText(args.Text,"SourceHan_35",w/2,h/2,Color(25,25,25),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-            end},
+            {type = "panel",x=0,y=30,w=400,h=120,
+                NoGTheme = true,
+                Paint=function(self,w,h)
+                    draw.SimpleText(args.Text,"SourceHan_35",w/2,h/2,Color(25,25,25),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+                end
+            },
 
             {type = "rl_button",ID = "CloseButton",Text=args.ButtonText,Font="SourceHan_25",x=0,y=30,w=50,h=30,DoClick=args.DoClick,}
         }

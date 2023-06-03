@@ -90,6 +90,10 @@ end)
 RiceUI.DefineUniProcess("Value",{
     Slider = function(pnl,data)
         pnl:SetSlideX(math.Remap(data,pnl.Min,pnl.Max,0,1))
+    end,
+
+    ColorMixer = function(pnl,data)
+        pnl:SetColor(data)
     end
 })
 

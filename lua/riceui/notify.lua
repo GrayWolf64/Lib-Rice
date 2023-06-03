@@ -3,24 +3,44 @@ RiceUI.Notify = RiceUI.Notify or {}
 
 function RiceUI.Notify.Message(arg)
     RL.table.Inherit(arg,{
+        Title = "Message",
         Text = "Message",
-        Color = Color(0,255,0,100),
-        Sound = "garrysmod/content_downloaded.wav"
+        Icon = "icon16/textfield.png",
+        Sound = "garrysmod/content_downloaded.wav",
+        BarColor = Color(0,0,0,0)
     })
 
     surface.PlaySound(arg.Sound)
 
-    RiceUI.SimpleCreate({type = "rl_panel",Dock = TOP,Margin = {0,5,0,0},h = 40,
-        Paint = function(self,w,h)
-            draw.RoundedBox(5,0,0,w,h,arg.Color)
-        end,
+    RiceUI.SimpleCreate({type = "rl_panel",Dock = TOP,Margin = {0,5,0,0},h = 90,
+        Theme = {ThemeName = "glass", ThemeType = "Panel", Color = "black", TextColor = "black", Blur = 3, Shadow = true},
 
         children = {
-            {type = "label",Text = arg.Text,Font = "OPSans_30",Dock = LEFT,Margin = {10,0,0,0},Color = Color(255,255,255)}
+            {type="panel", Paint = function() end, Dock =TOP,h = 40,
+                children = {
+                    {type = "image",Image = arg.Icon,w = 30,Dock = LEFT,Margin = {10,10,0,0},Color = Color(255,255,255)},
+                    {type = "panel",Text = arg.Title,Font = "OPSans_35",Dock = LEFT,Margin = {10,8,0,0},
+                        Theme = {ThemeName = "modern", ThemeType = "ShadowText"}
+                    },
+                }
+            },
+
+            {type = "panel",Text = arg.Text,Font = "OPSans_30",Dock = TOP,Margin = {10,10,0,0},
+                Theme = {ThemeName = "modern", ThemeType = "ShadowText"}
+            },
+
+            {type = "panel",Dock = BOTTOM,h = 2,
+                BarColor = arg.BarColor,
+
+                Paint = function(self,w,h)
+                    surface.SetDrawColor(self.BarColor)
+                    surface.DrawRect(0,0,w,h)
+                end
+            }
         },
 
         Anim = {
-            {type = "resize",w = -1,h = 0,time = 0.5,delay = 5,
+            {type = "alpha",alpha = 0,time = 0.2,delay = 4.8,
                 CallBack = function(_,pnl) pnl:Remove() end
             }
         }
@@ -63,9 +83,9 @@ concommand.Add("riceui_notify_message",function(ply,cmd,args,argStr)
 end)
 
 concommand.Add("riceui_notify_warn",function(ply,cmd,args,argStr)
-    RiceUI.Notify.Message({Text = argStr, Color = Color(255,255,0,150), Sound = "garrysmod/ui_hover.wav"})
+    RiceUI.Notify.Message({Text = argStr, Title = "Warning", Icon = "vgui/notices/generic", Sound = "garrysmod/ui_hover.wav", BarColor = Color(255,255,0)})
 end)
 
 concommand.Add("riceui_notify_error",function(ply,cmd,args,argStr)
-    RiceUI.Notify.Message({Text = argStr, Color = Color(255,0,0,150), Sound = "garrysmod/ui_hover.wav"})
+    RiceUI.Notify.Message({Text = argStr, Title = "ERROR", Icon = "vgui/notices/error", Sound = "garrysmod/ui_hover.wav", BarColor = Color(255,0,0)})
 end)

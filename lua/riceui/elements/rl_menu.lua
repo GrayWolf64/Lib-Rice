@@ -3,7 +3,7 @@ function Element.Create(data,parent)
     RL.table.Inherit(data,{
         w = 300,
         Font = "OPSans_30",
-        Theme = {ThemeName = "modern",ThemeType = "Panel",Color = "white",TextColor = "white"},
+        Theme = {ThemeName = "modern", ThemeType = "Panel", Color = "white", TextColor = "white", Shadow = true},
         Choice = {
             {"Option1",function() end},
             {"Option2",function() end},
