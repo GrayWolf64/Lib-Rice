@@ -1,9 +1,14 @@
 RL.table = RL.table or {}
 
-function RL.table.Inherit( t, base, override )
+function RL.table.Inherit( t, base, override, blacklist )
 	override = override or {}
+	blacklist = blacklist or {}
 
 	for k, v in pairs( base ) do
+		if blacklist[k] then
+			continue
+		end
+
 		if override[k] then
 			t[ k ] = v
 		end

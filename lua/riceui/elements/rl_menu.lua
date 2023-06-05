@@ -7,10 +7,11 @@ function Element.Create(data,parent)
         Choice = {
             {"Option1",function() end},
             {"Option2",function() end},
-            {"-",function()end},
+            {"-",function() end},
             {"Option3",function() end}
         },
         ChoiceH = 40,
+        Padding = {0,5,0,0},
     })
 
     local panel = vgui.Create("DPanel")
@@ -29,19 +30,23 @@ function Element.Create(data,parent)
                 local pnl = RiceUI.SimpleCreate({type = "rl_panel",
                     Theme = {ThemeType = "Spacer"},
                     Dock = TOP,
-                    h = self.ChoiceH/2,
+                    h = RL.hudScaleY(10),
                 },self)
 
                 RiceUI.ApplyTheme(pnl,self.Theme)
-    
-                continue 
+
+                continue
             end
 
             local pnl = RiceUI.SimpleCreate({type = "rl_button",
                 Theme = {ThemeType = "TransButton_TextLeft"},
+
                 Text = v[1],
                 Font = self.Font,
+
                 Dock = TOP,
+                Margin = {5,0,5,0},
+
                 h = self.ChoiceH,
 
                 DoClick = function(self)
@@ -56,7 +61,7 @@ function Element.Create(data,parent)
             RiceUI.ApplyTheme(pnl,self.Theme)
         end
 
-        local h = 0
+        local h = RL.hudScaleY(10)
         for _, v in ipairs(self:GetChildren()) do
             h = h + v:GetTall()
         end

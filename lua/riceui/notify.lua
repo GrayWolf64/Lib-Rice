@@ -12,11 +12,11 @@ function RiceUI.Notify.Message(arg)
 
     surface.PlaySound(arg.Sound)
 
-    RiceUI.SimpleCreate({type = "rl_panel",Dock = TOP,Margin = {0,5,0,0},h = 90,
+    RiceUI.SimpleCreate({type = "rl_panel",Dock = TOP,Margin = {0,5,0,0},h = 0,
         Theme = {ThemeName = "glass", ThemeType = "Panel", Color = "black", TextColor = "black", Blur = 3, Shadow = true},
 
         children = {
-            {type="panel", Paint = function() end, Dock =TOP,h = 40,
+            {type = "panel", Paint = function() end, Dock = TOP, h = 40,
                 children = {
                     {type = "image",Image = arg.Icon,w = 30,Dock = LEFT,Margin = {10,10,0,0},Color = Color(255,255,255)},
                     {type = "panel",Text = arg.Title,Font = "OPSans_35",Dock = LEFT,Margin = {10,8,0,0},
@@ -40,8 +40,12 @@ function RiceUI.Notify.Message(arg)
         },
 
         Anim = {
-            {type = "alpha",alpha = 0,time = 0.2,delay = 4.8,
-                CallBack = function(_,pnl) pnl:Remove() end
+            {type = "resize",w = -1, h = 90, time = 0.2, delay = 0,
+                CallBack = function(_,pnl)
+                    pnl:SizeTo(-1,0,0.2,4.8,0.3,function(_,pnl)
+                        pnl:Remove()
+                    end)
+                end
             }
         }
     },RiceUI.Notify.Base.Elements.ScrollPanel)

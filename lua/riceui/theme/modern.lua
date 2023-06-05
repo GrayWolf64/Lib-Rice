@@ -93,12 +93,28 @@ function tbl.DrawInnerBox(pnl, w, h, Color)
 end
 
 function tbl.DrawOutlineBox(pnl, w, h, Color)
+    if pnl.Theme.Shadow then
+        if isbool(pnl.Theme.Shadow) then
+            RiceUI.Render.DrawShadow(tbl, pnl)
+        else
+            RiceUI.Render.DrawShadowEx(RiceUI.GetShadowAlpha(tbl,pnl), pnl, unpack(pnl.Theme.Shadow))
+        end
+    end
+
     tbl.DrawOutline(pnl, w, h, Color or RiceUI.GetColor(tbl, pnl, "Outline"))
     tbl.DrawInnerBox(pnl, w, h)
 end
 
 function tbl.DrawBox(pnl, w, h, Color)
     local Corner = pnl.Theme.Corner or {true,true,true,true}
+
+    if pnl.Theme.Shadow then
+        if isbool(pnl.Theme.Shadow) then
+            RiceUI.Render.DrawShadow(tbl, pnl)
+        else
+            RiceUI.Render.DrawShadowEx(RiceUI.GetShadowAlpha(tbl,pnl), pnl, unpack(pnl.Theme.Shadow))
+        end
+    end
 
     draw.RoundedBoxEx(pnl.Theme.Curver or 5, 0, 0, w, h, Color or RiceUI.GetColor(tbl, pnl),unpack(Corner))
 end
@@ -142,32 +158,20 @@ end
 */
 
 function tbl.Panel(pnl, w, h)
-    if pnl.DrawBorder or pnl:GetParent():GetClassName() ~= "CGModBase" then
-        if pnl.Theme.Shadow then
-            RiceUI.Render.DrawShadow(tbl,pnl)
-        end
-
+    if pnl.DrawBorder or pnl:GetParent():GetClassName() ~= "CGModBase" and not pnl.Theme.NoBorder then
         tbl.DrawOutlineBox(pnl, w, h)
 
         return
-    end
-
-    if pnl.Theme.Shadow then
-        RiceUI.Render.DrawShadow(tbl,pnl)
     end
 
     tbl.DrawBox(pnl, w, h)
 end
 
 function tbl.RL_Frame(pnl, w, h)
-    if pnl.DrawBorder or pnl:GetParent():GetClassName() ~= "CGModBase" then
+    if pnl.DrawBorder or pnl:GetParent():GetClassName() ~= "CGModBase" and not pnl.Theme.NoBorder then
         DisableClipping(true)
         draw.RoundedBox(pnl.Theme.Curver or 5, -1, -1, w + 2, h + 2, RiceUI.GetColor(tbl, pnl, "Bar"))
         DisableClipping(false)
-    end
-
-    if pnl.Theme.Shadow then
-        RiceUI.Render.DrawShadow(tbl,pnl)
     end
 
     tbl.DrawBox(pnl, w, h, RiceUI.GetColor(tbl, pnl, "Bar"))
@@ -388,10 +392,8 @@ function tbl.Form(pnl, w, h)
 end
 
 function tbl.Spacer(pnl, w, h)
-    local len = pnl.Theme.SpacerLen or 5
-
-    surface.SetDrawColor(RiceUI.GetColorBase(tbl,pnl,"Text"))
-    surface.DrawRect(len,h / 2-RL.hudOffsetY(2),w-len * 2,RL.hudOffsetY(2))
+    surface.SetDrawColor(RiceUI.GetColor(tbl, pnl, "Outline"))
+    surface.DrawRect(0, h / 2 - RL.hudOffsetY(1), w, RL.hudOffsetY(2))
 end
 
 function tbl.ShadowText(pnl, w, h)

@@ -1,10 +1,10 @@
 RiceUI = RiceUI or {}
 
-/*
+--[[
 
     Utils
 
-*/
+]]--
 
 function RiceUI.GetTheme(name) return RiceUI.Theme[name] end
 
@@ -28,11 +28,12 @@ function RiceUI.GetShadowAlpha(tbl,pnl)
 
     return tbl["ShadowAlpha"][color] or 50
 end
-/*
+
+--[[
 
     Main Theme System
 
-*/
+]]--
 
 function RiceUI.RefreshTheme(pnl)
     local theme = pnl.Theme
@@ -52,13 +53,13 @@ function RiceUI.ApplyTheme(pnl, theme)
 
         RL.table.Inherit(pnl.Theme, {
             ThemeType = pnl.ProcessID
-        })
+        }, RiceUI.ThemeParamaBlacklist)
 
         RL.table.Inherit(pnl.Theme, theme, {
             ThemeName = 1,
             Color = 1,
             TextColor = 1
-        })
+        }, RiceUI.ThemeParamaBlacklist)
 
         RiceUI.RefreshTheme(pnl)
         RiceUI.DoThemeProcess(pnl)
@@ -69,11 +70,11 @@ function RiceUI.ApplyTheme(pnl, theme)
     end
 end
 
-/*
+--[[
 
     Theme Process
 
-*/
+]]--
 
 RiceUI.ThemeProcess = {}
 
@@ -94,6 +95,20 @@ function RiceUI.DefineThemeProcess(name,data)
 end
 
 RL.IncludeDir("riceui/themeprocess",true)
+
+RiceUI.ThemeParamaBlacklist = {}
+
+function RiceUI.AddThemeParamaBlacklist(name)
+    RiceUI.ThemeParamaBlacklist[name] = true
+end
+
+RL.IncludeDir("riceui/themeprocess_parmablacklist",true)
+
+--[[
+
+    Themes loader
+
+]]--
 
 RiceUI.Theme = {}
 RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
