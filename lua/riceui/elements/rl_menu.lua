@@ -14,14 +14,16 @@ function Element.Create(data,parent)
         Padding = {0,5,0,0},
     })
 
-    local panel = vgui.Create("DPanel")
+    local panel = vgui.Create("DPanel",parent)
     panel:SetSize(RL.hudScaleX(data.w),0)
     panel:SetPos(gui.MouseX(),gui.MouseY())
     panel.ProcessID = "RL_Menu"
     panel.DrawBorder = true
 
     function panel:OnFocusChanged(gained)
-        if not gained then self:Remove() end
+        if not gained then
+            self:Remove()
+        end
     end
 
     function panel:Layout()
@@ -59,6 +61,19 @@ function Element.Create(data,parent)
             },self)
 
             RiceUI.ApplyTheme(pnl,self.Theme)
+        end
+
+        if self.AutoWide then
+            local far = 0
+
+            for _,choice in ipairs(self.Choice) do
+                local wide = RL.VGUI.TextWide(self.Font,choice[1])
+                if wide < far then continue end
+
+                far = wide
+            end
+
+            self:SetWide(far + RL.hudOffsetX(30))
         end
 
         local h = RL.hudScaleY(10)

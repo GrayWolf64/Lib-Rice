@@ -5,3 +5,17 @@ RL.VGUI.RegisterFontAdv("OPlusSans 3.0 Medium", "OPSans")
 RL.VGUI.RegisterFontAdv("OPlusSans 3.0", "OPSans_L")
 RL.VGUI.RegisterFontAdv("Source Han Sans SC", "SourceHan")
 RL.VGUI.RegisterFontAdv("Smiley Sans Oblique", "SmileySans")
+
+RL.VGUI.RegisterFont_New({
+    CodeName = "RiceUI",
+})
+
+RL.VGUI.RegisterFont_New({
+    CodeName = "RiceUI_M",
+    FontName = "OPlusSans 3.0 Medium"
+})
+
+RL.VGUI.RegisterFont_New({
+    CodeName = "Source",
+    FontName = "Source Han Sans SC"
+})

@@ -55,3 +55,37 @@ function RiceUI.ProcessData(data)
 
     return newData
 end
+
+function RiceUI.GetWebImage(url,httpFunc)
+    if url == nil then return end
+
+    if file.Exists("riceui/web_image/" .. util.SHA256(url) .. ".png","DATA") then
+        return Material("data/riceui/web_image/" .. util.SHA256(url) .. ".png","smooth")
+    else
+        http.Fetch(url,function(body)
+            file.Write("riceui/web_image/" .. util.SHA256(url) .. ".png",body)
+
+            if isfunction(httpFunc) then
+                httpFunc(Material("data/riceui/web_image/" .. util.SHA256(url) .. ".png","smooth"))
+            end
+        end)
+    end
+end
+
+function RiceUI.HoverAlpha(pnl,Speed)
+    if not pnl.HoverAlpha then
+        pnl.HoverAlpha = 0
+    end
+
+    if pnl:IsHovered() then
+        pnl.HoverAlpha = math.min(pnl.HoverAlpha + Speed * (RealFrameTime() * 100), 255)
+    else
+        pnl.HoverAlpha = math.max(pnl.HoverAlpha - Speed * (RealFrameTime() * 100), 0)
+    end
+
+    return pnl.HoverAlpha
+end
+
+function RiceUI.AlphaPercent(color, percent)
+    return ColorAlpha(color, 255 * percent)
+end

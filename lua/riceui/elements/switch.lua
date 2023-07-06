@@ -1,45 +1,53 @@
 local Element = {}
-Element.Editor = {Category = "interact"}
-function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+
+Element.Editor = {
+    Category = "interact"
+}
+
+function Element.Create(data, parent)
+    RL.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 100,
         h = 50,
-        DisableColor = Color(200,200,200),
-        Theme = {ThemeName = "modern", ThemeType = "Switch", Color = "white"}
+
+        Color = Color(64, 158, 255),
+        DisableColor = Color(200, 200, 200),
+
+        Theme = {
+            ThemeName = "modern",
+            ThemeType = "Switch",
+            Color = "white"
+        }
     })
 
-    local panel = vgui.Create("DButton",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
+    local panel = vgui.Create("DButton", parent)
+    panel:SetPos(RL.hudScale(data.x, data.y))
+    panel:SetSize(RL.hudScale(data.w, data.h))
     panel:SetText("")
     panel:SetColor(data.DisableColor)
     panel.ProcessID = "Switch"
     panel.togglePos = 0
 
     function panel:DoClick()
-        panel.Value = !panel.Value
-
-        panel.DoAnim(panel.Value)
+        panel.Value = not panel.Value
+        panel:DoAnim(panel.Value)
         panel:OnValueChanged(panel.Value)
     end
 
-    function panel:OnValueChanged(val,noanim)
+    function panel:OnValueChanged(val, noanim)
     end
 
     function panel:SetValue(val)
         panel.Value = val
-        panel.DoAnim(panel.Value,true)
+        panel:DoAnim(panel.Value, true)
         panel:OnValueChanged(val)
     end
 
-    function panel.DoAnim(val,noanim)
-        local self = panel
-
+    function panel:DoAnim(val, noanim)
         if noanim then
             if val then
-                self.togglePos = self:GetWide()/2
+                self.togglePos = self:GetWide() / 2
                 self:SetColor(Color(64, 158, 255))
             else
                 self.togglePos = 0
@@ -49,28 +57,25 @@ function Element.Create(data,parent)
             return
         end
 
-        local anim = self:NewAnimation( self.a_length or 0.25, 0, self.a_ease or 0.25 )
+        local anim = self:NewAnimation(self.a_length or 0.25, 0, self.a_ease or 0.25)
 
         if val then
             anim.StartPos = 0
-            anim.TargetPos = self:GetWide()/2
-            
-            self:ColorTo(Color(64, 158, 255),0.15,0.05)
+            anim.TargetPos = self:GetWide() / 2
+            self:ColorTo(self.Color, 0.15, 0.05)
         else
-            anim.StartPos = self:GetWide()/2
+            anim.StartPos = self:GetWide() / 2
             anim.TargetPos = 0
-
-            self:ColorTo(self.DisableColor,0.15,0.05)
+            self:ColorTo(self.DisableColor, 0.15, 0.05)
         end
-    
-        anim.Think = function( anim, pnl, fraction )
-            self.togglePos = Lerp( fraction, anim.StartPos, anim.TargetPos )
+
+        anim.Think = function(anim, pnl, fraction)
+            self.togglePos = Lerp(fraction, anim.StartPos, anim.TargetPos)
             self.animFraction = fraction
         end
     end
 
-    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
-
+    RiceUI.MergeData(panel, RiceUI.ProcessData(data))
     panel:SetValue(data.Value or false)
 
     return panel

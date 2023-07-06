@@ -16,6 +16,7 @@ RiceUI.DefineUniProcess("OnTop",function(pnl,data)
 end)
 
 RiceUI.DefineUniProcess("Theme",function(pnl,data)
+    if data.NT then return end
     if !data.ThemeName then return end
 
     pnl.Paint = RiceUI.GetTheme(data.ThemeName)[data.ThemeType]
@@ -88,12 +89,16 @@ RiceUI.DefineUniProcess("Anim",function(pnl,data)
 end)
 
 RiceUI.DefineUniProcess("Value",{
-    Slider = function(pnl,data)
-        pnl:SetSlideX(math.Remap(data,pnl.Min,pnl.Max,0,1))
+    Slider = function(pnl, data)
+        pnl:SetSlideX(math.Remap(data, pnl.Min, pnl.Max,0,1))
     end,
 
-    ColorMixer = function(pnl,data)
+    ColorMixer = function(pnl, data)
         pnl:SetColor(data)
+    end,
+
+    RL_NumberWang = function(pnl, data)
+        pnl:SetValue(data)
     end
 })
 

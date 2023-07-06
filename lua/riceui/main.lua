@@ -18,6 +18,7 @@ function RiceUI.SimpleCreate(data, parent)
     local pnl = RiceUI.Elements[data.type].Create(data, parent)
     table.insert(RiceUI.UI, pnl)
     RiceUI.DoProcess(pnl)
+    RiceUI.ApplyExtraFunctions(pnl)
 
     if data.children then
         RiceUI.Create(data.children, pnl)
@@ -81,3 +82,82 @@ end)
 
 RiceUI.Prefab = {}
 RL.IncludeDir("riceui/prefabs", true)
+
+concommand.Add("riceui_prefabs", function()
+    RiceUI.SimpleCreate({type = "rl_frame",
+    Text = "Examples",
+    Center = true,
+    Root = true,
+    Alpha = 0,
+    w = 400,
+    h = 600,
+
+    UseNewTheme = true,
+    Theme = {
+        ThemeName = "modern",
+        ThemeType = "RL_Frame",
+        Color = "black1",
+        TextColor = "black1",
+        Shadow = true,
+    },
+
+    Anim = {
+        {
+            type = "alpha",
+            time = 0.075,
+            alpha = 255
+        }
+    },
+
+    children = {
+        {type = "scrollpanel",
+            ID = "ScrollPanel",
+            x = 10,
+            y = 40,
+            w = 380,
+            h = 550,
+            OnCreated = function(pnl)
+                for k, v in SortedPairs(RiceUI.Prefab) do
+                    pnl:AddItem(RiceUI.SimpleCreate({type = "rl_button",
+                        Dock = TOP,
+                        h = 50,
+                        Margin = {0, 0, 5, 5},
+                        Text = k,
+
+                        Theme = {
+                            ThemeType = "Button",
+                            ThemeName = "modern_rect",
+                            Color = "white"
+                        },
+
+                        DoClick = function() RiceUI.Prefab[k]({}) end
+                    }, pnl))
+
+                    pnl:AddItem(RiceUI.SimpleCreate({type = "rl_button",
+                        Dock = TOP,
+                        h = 50,
+                        Margin = {0, 0, 5, 5},
+                        Text = k .. " Dark",
+
+                        Theme = {
+                            ThemeType = "Button",
+                            ThemeName = "modern_rect",
+                            Color = "white"
+                        },
+
+                        DoClick = function() RiceUI.Prefab[k]({
+                            Theme = {
+                                ThemeName = "modern",
+                                ThemeType = "Panel",
+
+                                Color = "black",
+                                TextColor = "black"
+                            },
+                        }) end
+                    }, pnl))
+                end
+            end
+        },
+    },
+})
+end)

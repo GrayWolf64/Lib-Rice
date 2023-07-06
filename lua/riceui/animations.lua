@@ -67,3 +67,45 @@ function RiceUI.Animation.Shrink(pnl, data)
     pnl:SizeTo(0, 0, data.time, data.delay, data.ease, data.callback)
     pnl:MoveTo(pnl.AnimData.StartX, pnl.AnimData.StartY, data.time, data.delay, data.ease)
 end
+
+function RiceUI.Animation.FadeIn(Pnl,dur,delay,ease)
+    delay = delay or 0
+    ease = ease or 0.3
+
+    Pnl:SetVisible(true)
+    local Anim = Pnl:NewAnimation(dur,delay,ease)
+
+    Anim.Think = function(_, pnl, fraction)
+        pnl:SetAlpha(255 * fraction)
+    end
+end
+
+function RiceUI.Animation.FadeOut(Pnl,dur,delay,ease)
+    delay = delay or 0
+    ease = ease or 0.3
+
+    local Anim = Pnl:NewAnimation(dur,delay,ease,function(_, pnl)
+        pnl:SetVisible(false)
+    end)
+
+    Anim.Think = function(_, pnl, fraction)
+        pnl:SetAlpha(255 - 255 * fraction)
+    end
+end
+
+function RiceUI.Animation.FadeInOut(Pnl,data)
+    local dur, delay, ease, func = data.dur, data.delay, data.ease, data.func
+
+    delay = delay or 0
+    ease = ease or 0.3
+
+    local Anim = Pnl:NewAnimation(dur / 2,delay,ease,function(_, pnl)
+        RiceUI.Animation.FadeIn(Pnl, dur / 2, delay, ease)
+
+        func(pnl)
+    end)
+
+    Anim.Think = function(_, pnl, fraction)
+        pnl:SetAlpha(255 - 255 * fraction)
+    end
+end

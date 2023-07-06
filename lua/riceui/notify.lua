@@ -12,7 +12,7 @@ function RiceUI.Notify.Message(arg)
 
     surface.PlaySound(arg.Sound)
 
-    RiceUI.SimpleCreate({type = "rl_panel",Dock = TOP,Margin = {0,5,0,0},h = 0,
+    return RiceUI.SimpleCreate({type = "rl_panel",Dock = TOP,Margin = {0,5,0,0},h = 0,
         Theme = {ThemeName = "glass", ThemeType = "Panel", Color = "black", TextColor = "black", Blur = 3, Shadow = true},
 
         children = {
@@ -42,7 +42,7 @@ function RiceUI.Notify.Message(arg)
         Anim = {
             {type = "resize",w = -1, h = 90, time = 0.2, delay = 0,
                 CallBack = function(_,pnl)
-                    pnl:SizeTo(-1,0,0.2,4.8,0.3,function(_,pnl)
+                    pnl:SizeTo(-1,0,0.2,4.8,0.3,function()
                         pnl:Remove()
                     end)
                 end
@@ -52,7 +52,7 @@ function RiceUI.Notify.Message(arg)
 end
 
 function RiceUI.Notify.Panel(data)
-    RiceUI.SimpleCreate(data,RiceUI.Notify.Base.Elements.ScrollPanel)
+    return RiceUI.SimpleCreate(data,RiceUI.Notify.Base.Elements.ScrollPanel)
 end
 
 function RiceUI.Notify.Init()

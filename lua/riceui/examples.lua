@@ -33,6 +33,14 @@ RiceUI.Examples = {
                     w = 100,
                     h = 50
                 },
+                {type = "button",
+                    x = 120,
+                    y = 40,
+                    w = 100,
+                    h = 50,
+
+                    Theme = {ThemeType = "Button_Accent"}
+                },
                 {type = "entry",
                     x = 10,
                     y = 100,
@@ -40,13 +48,13 @@ RiceUI.Examples = {
                     h = 30
                 },
                 {type = "switch",
-                    x = 120,
+                    x = 230,
                     y = 38,
                     w = 50,
                     h = 25
                 },
                 {type = "switch",
-                    x = 120,
+                    x = 230,
                     y = 67,
                     w = 50,
                     h = 25,
@@ -245,6 +253,30 @@ RiceUI.Examples = {
                         surface.SetMaterial(Material("gui/colors_dark.png"))
                         RL.Draw.TexturedCircle(w / 2, h / 2, h/2, h)
                     end
+                }
+            }
+        }
+    },
+
+    ModernNT = {
+        {type = "rl_frame",
+            Center = true,
+            Root = true,
+
+            w = 1000,
+            h = 800,
+
+            children = {
+                {type = "rl_panel",
+                    NoGTheme = true,
+
+                    UseNewTheme = true,
+                    Theme = {
+                        NT = true,
+
+                        ThemeName = "modern_nt",
+                        Color = "Light",
+                    }
                 }
             }
         }
