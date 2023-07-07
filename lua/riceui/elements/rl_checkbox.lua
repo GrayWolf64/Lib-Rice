@@ -2,16 +2,16 @@ local Element = {}
 Element.Editor = {Category="interact"}
 function Element.Create(data,parent)
     RL.table.Inherit(data,{
+        size = 20,
         x = 10,
         y = 10,
-        w = 30,
-        h = 30,
         Theme = {ThemeName="modern",ThemeType="CheckBox",Color="white"}
     })
 
     local panel = vgui.Create("DButton",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
+    local s = RL.hudScaleY(data.size)
+    panel:SetSize(s,s)
     panel:SetText("")
     panel.GThemeType = "CheckBox"
     panel.ProcessID = "CheckBox"
@@ -37,14 +37,14 @@ function Element.Create(data,parent)
         self:DoAnim()
     end
 
-    function panel:OnValueChange(val)
+    function panel:OnValueChanged(val)
     end
 
     function panel:DoClick()
         if self.Disable then return end
 
         self.Value = not self.Value
-        self:OnValueChange(self.Value)
+        self:OnValueChanged(self.Value)
 
         self:DoAnim()
 

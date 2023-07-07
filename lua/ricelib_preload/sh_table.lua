@@ -1,12 +1,44 @@
 RL.table = RL.table or {}
 
-function RL.table.Inherit( t, base )
+function RL.table.Inherit( t, base, override, blacklist )
+	override = override or {}
+	blacklist = blacklist or {}
 
 	for k, v in pairs( base ) do
+		if blacklist[k] then
+			continue
+		end
+
+		if override[k] then
+			t[ k ] = v
+		end
+
 		if ( t[ k ] == nil ) then t[ k ] = v end
 	end
 
 	return t
+
+end
+
+function RL.table.InheritCopy( t, base, override, blacklist )
+	local tbl = table.Copy(t)
+
+	override = override or {}
+	blacklist = blacklist or {}
+
+	for k, v in pairs( base ) do
+		if blacklist[k] then
+			continue
+		end
+
+		if override[k] then
+			tbl[ k ] = v
+		end
+
+		if ( tbl[ k ] == nil ) then tbl[ k ] = v end
+	end
+
+	return tbl
 
 end
 

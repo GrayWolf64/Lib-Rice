@@ -2,21 +2,24 @@ RL.Config = RL.Config or {}
 RL.Config.Data = {}
 
 function RL.Config.LoadConfig(Config,Name,default)
-    local root = "ricelib/settings/"..Config
-    local dir = "ricelib/settings/"..Config.."/"..Name..".json"
+    local root = "ricelib/settings/" .. Config
+    local dir = "ricelib/settings/" .. Config .. "/" .. Name .. ".json"
 
     if file.Exists(root,"DATA") and file.Exists(dir,"DATA") then
-        return util.JSONToTable(file.Read(dir))
+        local data = RL.table.Inherit(util.JSONToTable(file.Read(dir)),default)
+        RL.Config.SaveConfig(Config,Name,data)
+
+        return data
     else
         file.CreateDir(root)
         file.Write(dir,util.TableToJSON(default,true) or "")
 
-        return {}
+        return default
     end
 end
 
 function RL.Config.SaveConfig(Config,Name,tbl)
-    dir = "ricelib/settings/"..Config.."/"..Name..".json"
+    dir = "ricelib/settings/" .. Config .. "/" .. Name .. ".json"
 
     file.Write(dir,util.TableToJSON(tbl,true))
 end

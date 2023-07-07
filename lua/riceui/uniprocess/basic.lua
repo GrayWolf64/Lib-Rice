@@ -7,7 +7,16 @@ RiceUI.DefineUniProcess("Clipping",function(pnl,data) pnl:NoClipping(data) end)
 RiceUI.DefineUniProcess("Alpha",function(pnl,data) pnl:SetAlpha(data) end)
 RiceUI.DefineUniProcess("Paint",function(pnl,data) pnl.Paint = data end)
 
+RiceUI.DefineUniProcess("OnTop",function(pnl,data)
+    if not data then return end
+
+    pnl:SetDrawOnTop(true)
+    pnl:MakePopup()
+    pnl:DoModal()
+end)
+
 RiceUI.DefineUniProcess("Theme",function(pnl,data)
+    if data.NT then return end
     if !data.ThemeName then return end
 
     pnl.Paint = RiceUI.GetTheme(data.ThemeName)[data.ThemeType]
@@ -70,7 +79,31 @@ RiceUI.DefineUniProcess("Anim",function(pnl,data)
         end
 
         if AnimData.type == "move" then
-            pnl:MoveTo(AnimData.x or 0,AnimData.y or 0,AnimData.time,AnimData.delay or 0,AnimData.ease or -1,AnimData.CallBack or function()end)
+            pnl:MoveTo(AnimData.x or 0,AnimData.y or 0,AnimData.time,AnimData.delay or 0,AnimData.ease or 0.3,AnimData.CallBack or function()end)
+        end
+
+        if AnimData.type == "resize" then
+            pnl:SizeTo(AnimData.w or 0,AnimData.h or 0,AnimData.time,AnimData.delay or 0,AnimData.ease or 0.3,AnimData.CallBack or function()end)
         end
     end
+end)
+
+RiceUI.DefineUniProcess("Value",{
+    Slider = function(pnl, data)
+        pnl:SetSlideX(math.Remap(data, pnl.Min, pnl.Max,0,1))
+    end,
+
+    ColorMixer = function(pnl, data)
+        pnl:SetColor(data)
+    end,
+
+    RL_NumberWang = function(pnl, data)
+        pnl:SetValue(data)
+    end
+})
+
+RiceUI.DefineUniProcess("OffsetProfile",function(pnl,data)
+    if RL.VGUI.HUDOffset[data] == nil then return end
+
+    pnl:SetPos(RL.hudOffset(100,100,data))
 end)

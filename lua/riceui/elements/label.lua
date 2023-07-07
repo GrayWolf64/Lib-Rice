@@ -9,6 +9,7 @@ function Element.Create(data,parent)
         Font = "OPPOSans_30",
         Color = Color(30,30,30),
         Text = "HelloWorld!, 你好中国",
+        Wrap = false,
     })
 
     local panel = vgui.Create("DLabel",parent)
@@ -21,6 +22,11 @@ function Element.Create(data,parent)
     panel.ProcessID = "Label"
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
+    if panel.Wrap then
+        panel:SetWrap(true)
+        panel:SetAutoStretchVertical(true)
+    end
 
     return panel
 end

@@ -10,7 +10,7 @@ function Element.Create(data,parent)
     local panel = vgui.Create("DPanel",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
-    panel.GThemeType = "Panel"
+    panel.ProcessID = "Panel"
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 

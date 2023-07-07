@@ -12,9 +12,10 @@ function Element.Create(data,parent)
     local panel = vgui.Create("DImageButton",parent)
     panel:SetPos(RL.hudScale(data.x,data.y))
     panel:SetSize(RL.hudScale(data.w,data.h))
-    panel:SetImage(data.Image)
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
+
+    panel:SetImage(data.Image)
 
     return panel
 end

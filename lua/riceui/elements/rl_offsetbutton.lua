@@ -10,6 +10,7 @@ function Element.Create(data,parent)
         RootName = "",
         EnableOnChat = true,
         Outline = true,
+        NoGTheme = true,
     })
 
     local panel = vgui.Create("DButton",parent)
@@ -31,6 +32,11 @@ function Element.Create(data,parent)
 
         surface.SetDrawColor(0,255,0,255)
         surface.DrawOutlinedRect(0,0,w,h,2)
+
+        if self.Hint == nil then return end
+        if not self:IsHovered() then return end
+
+        draw.SimpleText(self.Hint,"OPSans_30",w / 2,h / 2,Color(0,255,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
     end
 
     function panel:Think()
@@ -52,7 +58,7 @@ function Element.Create(data,parent)
         if code == MOUSE_RIGHT then
             parent:SetPos(RL.hudScale(self.DefaultX,self.DefaultY))
 
-            RL.Clear_HUDOffset(self.Profile,0,0)
+            RL.Clear_HUDOffset(self.Profile,self.DefaultX,self.DefaultY)
 
             return
         end
@@ -64,7 +70,7 @@ function Element.Create(data,parent)
     end
 
     function panel:OnMouseReleased()
-        if !self.Profile then return end
+        if self.Profile == nil then return end
 
         self.Dragging = nil
         self:MouseCapture( false )

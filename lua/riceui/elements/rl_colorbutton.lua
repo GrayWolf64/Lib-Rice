@@ -10,20 +10,39 @@ function Element.Create(data,parent)
     })
 
     local panel = RiceUI.SimpleCreate({type="rl_button", x=data.x, y=data.y, w=data.w, h=data.h, Theme = data.Theme},parent)
-    panel.GThemeType = "RL_ColorButton"
-    panel.ProcessID = "RL_ColorButton"
+    panel.ProcessID = "ColorButton"
+    panel.Value = Color(255,0,0)
 
     function panel:DoClick()
+        if IsValid(self.ColorPicker) then return end
 
+        self.ColorPicker = RiceUI.SimpleCreate({type = "rl_popup",
+            w = 300,
+            h = 250,
+
+            Parent = self,
+
+            children = {
+                {type = "color_mixer",
+                    Value = self.Value,
+
+                    Dock = FILL,
+                    Margin = {10,10,10,10},
+
+                    ValueChanged = function(_,val)
+                        self.Value = val
+
+                        self:OnValueChanged(val)
+                    end
+                }
+            }
+        })
+    end
+
+    function panel:OnValueChanged(val)
     end
 
     function panel:RiceUI_Event(event,id,pnl)
-        if event == "ColorButton_PickerSeleted" then
-            self.Value = id
-
-            return
-        end
-
         if self:GetParent().RiceUI_Event then
             self:GetParent():RiceUI_Event(name,id,pnl)
         end
