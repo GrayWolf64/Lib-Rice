@@ -1,36 +1,32 @@
-RL.Draw = RL.Draw or {}
+local mathRad = math.rad
+local mathSin = math.sin
+local mathCos = math.cos
+local tableInsert = table.insert
+local surfaceDrawRect = surface.DrawRect
 
-function RL.Draw.Circle(x, y, radius, seg, color)
+local function drawCircle(x, y, radius, seg, color, doTexture)
 	local cir = {}
 
-	table.insert(cir, {
-		x = x,
-		y = y,
-		u = 0.5,
-		v = 0.5
-	})
-
-	for i = 0, seg do
-		local a = math.rad((i / seg) * -360)
-
-		table.insert(cir, {
-			x = x + math.sin(a) * radius,
-			y = y + math.cos(a) * radius,
-			u = math.sin(a) / 2 + 0.5,
-			v = math.cos(a) / 2 + 0.5
-		})
+	local function mkVertex(ang)
+		return {
+			x = x + mathSin(ang) * radius,
+			y = y + mathCos(ang) * radius,
+			u = mathSin(ang) / 2 + 0.5,
+			v = mathCos(ang) / 2 + 0.5
+		}
 	end
 
-	local a = math.rad(0) -- This is needed for non absolute segment counts
+	tableInsert(cir, {x = x, y = y, u = 0.5, v = 0.5})
 
-	table.insert(cir, {
-		x = x + math.sin(a) * radius,
-		y = y + math.cos(a) * radius,
-		u = math.sin(a) / 2 + 0.5,
-		v = math.cos(a) / 2 + 0.5
-	})
+	for i = 0, seg do
+		tableInsert(cir, mkVertex(mathRad((i / seg) * -360)))
+	end
 
-	draw.NoTexture()
+	tableInsert(cir, mkVertex(mathRad(0)))
+
+	if not doTexture then
+		draw.NoTexture()
+	end
 
 	if color ~= nil then
 		surface.SetDrawColor(color:Unpack())
@@ -39,82 +35,47 @@ function RL.Draw.Circle(x, y, radius, seg, color)
 	surface.DrawPoly(cir)
 end
 
-function RL.Draw.TexturedCircle(x, y, radius, seg)
-	local cir = {}
-
-	table.insert(cir, {
-		x = x,
-		y = y,
-		u = 0.5,
-		v = 0.5
-	})
-
-	for i = 0, seg do
-		local a = math.rad((i / seg) * -360)
-
-		table.insert(cir, {
-			x = x + math.sin(a) * radius,
-			y = y + math.cos(a) * radius,
-			u = math.sin(a) / 2 + 0.5,
-			v = math.cos(a) / 2 + 0.5
-		})
-	end
-
-	local a = math.rad(0) -- This is needed for non absolute segment counts
-
-	table.insert(cir, {
-		x = x + math.sin(a) * radius,
-		y = y + math.cos(a) * radius,
-		u = math.sin(a) / 2 + 0.5,
-		v = math.cos(a) / 2 + 0.5
-	})
-
-	surface.DrawPoly(cir)
+local function drawTexturedCircle(x, y, radius, seg)
+	drawCircle(x, y, radius, seg, nil, true)
 end
 
-function RL.Draw.RoundedBox(bordersize, x, y, w, h, Color, corner)
+local function drawRoundedBox(borderSize, x, y, w, h, color, corner)
 	local corner = corner or {true,true,true,true}
-	local tl, tr, bl, br = unpack(corner)
+	local topLeft, topRight, bottomLeft, bottomRight = unpack(corner)
 
-	local Color = Color or color_white
-	surface.SetDrawColor(Color)
+	local color = color or color_white
+	surface.SetDrawColor(color)
 
-	bordersize = bordersize or 8
+	borderSize = borderSize or 8
 
-	-- Do not waste performance if they don't want rounded corners
-	if bordersize <= 0 then
-		surface.DrawRect(x, y, w, h)
+	if borderSize <= 0 then
+		surfaceDrawRect(x, y, w, h)
 
 		return
 	end
 
-	bordersize = math.min(math.Round(bordersize), math.floor(w / 2), math.floor(h / 2))
+	borderSize = math.min(math.Round(borderSize), math.floor(w / 2), math.floor(h / 2))
 
-	surface.DrawRect(x + bordersize, y, w - bordersize * 2, h)
-	surface.DrawRect(x, y + bordersize, bordersize, h - bordersize * 2)
-	surface.DrawRect(x + w - bordersize, y + bordersize, bordersize, h - bordersize * 2)
+	surfaceDrawRect(x + borderSize, y, w - borderSize * 2, h)
+	surfaceDrawRect(x, y + borderSize, borderSize, h - borderSize * 2)
+	surfaceDrawRect(x + w - borderSize, y + borderSize, borderSize, h - borderSize * 2)
 
-	if tl then
-		RL.Draw.Circle(x + bordersize, y + bordersize, bordersize, bordersize)
-	else
-		surface.DrawRect(x, y, bordersize, bordersize)
+	local function doCorner(bDraw, circleX, circleY, rectX, rectY)
+		if bDraw then
+			drawCircle(circleX, circleY, borderSize, borderSize)
+		else
+			surfaceDrawRect(rectX, rectY, borderSize, borderSize)
+		end
 	end
 
-	if tr then
-		RL.Draw.Circle(x + w - bordersize, y + bordersize, bordersize, bordersize)
-	else
-		surface.DrawRect(x + w - bordersize, y, bordersize, bordersize)
-	end
-
-	if bl then
-		RL.Draw.Circle(x + bordersize, y + h - bordersize, bordersize, bordersize)
-	else
-		surface.DrawRect(x, y + h - bordersize, bordersize, bordersize)
-	end
-
-	if br then
-		RL.Draw.Circle(x + w - bordersize, y + h - bordersize, bordersize, bordersize)
-	else
-		surface.DrawRect(x + w - bordersize, y + h - bordersize, bordersize, bordersize)
-	end
+	doCorner(topLeft, x + borderSize, y + borderSize, x, y)
+	doCorner(topRight, x + w - borderSize, y + borderSize, x + w - borderSize, y)
+	doCorner(bottomLeft, x + borderSize, y + h - borderSize, x, y + h - borderSize)
+	doCorner(bottomRight, x + w - borderSize, y + h - borderSize, x + w - borderSize, y + h - borderSize)
 end
+
+RL.Draw = RL.Draw or {
+	Circle = drawCircle,
+	TexturedCircle = drawTexturedCircle,
+	RoundedBox = drawRoundedBox
+}
