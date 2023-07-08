@@ -16,7 +16,7 @@ function RL.VGUI.ReloadTheme()
             local Name,Theme = include("ricelib_vgui_theme/" .. v)
             if !Name or !Theme then return end
 
-            RL.MessageAs("Loaded " .. Name,"RiceLib VGUI Theme")
+            RL.Message("Loaded " .. Name,"RiceLib VGUI Theme")
             
             RL.VGUI.RegisterTheme(Name,Theme)
         end
