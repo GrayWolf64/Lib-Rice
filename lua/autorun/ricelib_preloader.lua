@@ -16,7 +16,7 @@ for k, v in pairs({
     ["Message_Error"] = Color(255, 75, 75),
     ["Message_Warn"] = Color(255, 150, 0)
 }) do
-    RL[k] = function(msg)
+    RL[k] = function(msg, name)
         local color
 
         if string.StartWith(msg, "#") then
@@ -29,27 +29,8 @@ for k, v in pairs({
             color = Color(255, 255, 150)
         end
 
-        MsgC(color, "[RiceLib] ")
-        MsgC(v, msg .. "\n")
-    end
-end
-
-for k, v in pairs({
-    ["MessageAs"] = Color(0, 255, 0),
-    ["Message_ErrorAs"] = Color(255, 0, 0),
-    ["Message_WarnAs"] = Color(255, 150, 0)
-}) do
-    RL[k] = function(msg, name)
-        local color
-
-        if string.StartWith(msg, "#") then
-            msg = RL.Language.Get(string.sub(msg, 2)) or msg
-        end
-
-        if SERVER then
-            color = Color(0, 150, 255)
-        else
-            color = Color(255, 255, 150)
+        if not name then
+            name = "RiceLib"
         end
 
         MsgC(color, "[" .. name .. "] ")
@@ -149,28 +130,28 @@ local function AddFileAs(File, directory, name)
 
     if SERVER and prefix == "sv_" then
         include(directory .. File)
-        RL.MessageAs("Server Load: " .. File, name)
+        RL.Message("Server Load: " .. File, name)
     elseif prefix == "sh_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
-            RL.MessageAs("Shared AddCS: " .. File, name)
+            RL.Message("Shared AddCS: " .. File, name)
         end
 
         include(directory .. File)
-        RL.MessageAs("Shared Load: " .. File, name)
+        RL.Message("Shared Load: " .. File, name)
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
-            RL.MessageAs("Client AddCS: " .. File, name)
+            RL.Message("Client AddCS: " .. File, name)
         elseif CLIENT then
             include(directory .. File)
-            RL.MessageAs("Client Load: " .. File, name)
+            RL.Message("Client Load: " .. File, name)
         end
     else
         AddCSLuaFile(directory .. File)
         include(directory .. File)
-        RL.MessageAs("Load: " .. File, name)
+        RL.Message("Load: " .. File, name)
     end
 end
 
@@ -194,15 +175,15 @@ function RL.IncludeDirAs(directory, name, nosub)
     end
 
     for i, v in ipairs(directories) do
-        RL.MessageAs("Loading Directory: " .. directory .. v, name)
+        RL.Message("Loading Directory: " .. directory .. v, name)
         RL.IncludeDirAs(directory .. v, name)
 
         if i == #directories then
-            RL.MessageAs("Done Loading Directory: " .. directory .. v, name)
+            RL.Message("Done Loading Directory: " .. directory .. v, name)
         end
     end
 
-    RL.MessageAs("Done Loading\n", name)
+    RL.Message("Done Loading\n", name)
 end
 
 if SERVER then
@@ -215,7 +196,7 @@ if SERVER then
 
         for _, v in ipairs(files) do
             if name then
-                RL.MessageAs("CSFiles: " .. directory .. v, name)
+                RL.Message("CSFiles: " .. directory .. v, name)
             end
 
             AddCSLuaFile(directory .. v)
@@ -231,7 +212,7 @@ if SERVER then
 
         for _, v in ipairs(directories) do
             if name then
-                RL.MessageAs("CSFiles Dir: " .. directory .. v, name)
+                RL.Message("CSFiles Dir: " .. directory .. v, name)
             end
 
             RL.AddCSFiles(directory .. v, name)

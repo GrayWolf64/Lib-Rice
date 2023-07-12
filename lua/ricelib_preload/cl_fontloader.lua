@@ -16,7 +16,7 @@ function RL.VGUI.RegisterFont(FontName, CodeName, addData)
         surface.CreateFont(CodeName.."_"..i*10,data)
     end
 
-    RL.MessageAs("RegisterFont: "..CodeName.." ("..FontName..")","Ricelib Font")
+    RL.Message("RegisterFont: "..CodeName.." ("..FontName..")","Ricelib Font")
 end
 
 function RL.VGUI.RegisterFontFixed(FontName, CodeName, addData)
@@ -36,7 +36,7 @@ function RL.VGUI.RegisterFontFixed(FontName, CodeName, addData)
         surface.CreateFont(CodeName.."_"..i*10,data)
     end
 
-    RL.MessageAs("Register FixedFont: "..CodeName.." ("..FontName..")","Ricelib Font")
+    RL.Message("Register FixedFont: "..CodeName.." ("..FontName..")","Ricelib Font")
 end
 
 function RL.VGUI.RegisterFontAdv(FontName, CodeName, addData)
@@ -56,7 +56,7 @@ function RL.VGUI.RegisterFontAdv(FontName, CodeName, addData)
         surface.CreateFont(CodeName.."_"..i*5,data)
     end
 
-    RL.MessageAs("<ADV> RegisterFont: "..CodeName.." ("..FontName..")","Ricelib Font")
+    RL.Message("<ADV> RegisterFont: "..CodeName.." ("..FontName..")","Ricelib Font")
 end
 
 function RL.VGUI.RegisterFontFixedAdv(FontName, CodeName, addData)
@@ -76,7 +76,7 @@ function RL.VGUI.RegisterFontFixedAdv(FontName, CodeName, addData)
         surface.CreateFont(CodeName.."_"..i*5,data)
     end
 
-    RL.MessageAs("<ADV> Register FixedFont: "..CodeName.." ("..FontName..")","Ricelib Font")
+    RL.Message("<ADV> Register FixedFont: "..CodeName.." ("..FontName..")","Ricelib Font")
 end
 
 function RL.VGUI.RegisterFont_New(data)
@@ -102,7 +102,7 @@ function RL.VGUI.RegisterFont_New(data)
 
     if not data.ShowMessage then return end
 
-    RL.MessageAs("<ADV> RegisterFont: "..CodeName.." ("..FontName..")","Ricelib Font")
+    RL.Message("<ADV> RegisterFont: "..CodeName.." ("..FontName..")","Ricelib Font")
 end
 
 concommand.Add("RiceLib_VGUI_FontView",function(ply,cmd,args)
