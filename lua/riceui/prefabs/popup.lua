@@ -105,27 +105,99 @@ function RiceUI.Prefab.Notify_LOL_FullScreen(args)
 end
 
 function RiceUI.Prefab.RequestInput(args)
-    table.Inherit(args,{
+    RL.table.Inherit(args,{
         Title = "请求输入",
-        ButtonText = "取消",
-        OnEnter = function(self,value) self:GetParent():Remove() end,
-        FontSize = 30,
-        Theme = {ThemeName="modern",ThemeType="RL_Frame",Color="white",TextColor="white"},
+        Placeholder = "Request Input",
+
+        OnConfirm = function(self) self:Remove() end,
+        OnCancel = function(self) self:Remove() end,
+
+        Theme = {
+            ThemeName = "modern",
+            ThemeType = "Panel",
+
+            Color = "white",
+            TextColor = "white"
+        },
     })
 
-    local frame = RiceUI.SimpleCreate({type = "rl_frame",w=400,h=120,Text = args.Title,Center = true,Root = true,
+    local wide = math.max(500,RL.VGUI.TextWide("RiceUI_36", args.Title))
+
+    RiceUI.SimpleCreate({type = "epanel",
+        w = wide,
+        h = 200,
+
+        Center = true,
+        OnTop = true,
+
         UseNewTheme = true,
         Theme = args.Theme,
 
         children = {
-            {type = "entry",x=12,y=40,w=375,h=30,OnEnter = args.OnEnter},
+            {type = "label",
+                Text = args.Title,
+                Font = "RiceUI_M_36",
 
-            {type = "button",ID = "CloseButton",Text=args.ButtonText,Font="SourceHan_25",x=400/2-25,y=80,w=50,h=30,
-                DoClick=function(self)
-                    self:GetParent():Remove()
-                end,
+                Dock = TOP,
+                Margin = {20,20,0,0}
+            },
 
-                Paint = RiceUI.GetTheme("modern_rect").Button,
+            {type = "entry",
+                ID = "Entry",
+                Placeholder = args.Placeholder,
+
+                Dock = TOP,
+                Margin = {20,15,20,0}
+            },
+
+            {type = "rl_panel",
+                Theme = {
+                    ThemeType = "PanelNT",
+                    Corner = {false,false,true,true},
+
+                    ColorNT = {"Background", "Soild", "Primary"},
+                    BorderColor = {"Stroke", "Solid"},
+                    Border = true,
+                },
+
+                h = 80,
+
+                Dock = BOTTOM,
+                Margin = {0,0,0,0},
+
+                children = {
+                    {type = "rl_button",
+                        Text = "确定",
+                        Font = "RiceUI_30",
+
+                        Dock = LEFT,
+                        Margin = {20,20,0,20},
+
+                        w = wide / 2 - RL.hudScaleX(25),
+
+                        Theme = {ThemeType = "Button_Accent"},
+
+                        DoClick = function(self)
+                            args.OnConfirm(self:RiceUI_GetRoot(), self:RiceUI_GetRoot().Elements.Entry:GetValue())
+                        end
+                    },
+
+                    {type = "rl_button",
+                        Text = "取消",
+                        Font = "RiceUI_30",
+
+                        Dock = RIGHT,
+                        Margin = {0,20,20,20},
+
+                        w = wide / 2 - RL.hudScaleX(25),
+
+                        Theme = {ThemeType = "Button_NT"},
+
+                        DoClick = function(self)
+                            args.OnCancel(self:RiceUI_GetRoot())
+                        end
+                    },
+                }
             }
         }
     })
@@ -136,8 +208,8 @@ function RiceUI.Prefab.Confirm(args)
         Title = "确认",
         Text = "确定进行此操作吗？",
 
-        OnConfirm = function(self) RL.VGUI.GetRoot(self):Remove() end,
-        OnCancel = function(self) RL.VGUI.GetRoot(self):Remove() end,
+        OnConfirm = function(self) self:Remove() end,
+        OnCancel = function(self) self:Remove() end,
 
         Theme = {
             ThemeName = "modern",
@@ -204,7 +276,9 @@ function RiceUI.Prefab.Confirm(args)
 
                         Theme = {ThemeType = "Button_Accent"},
 
-                        DoClick = args.OnConfirm
+                        DoClick = function(self)
+                            args.OnConfirm(self:RiceUI_GetRoot())
+                        end
                     },
 
                     {type = "rl_button",
@@ -218,7 +292,9 @@ function RiceUI.Prefab.Confirm(args)
 
                         Theme = {ThemeType = "Button_NT"},
 
-                        DoClick = args.OnCancel
+                        DoClick = function(self)
+                            args.OnCancel(self:RiceUI_GetRoot())
+                        end
                     },
                 }
             }

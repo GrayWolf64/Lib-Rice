@@ -28,7 +28,7 @@ function RL.VGUI.blurPanel(panel, amount)
         blur:SetFloat("$blur", (i / 3) * (amount or 6))
         blur:Recompute()
         render.UpdateScreenEffectTexture()
-        surface.DrawTexturedRect(x * -1, y * -1, scrW, scrH)
+        surface.DrawTexturedRect(-x, -y, scrW, scrH)
     end
 end
 

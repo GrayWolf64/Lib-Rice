@@ -92,7 +92,7 @@ function RL.IncludeDir(directory, silence, nosub)
         directory = directory .. "/"
     end
 
-    local files, directories = file.Find(directory .. "*", "LUA")
+    local files, directories = file.Find(directory .. "*.lua", "LUA")
     silence = silence or RL.Debug or true
 
     for _, v in ipairs(files) do
