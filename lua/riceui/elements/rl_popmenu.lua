@@ -1,17 +1,23 @@
 local Element = {}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RL.table.Inherit(data, {
         x = 10,
         y = 10,
-        w = 500,
+        w = 300,
         h = 300,
+
+        Theme = {
+            ThemeName = "modern",
+            ThemeType = "Panel",
+            Color = "white",
+            TextColor = "white",
+        },
     })
 
-    local panel = vgui.Create("EditablePanel",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
-    panel.ProcessID = "Panel"
-    panel.IsBase = true
+    local panel = vgui.Create("DPanel")
+    panel:SetPos(data.x, data.y)
+    panel:SetSize(RL.hudScale(data.w, data.h))
+    panel.ProcessID = "RL_PopMenu"
 
     function panel:ChildCreated()
         if self.UseNewTheme then
@@ -35,21 +41,17 @@ function Element.Create(data,parent)
         end
     end
 
-    function panel.RiceUI_Event(self, name, id, data)
-        if panel:GetParent().RiceUI_Event then
-            panel:GetParent():RiceUI_Event(name, id, data)
-        end
+    function panel:OnFocusChanged(gain)
+        if not gain then self:Remove() end
+    end
 
-        if not isfunction(self.GetChildren) then return end
-
-        for _, pnl in ipairs(self:GetChildren()) do
-            if pnl.IsBase then continue end
-            if pnl.RiceUI_Event == nil then continue end
-            pnl:RiceUI_Event(name, id, data)
+    function panel.RiceUI_Event(self,name,id,data)
+        if panel.Parent.RiceUI_Event then
+            panel.Parent:RiceUI_Event(name,id,data)
         end
     end
 
-    RiceUI.MergeData(panel, RiceUI.ProcessData(data))
+    RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     return panel
 end

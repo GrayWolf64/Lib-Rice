@@ -44,11 +44,11 @@ function RiceUI.Render.DrawIndicator(w, h)
     surface.DrawOutlinedRect(0, 0, w, h, RL.hudScaleY(2))
 end
 
-function RiceUI.Render.ShadowText(Text, Font, X, Y, color, Align_X, Align_Y)
+function RiceUI.Render.ShadowText(Text, Font, X, Y, color, Align_X, Align_Y, shadowAlpha)
     local offsetx, offsety = RL.hudScale(2, 2)
     color = color or color_white
     Align_X = Align_X or TEXT_ALIGN_LEFT
     Align_Y = Align_Y or TEXT_ALIGN_TOP
-    draw.SimpleText(Text, Font, X + offsetx, Y + offsety, Color(0, 0, 0, 50), Align_X, Align_Y)
+    draw.SimpleText(Text, Font, X + offsetx, Y + offsety, Color(0, 0, 0, shadowAlpha or 50), Align_X, Align_Y)
     draw.SimpleText(Text, Font, X, Y, color, Align_X, Align_Y)
 end

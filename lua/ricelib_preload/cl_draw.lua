@@ -74,8 +74,22 @@ local function drawRoundedBox(borderSize, x, y, w, h, color, corner)
 	doCorner(bottomRight, x + w - borderSize, y + h - borderSize, x + w - borderSize, y + h - borderSize)
 end
 
-RL.Draw = RL.Draw or {
+local function drawRoundedBoxOutlined(borderSize, x, y, w, h, color, corner, thickness)
+	RL.Render.StartStencil()
+
+	RL.Draw.RoundedBox(borderSize, x + thickness, y + thickness, w - thickness * 2, h - thickness * 2, color_white, Corner)
+
+	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+	render.SetStencilFailOperation(STENCIL_KEEP)
+
+	RL.Draw.RoundedBox(borderSize, x, y, w, h, color, Corner)
+
+	render.SetStencilEnable(false)
+end
+
+RL.Draw = {--RL.Draw or {
 	Circle = drawCircle,
 	TexturedCircle = drawTexturedCircle,
-	RoundedBox = drawRoundedBox
+	RoundedBox = drawRoundedBox,
+	RoundedBoxOutlined = drawRoundedBoxOutlined
 }

@@ -51,6 +51,16 @@ tbl.ShadowAlpha = {
     black = 50,
 }
 
+tbl.Colors = {
+    white = {
+        CloseButton = Color(255, 75, 75)
+    },
+
+    black = {
+        CloseButton = Color(255, 75, 75)
+    }
+}
+
 --[[
 
     Drawing Functions
@@ -117,8 +127,39 @@ end
 
     Themes
 
-]]
---
+]]--
+
+function tbl.NoDraw() end
+
+--[[
+
+    Layouts
+]]--
+
+function tbl.ScrollPanel_VBar(pnl, w, h)
+    surface.SetDrawColor(RiceUI.GetColor(tbl, pnl, "VBar"))
+    surface.DrawRect(0, 0, w, h)
+end
+
+function tbl.ScrollPanel_VBar_Grip(pnl, w, h)
+    surface.SetDrawColor(ColorAlpha(RiceUI.GetColor(tbl, pnl), 100))
+    surface.DrawRect(0, 0, w, h)
+end
+
+function tbl.Form(pnl, w, h)
+    tbl.DrawButton(pnl, w, h)
+
+    local h = pnl.h
+    surface.SetDrawColor(RiceUI.GetColorBase(tbl, pnl, "Text"))
+    surface.SetMaterial(point)
+    surface.DrawTexturedRectRotated(w - h / 2, h / 2, h / 3, h / 3, pnl.a_pointang)
+end
+
+function tbl.Spacer(pnl, w, h)
+    surface.SetDrawColor(RiceUI.GetColor(tbl, pnl, "Outline"))
+    surface.DrawRect(0, h / 2 - RL.hudOffsetY(1), w, RL.hudOffsetY(2))
+end
+
 function tbl.Panel(pnl, w, h)
     tbl.DrawBox(pnl, w, h)
 end
@@ -132,6 +173,12 @@ end
 function tbl.Raw(pnl, w, h)
     RL.VGUI.blurPanel(pnl, pnl.Theme.Blur)
 end
+
+--[[
+
+    Inputs
+
+]]--
 
 function tbl.Button(pnl, w, h)
     tbl.DrawButton(pnl, w, h)
@@ -169,6 +216,16 @@ function tbl.TransButton_F(pnl, w, h)
     surface.DrawRect(0, 0, w, h)
 
     draw.SimpleText(pnl.Text, pnl:GetFont(), w / 2, h / 2, RiceUI.GetColorBase(tbl, pnl, "NonContentText"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+function tbl.CloseButton(self, w, h)
+    local color = self:RiceUI_GetColor("CloseButton")
+
+    tbl.DrawBox(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)))
+
+    surface.SetDrawColor(RiceUI.GetColorBase(tbl, self, "Text"))
+    surface.SetMaterial(cross)
+    surface.DrawTexturedRectRotated(w / 2, h / 2, h / 1.5, h / 1.5, 0)
 end
 
 function tbl.Entry(pnl, w, h)
@@ -210,30 +267,7 @@ function tbl.Slider(pnl, w, h)
     DisableClipping(false)
 end
 
-function tbl.ScrollPanel_VBar(pnl, w, h)
-    surface.SetDrawColor(RiceUI.GetColor(tbl, pnl, "VBar"))
-    surface.DrawRect(0, 0, w, h)
-end
-
-function tbl.ScrollPanel_VBar_Grip(pnl, w, h)
-    surface.SetDrawColor(ColorAlpha(RiceUI.GetColor(tbl, pnl), 100))
-    surface.DrawRect(0, 0, w, h)
-end
-
-function tbl.Form(pnl, w, h)
-    tbl.DrawButton(pnl, w, h)
-
-    local h = pnl.h
-    surface.SetDrawColor(RiceUI.GetColorBase(tbl, pnl, "Text"))
-    surface.SetMaterial(point)
-    surface.DrawTexturedRectRotated(w - h / 2, h / 2, h / 3, h / 3, pnl.a_pointang)
-end
-
-function tbl.Spacer(pnl, w, h)
-    surface.SetDrawColor(RiceUI.GetColor(tbl, pnl, "Outline"))
-    surface.DrawRect(0, h / 2 - RL.hudOffsetY(1), w, RL.hudOffsetY(2))
-end
-
+--Combo
 function tbl.RL_Combo(pnl, w, h)
     tbl.DrawButton(pnl, w, h)
 
@@ -264,9 +298,8 @@ function tbl.RL_Combo_Choice(pnl, w, h)
         bar_color = color
     end
 
-    
     surface.SetDrawColor(bar_color)
-    surface.DrawRect(RL.hudOffsetY(2), height, RL.hudOffsetY(2) + RL.hudOffsetY(1), h - height)
+    surface.DrawRect(RL.hudOffsetY(2), height, RL.hudOffsetY(2) + RL.hudOffsetY(1), h - height * 2)
 
     RiceUI.Render.ShadowText(pnl.Text, pnl:GetFont(), RL.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end

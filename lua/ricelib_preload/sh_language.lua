@@ -10,7 +10,7 @@ if CLIENT then
         local languageDir = dir .. dirs .. "/" .. CUR_Lang
 
         RL.Files.Iterator(languageDir, "LUA", function(file,dir,path)
-            table.Merge(RL.Language.Words, include(dir .."/" .. file))
+            table.Merge(RL.Language.Words, include(dir .. file))
         end)
     end)
 else

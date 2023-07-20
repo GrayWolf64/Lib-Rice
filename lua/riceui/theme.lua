@@ -8,25 +8,25 @@ RiceUI = RiceUI or {}
 
 function RiceUI.GetTheme(name) return RiceUI.Theme[name] end
 
-function RiceUI.GetColor(tbl,pnl,name,default)
+function RiceUI.GetColor(tbl,self,name,default)
     name = name or ""
     default = default or "white1"
 
-    return pnl.Theme["Raw" .. name .. "Color"] or tbl[name .. "Color"][pnl.Theme.Color] or tbl[name .. "Color"][default]
+    return self.Theme["Raw" .. name .. "Color"] or tbl[name .. "Color"][self.Theme.Color] or tbl[name .. "Color"][default]
 end
 
-function RiceUI.GetColorBase(tbl,pnl,name,default)
+function RiceUI.GetColorBase(tbl,self,name,default)
     name = name or ""
     default = default or "white"
-    color = string.match(pnl.Theme.Color or "white","^[a-zA-Z]*")
+    color = string.match(self.Theme.Color or "white","^[a-zA-Z]*")
 
-    return pnl.Theme["Raw" .. name .. "Color"] or tbl[name .. "Color"][color] or tbl[name .. "Color"][default]
+    return self.Theme["Raw" .. name .. "Color"] or tbl[name .. "Color"][color] or tbl[name .. "Color"][default]
 end
 
-function RiceUI.GetShadowAlpha(tbl,pnl)
-    color = string.match(pnl.Theme["Color"] or "white","^[a-zA-Z]*")
+function RiceUI.GetShadowAlpha(tbl,self)
+    color = string.match(self.Theme["Color"] or "white","^[a-zA-Z]*")
 
-    return pnl.Theme["ShadowAlpha"] or tbl["ShadowAlpha"][color] or 50
+    return self.Theme["ShadowAlpha"] or tbl["ShadowAlpha"][color] or 50
 end
 
 --[[
@@ -35,45 +35,47 @@ end
 
 ]]--
 
-function RiceUI.RefreshTheme(pnl)
-    local theme = pnl.Theme
+function RiceUI.RefreshTheme(self)
+    local theme = self.Theme
     if theme.ThemeName == nil then return end
 
-    pnl.Paint = RiceUI.GetTheme(theme.ThemeName)[theme.ThemeType]
+    self.Paint = RiceUI.GetTheme(theme.ThemeName)[theme.ThemeType]
 end
 
-function RiceUI.ApplyTheme(pnl, theme)
-    if pnl.NoGTheme then return end
+function RiceUI.ApplyTheme(self, theme)
+    if self.NoGTheme then return end
 
-    if (theme ~= nil and theme.NT) or (pnl.Theme ~= nil and pnl.Theme.NT) then
-        RiceUI.ThemeNT.ApplyTheme(pnl, theme)
+    if (theme ~= nil and theme.NT) or (self.Theme ~= nil and self.Theme.NT) then
+        RiceUI.ThemeNT.ApplyTheme(self, theme)
 
         return
     end
 
     if theme then
-        if pnl.ProcessID == nil then return end
+        if self.ProcessID == nil then return end
 
-        pnl.Theme = pnl.Theme or {}
-        pnl.ThemeMeta = RiceUI.GetTheme(theme.ThemeName)
-        pnl.Colors = RiceUI.GetTheme(theme.ThemeName).Colors
+        self.Theme = self.Theme or {}
+        self.ThemeMeta = RiceUI.GetTheme(theme.ThemeName)
+        self.Colors = RiceUI.GetTheme(theme.ThemeName).Colors
 
-        RL.table.Inherit(pnl.Theme, {
-            ThemeType = pnl.Theme.TypeOverride or pnl.ProcessID
+        RL.table.Inherit(self.Theme, {
+            ThemeType = self.Theme.TypeOverride or self.ProcessID
         }, RiceUI.ThemeParamaBlacklist)
 
-        RL.table.Inherit(pnl.Theme, theme, {
+        RL.table.Inherit(self.Theme, theme, {
             ThemeName = 1,
-            Color = (not pnl.Theme.ColorOverride) or 1,
+            Color = (not self.Theme.ColorOverride) or 1,
             TextColor = 1
         }, RiceUI.ThemeParamaBlacklist)
 
-        RiceUI.RefreshTheme(pnl)
-        RiceUI.DoThemeProcess(pnl)
+        RiceUI.RefreshTheme(self)
+        RiceUI.DoThemeProcess(self)
     end
 
-    for _, v in ipairs(pnl:GetChildren()) do
-        RiceUI.ApplyTheme(v, pnl.Theme)
+    self.Colors = RiceUI.GetTheme(self.Theme.ThemeName).Colors
+
+    for _, v in ipairs(self:GetChildren()) do
+        RiceUI.ApplyTheme(v, self.Theme)
     end
 end
 
@@ -85,13 +87,13 @@ end
 
 RiceUI.ThemeProcess = {}
 
-function RiceUI.DoThemeProcess(pnl)
-    local ProcessSet = RiceUI.ThemeProcess[pnl.ProcessID]
+function RiceUI.DoThemeProcess(self)
+    local ProcessSet = RiceUI.ThemeProcess[self.ProcessID]
 
     if ProcessSet == nil then return end
 
     for _,v in ipairs(ProcessSet) do
-        v(pnl)
+        v(self)
     end
 end
 
@@ -160,31 +162,31 @@ function RiceUI.ThemeNT.LoadThemes()
     end
 end
 
-function RiceUI.ThemeNT.RefreshTheme(pnl)
-    local theme = pnl.Theme
+function RiceUI.ThemeNT.RefreshTheme(self)
+    local theme = self.Theme
 
-    print(RiceUI.ThemeNT.Themes[theme.ThemeName][pnl.ProcessID][theme.Style or "Default"])
-    print(theme.ThemeName,pnl.ProcessID,theme.Style or "Default")
+    print(RiceUI.ThemeNT.Themes[theme.ThemeName][self.ProcessID][theme.Style or "Default"])
+    print(theme.ThemeName,self.ProcessID,theme.Style or "Default")
 
-    pnl.Paint = RiceUI.ThemeNT.Themes[theme.ThemeName][pnl.ProcessID][theme.Style or "Default"]
+    self.Paint = RiceUI.ThemeNT.Themes[theme.ThemeName][self.ProcessID][theme.Style or "Default"]
 end
 
 function RiceUI.ThemeNT.ApplyTheme(self, theme)
-    if pnl.ProcessID == nil then return end
+    if self.ProcessID == nil then return end
 
-    pnl.Theme = pnl.Theme or {}
+    self.Theme = self.Theme or {}
 
-    RL.table.Inherit(pnl.Theme, theme, {
+    RL.table.Inherit(self.Theme, theme, {
         ThemeName = 1,
         Color = 1
     }, RiceUI.ThemeParamaBlacklist)
 
-    pnl.ThemeColors = RiceUI.ThemeNT.Themes[pnl.Theme.Color].Colors
+    self.ThemeColors = RiceUI.ThemeNT.Themes[self.Theme.Color].Colors
 
-    RiceUI.ThemeNT.RefreshTheme(pnl)
+    RiceUI.ThemeNT.RefreshTheme(self)
 
-    for _, v in ipairs(pnl:GetChildren()) do
-        RiceUI.ThemeNT.ApplyTheme(v, pnl.Theme)
+    for _, v in ipairs(self:GetChildren()) do
+        RiceUI.ThemeNT.ApplyTheme(v, self.Theme)
     end
 end
 
