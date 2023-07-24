@@ -1,15 +1,22 @@
 if CLIENT then
-    function RL.Language.Define(id,word)
+    function RL.Language.Define(id, word)
         RL.Language.Words[id] = word
     end
 
-    function RL.Language.Get(id) return RL.Language.Words[id] or language.GetPhrase(id) or id end
+    function RL.Language.Get(id)
+        return RL.Language.Words[id] or language.GetPhrase(id) or id
+    end
 
     local CUR_Lang = GetConVar("cl_language"):GetString()
-    RL.Files.Iterator_Dir("rl_languages","LUA",function(dirs,dir,path)
-        local languageDir = dir .. dirs .. "/" .. CUR_Lang
 
-        RL.Files.Iterator(languageDir, "LUA", function(file,dir,path)
+    RL.Files.Iterator_Dir("rl_languages", "LUA", function(nameSpace, dir)
+        local languageDir = dir .. nameSpace .. "/" .. CUR_Lang
+
+        if not file.Exists(languageDir, "LUA") then
+            languageDir = dir .. nameSpace .. "/english"
+        end
+
+        RL.Files.Iterator(languageDir, "LUA", function(file, dir)
             table.Merge(RL.Language.Words, include(dir .. file))
         end)
     end)

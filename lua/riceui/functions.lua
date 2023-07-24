@@ -86,6 +86,20 @@ function RiceUI.HoverAlpha(pnl,Speed)
     return pnl.HoverAlpha
 end
 
+function RiceUI.HoverAlphaEase(pnl,Speed)
+    if not pnl.HoverAlpha then
+        pnl.HoverAlpha = 0
+    end
+
+    if pnl:IsHovered() then
+        pnl.HoverAlpha = math.min(pnl.HoverAlpha + Speed * (RealFrameTime() * 100), 255)
+    else
+        pnl.HoverAlpha = math.max(pnl.HoverAlpha - Speed * (RealFrameTime() * 100), 0)
+    end
+
+    return math.ease.InOutCubic(pnl.HoverAlpha / 255) * 255
+end
+
 function RiceUI.AlphaPercent(color, percent)
     return ColorAlpha(color, 255 * percent)
 end
