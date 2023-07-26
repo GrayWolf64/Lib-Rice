@@ -89,6 +89,7 @@ tbl.Colors = {
                 Disable = color_white
             }
         },
+
         Stroke = {
             Default = RiceUI.AlphaPercent(color_black, 0.05),
             Solid = HSLToColor(0, 0, 0.92),
@@ -111,19 +112,30 @@ tbl.Colors = {
                 Primary = color_white,
                 Secondary = HSLToColor(0, 0, 0.96),
             },
+
+            Frame = ColorAlpha(color_white, 150),
+            Layer = ColorAlpha(color_white, 50),
+
+            NavigationButton = {
+                Default = ColorAlpha(color_white, 0),
+                Hover = ColorAlpha(color_white, 50),
+                Selected = ColorAlpha(color_white, 75)
+            },
+
             Control = {
                 Default = RiceUI.AlphaPercent(color_white, 0.7),
                 Secondary = RiceUI.AlphaPercent(HSLToColor(0, 0, 0.97), 0.5),
                 Tertiary = RiceUI.AlphaPercent(HSLToColor(0, 0, 0.97), 0.3),
                 Active = color_white
             },
+
             Accent = {
                 Primary = Color(0, 95, 184),
                 Secondary = Color(26, 111, 191),
                 Tertiary = Color(51, 127, 198),
                 Disable = HSLToColor(0, 0, 0.78)
             }
-        }
+        },
     },
     black = {
         Text = {
@@ -131,6 +143,7 @@ tbl.Colors = {
             Secondary = HSLToColor(0, 0, 0.81),
             Tertiary = HSLToColor(0, 0, 0.62),
             Disable = HSLToColor(0, 0, 0.47),
+
             OnAccent = {
                 Primary = HSLToColor(0, 0, 0),
                 Secondary = RiceUI.AlphaPercent(HSLToColor(0, 0, 0), 0.5),
@@ -160,19 +173,24 @@ tbl.Colors = {
                 Primary = HSLToColor(0, 0, 0.215),
                 Secondary = HSLToColor(0, 0, 0.20)
             },
+
+            Frame = ColorAlpha(HSLToColor(0, 0, 0.15), 240),
+            Layer = ColorAlpha(color_white, 10),
+
             Control = {
                 Default = RiceUI.AlphaPercent(color_white, 0.02),
                 Secondary = RiceUI.AlphaPercent(color_white, 0.04),
                 Tertiary = RiceUI.AlphaPercent(color_white, 0.01),
                 Active = RiceUI.AlphaPercent(Color(30, 30, 30), 0.7)
             },
+
             Accent = {
                 Primary = Color(96, 205, 255),
                 Secondary = Color(91, 189, 233),
                 Tertiary = Color(86, 173, 213),
                 Disable = HSLToColor(0, 0, 0.30)
             }
-        }
+        },
     }
 }
 
@@ -297,6 +315,18 @@ function tbl.Panel(pnl, w, h)
     tbl.DrawBox(pnl, w, h)
 end
 
+function tbl.Layer(self, w, h)
+    local color = self:RiceUI_GetColor("Fill", "Layer")
+    local borderColor = color
+
+    if self.Theme.Border then
+        borderColor = self:RiceUI_GetColor(self.Theme.BorderColor)
+    end
+
+    tbl.DrawOutline(self, w, h, borderColor)
+    tbl.DrawInnerBox(self, w, h, color)
+end
+
 function tbl.PanelNT(self, w, h)
     local color = self:RiceUI_GetColor(self.Theme.ColorNT)
     local borderColor = color
@@ -318,6 +348,21 @@ function tbl.RL_Frame(pnl, w, h)
 
     tbl.DrawBox(pnl, w, h, RiceUI.GetColor(tbl, pnl, "Bar"))
     draw.RoundedBoxEx(pnl.Theme.Curver or tbl.DefaultCurver, 0, pnl.Title:GetTall() + 10, w, h - pnl.Title:GetTall() - 10, RiceUI.GetColor(tbl, pnl), false, false, true, true)
+end
+
+function tbl.RL_Frame2(self, w, h)
+    RL.Render.StartStencil()
+
+    RL.Draw.RoundedBox(8, 0, 0, w, h, color_white)
+
+    render.SetStencilCompareFunction(STENCIL_EQUAL)
+    render.SetStencilFailOperation(STENCIL_KEEP)
+
+    RL.VGUI.blurPanel(self, 8)
+
+    render.SetStencilEnable(false)
+
+    draw.RoundedBoxEx(self.Theme.Curver or tbl.DefaultCurver, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame"), true, true, true, true)
 end
 
 function tbl.ScrollPanel_VBar(pnl, w, h)
@@ -443,7 +488,55 @@ function tbl.CloseButton(pnl, w, h)
 
     surface.SetDrawColor(RiceUI.GetColorBase(tbl, pnl, "Text"))
     surface.SetMaterial(cross)
-    surface.DrawTexturedRectRotated(w / 2, h / 2, h / 1.5, h / 1.5, 0)
+    surface.DrawTexturedRectRotated(w / 2, h / 2, h / 2, h / 2, 0)
+end
+
+--[[
+
+    Navgation View
+
+]]
+
+function tbl.Navgation_Button(self, w, h)
+    local color = self:RiceUI_GetColor("Fill", "NavigationButton", "Default")
+    if self:IsHovered() then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Hover") end
+    if self.Selected then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Selected") end
+
+    tbl.DrawBox(self, w, h, color)
+
+    if self.Selected then
+        draw.RoundedBox(8, 0, h / 4, RL.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+    end
+
+    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+end
+
+function tbl.Navgation_Button_Transparent(self, w, h)
+    local color = self:RiceUI_GetColor("Fill", "NavigationButton", "Default")
+    if self:IsHovered() then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Hover") end
+    if self.Selected then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Selected") end
+
+    tbl.DrawBox(self, w, h, color)
+
+    if self.Selected then
+        draw.RoundedBox(8, 0, h / 4, RL.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+    end
+
+    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+end
+
+function tbl.Navgation_Combo(self, w, h)
+    local color = self:RiceUI_GetColor("Fill", "NavigationButton", "Default")
+    if self:IsHovered() then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Hover") end
+    if self.Selected then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Selected") end
+
+    tbl.DrawBox(self, w, h, color)
+
+    if self.Selected then
+        draw.RoundedBox(8, 0, self.Init_H / 4, RL.hudScaleX(4), self.Init_H / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+    end
+
+    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 --NumberWang

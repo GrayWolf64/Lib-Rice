@@ -24,6 +24,7 @@ function Element.Create(data, parent)
     panel:DockPadding(RL.hudScaleX(5), RL.hudScaleY(data.h), RL.hudScaleX(5), 0)
     panel.ProcessID = "RL_Form"
     panel.a_pointang = 0
+    panel.Init_H = RL.hudScaleY(data.h)
 
     panel.Header = RiceUI.SimpleCreate({
         type = "label",
@@ -45,6 +46,10 @@ function Element.Create(data, parent)
     end
 
     function panel:DoClick()
+        self:DoAnim()
+    end
+
+    function panel:DoAnim()
         if self.Expand then
             self:SizeTo(-1, data.h, 0.3, 0, 0.3)
         else

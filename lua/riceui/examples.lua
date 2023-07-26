@@ -13,7 +13,7 @@ RiceUI.Examples = {
             UseNewTheme = true,
             Theme = {
                 ThemeName = "modern",
-                ThemeType = "RL_Frame",
+                ThemeType = "RL_Frame2",
                 Color = "white",
                 TextColor = "white",
             },
@@ -135,6 +135,8 @@ RiceUI.Examples = {
                     y = 40,
                     w = 670,
                     Text = "Frame In Frame",
+
+                    Theme = {ThemeType = "RL_Frame2"},
 
                     children = {
                         {type = "slider",
@@ -263,22 +265,17 @@ RiceUI.Examples = {
             Center = true,
             Root = true,
 
+            UseNewTheme = true,
+            Theme = {
+                ThemeName = "modern",
+                ThemeType = "RL_Frame2",
+
+                Color = "white",
+                TextColor = "white"
+            },
+
             w = 1000,
             h = 800,
-
-            children = {
-                {type = "rl_panel",
-                    NoGTheme = true,
-
-                    UseNewTheme = true,
-                    Theme = {
-                        NT = true,
-
-                        ThemeName = "modern_nt",
-                        Color = "Light",
-                    }
-                }
-            }
         }
     }
 }
@@ -287,7 +284,7 @@ RiceUI.Examples.ModernBlack = table.Copy(RiceUI.Examples.Modern)
 
 RiceUI.Examples.ModernBlack[1].Theme = {
     ThemeName = "modern",
-    ThemeType = "RL_Frame",
+    ThemeType = "RL_Frame2",
     Color = "black",
     TextColor = "black",
     Shadow = true,

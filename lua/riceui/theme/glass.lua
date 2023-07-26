@@ -225,7 +225,7 @@ function tbl.CloseButton(self, w, h)
 
     surface.SetDrawColor(RiceUI.GetColorBase(tbl, self, "Text"))
     surface.SetMaterial(cross)
-    surface.DrawTexturedRectRotated(w / 2, h / 2, h / 1.5, h / 1.5, 0)
+    surface.DrawTexturedRectRotated(w / 2, h / 2, h / 2, h / 2, 0)
 end
 
 function tbl.Entry(pnl, w, h)
