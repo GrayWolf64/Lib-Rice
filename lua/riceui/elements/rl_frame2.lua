@@ -29,6 +29,15 @@ function Element.Create(data, parent)
         w = data.w,
         h = data.h,
 
+        Alpha = 0,
+        Anim = {
+            {
+                type = "alpha",
+                time = 0.075,
+                alpha = 255
+            }
+        },
+
         children = {
             {type = "rl_panel",
                 ID = "TabBar",
@@ -39,31 +48,38 @@ function Element.Create(data, parent)
                 h = 45,
 
                 OnMousePressed = function(self)
-                    local root = self:RiceUI_GetRoot()
+                    local root = self:GetParent()
 
                     root.Dragging = {gui.MouseX() - root:GetX(), gui.MouseY() - root:GetY()}
                 end,
 
                 OnMouseReleased = function(self)
-                    local root = self:RiceUI_GetRoot()
+                    local root = self:GetParent()
 
                     root.Dragging = nil
                 end,
 
                 children = {
-                    {type = "label", ID = "Title", Text = data.Title, Font = "RiceUI_M_24", Dock = LEFT, Margin = {15, 0, 0, 0}},
+                    {type = "label", ID = "Title", Text = data.Title, Font = "RiceUI_M_24", Dock = LEFT, Margin = {16, 0, 0, 0}},
                     {type = "rl_button", ID = "CloseButton", Text = data.Title, Dock = RIGHT, w = 50, Margin = {0, 0, 0, 10},
                         Theme = {ThemeType = "CloseButton"},
 
                         DoClick = function(self)
-                            self:RiceUI_GetRoot():Remove()
-                            self:RiceUI_GetRoot():OnClose()
+                            local panel = self:GetParent():GetParent()
+
+                            if panel.NoClose then return end
+
+                            panel:AlphaTo(0, 0.075, 0, function()
+                                panel:Remove()
+                            end)
+
+                            panel.OnClose()
                         end
                     },
                 }
             },
         }
-    })
+    }, parent)
 
     function panel:Think()
         if self.Dragging then

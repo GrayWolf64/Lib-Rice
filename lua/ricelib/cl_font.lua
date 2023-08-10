@@ -16,6 +16,11 @@ RL.VGUI.RegisterFont_New({
 })
 
 RL.VGUI.RegisterFont_New({
+    CodeName = "RiceUI_B",
+    FontName = "OPlusSans 3.0 Bold"
+})
+
+RL.VGUI.RegisterFont_New({
     CodeName = "Source",
     FontName = "Source Han Sans SC"
 })

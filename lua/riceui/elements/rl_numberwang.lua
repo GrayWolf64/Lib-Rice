@@ -22,6 +22,7 @@ function Element.Create(data, parent)
         Step = 1,
         Min = 0,
         Max = 100,
+        Dec = 2,
     })
 
     local panel = RiceUI.SimpleCreate({type = "entry",
@@ -95,11 +96,13 @@ function Element.Create(data, parent)
     end
 
     function panel:OnChange()
-        self:SetValue(math.Clamp(self:GetFloat() or 0, self.Min, self.Max))
+        local val = self:GetFloat() or 0
+
+        self:SetValue(math.Clamp(math.Round(val, self.Dec) or 0, self.Min, self.Max))
     end
 
     function panel:SetValue(val)
-        self.Value = math.Clamp(val, self.Min, self.Max)
+        self.Value = math.Clamp(math.Round(val, self.Dec), self.Min, self.Max)
 
         self:OnValueChanged(val)
     end
