@@ -18,7 +18,7 @@ function Element.Create(data, parent)
         }
     })
 
-    local panel = vgui.Create("DPanel", parent)
+    local panel = vgui.Create("EditablePanel", parent)
     panel:SetPos(RL.hudScale(data.x, data.y))
     panel:SetSize(RL.hudScale(data.w, data.h))
     panel.ProcessID = "Panel"
@@ -56,6 +56,7 @@ function Element.Create(data, parent)
         for _, pnl in ipairs(self:GetChildren()) do
             if pnl.IsBase then continue end
             if pnl.RiceUI_Event == nil then continue end
+
             pnl:RiceUI_Event(name, id, data)
         end
     end

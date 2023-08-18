@@ -32,6 +32,8 @@ if SERVER then
 
         table.insert(RL.URLMaterial.Materials, {name, url})
     end
+
+    RL.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
 else
     file.CreateDir("RiceLib/Materials")
 

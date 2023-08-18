@@ -15,6 +15,8 @@ function RiceUI.SimpleCreate(data, parent)
         return
     end
 
+    if data.ShouldCreate and not data.ShouldCreate() then return end
+
     local pnl = RiceUI.Elements[data.type].Create(data, parent)
     table.insert(RiceUI.UI, pnl)
     RiceUI.DoProcess(pnl)
@@ -54,6 +56,16 @@ function RiceUI.Create(tbl, parent)
     end
 end
 
+concommand.Add("riceui_reload", function()
+    RL.Functions.LoadFiles(RiceUI.Elements, "riceui/elements")
+    RL.Functions.LoadFiles(RiceUI.UniProcess, "riceui/uniprocess")
+    RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
+end)
+
+RiceUI.Prefab = {}
+RL.IncludeDir("riceui/prefabs", true)
+RL.IncludeDir("riceui/modules", true, true)
+
 concommand.Add("riceui_panic", function()
     for _, v in pairs(RiceUI.UI) do
         if IsValid(v) then
@@ -73,15 +85,6 @@ end)
 concommand.Add("riceui_all", function()
     PrintTable(RiceUI.UI)
 end)
-
-concommand.Add("riceui_reload", function()
-    RL.Functions.LoadFiles(RiceUI.Elements, "riceui/elements")
-    RL.Functions.LoadFiles(RiceUI.UniProcess, "riceui/uniprocess")
-    RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
-end)
-
-RiceUI.Prefab = {}
-RL.IncludeDir("riceui/prefabs", true)
 
 concommand.Add("riceui_prefabs", function()
     RiceUI.SimpleCreate({type = "rl_frame",

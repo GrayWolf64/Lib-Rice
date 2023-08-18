@@ -6,7 +6,7 @@ function Element.Create(data,parent)
         y = 10,
         w = 100,
         h = 50,
-        Font = "OPSans_30",
+        Font = "RiceUI_M_28",
         Text = "按钮",
         Theme = {ThemeName = "modern",ThemeType = "Button",Color = "white",TextColor = "white"},
     })
