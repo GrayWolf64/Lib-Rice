@@ -9,7 +9,7 @@ if SERVER then
 
     local function createURLMaterial(name, url)
         if not file.Exists(matDir .. name .. ".txt", "DATA") then
-            table.insert(urlMaterials, {name, url})
+            table.insert(urlMaterials, {name = name, url = url})
         end
 
         file.Write(matDir .. name .. ".txt", url)
