@@ -2,7 +2,7 @@ RiceUI = RiceUI or {}
 RiceUI.UniProcess = {}
 
 function RiceUI.DoProcess(pnl)
-    if !pnl.RiceUI_Data then return end
+    if not pnl.RiceUI_Data then return end
 
     for name,data in pairs(pnl.RiceUI_Data) do
         if !RiceUI.UniProcess[name] then continue end

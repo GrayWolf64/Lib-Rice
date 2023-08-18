@@ -7,10 +7,8 @@ if CLIENT then
         return RL.Language.Words[id] or language.GetPhrase(id) or id
     end
 
-    local CUR_Lang = GetConVar("cl_language"):GetString()
-
     RL.Files.Iterator_Dir("rl_languages", "LUA", function(nameSpace, dir)
-        local languageDir = dir .. nameSpace .. "/" .. CUR_Lang
+        local languageDir = dir .. nameSpace .. "/" .. GetConVar("cl_language"):GetString()
 
         if not file.Exists(languageDir, "LUA") then
             languageDir = dir .. nameSpace .. "/english"

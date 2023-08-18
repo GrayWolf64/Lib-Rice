@@ -1,7 +1,6 @@
 RiceUI = RiceUI or {}
-RiceUI.Animation = {}
 
-function RiceUI.Animation.ExpandFromPos(pnl, data)
+local function expandFromPos(panel, data)
     RL.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -9,15 +8,15 @@ function RiceUI.Animation.ExpandFromPos(pnl, data)
         callback = function() end
     })
 
-    pnl:SetAlpha(255)
-    pnl:SetSize(0, 0)
-    pnl:SetPos(data.StartX, data.StartY)
-    pnl:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
-    pnl:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
-    pnl.AnimData = data
+    panel:SetAlpha(255)
+    panel:SetSize(0, 0)
+    panel:SetPos(data.StartX, data.StartY)
+    panel:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
+    panel:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
+    panel.AnimData = data
 end
 
-function RiceUI.Animation.ExpandFromCursor(pnl, data)
+local function expandFromCursor(panel, data)
     RL.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -25,7 +24,7 @@ function RiceUI.Animation.ExpandFromCursor(pnl, data)
         callback = function() end
     })
 
-    pnl:SetAlpha(255)
+    panel:SetAlpha(255)
     local x, y = gui.MousePos()
 
     if IsValid(data.Parent) then
@@ -34,17 +33,17 @@ function RiceUI.Animation.ExpandFromCursor(pnl, data)
         y = y + oy
     end
 
-    pnl:SetSize(0, 0)
-    pnl:SetPos(x, y)
-    pnl:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
-    pnl:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
+    panel:SetSize(0, 0)
+    panel:SetPos(x, y)
+    panel:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
+    panel:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
 
-    pnl.AnimData = data
-    pnl.AnimData.StartX = x
-    pnl.AnimData.StartY = y
+    panel.AnimData = data
+    panel.AnimData.StartX = x
+    panel.AnimData.StartY = y
 end
 
-function RiceUI.Animation.ShrinkToPos(pnl, data)
+local function shrinkToPos(panel, data)
     RL.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -52,11 +51,11 @@ function RiceUI.Animation.ShrinkToPos(pnl, data)
         callback = function() end
     })
 
-    pnl:SizeTo(0, 0, data.time, data.delay, data.ease, data.callback)
-    pnl:MoveTo(data.PosX, data.PosY, data.time, data.delay, data.ease)
+    panel:SizeTo(0, 0, data.time, data.delay, data.ease, data.callback)
+    panel:MoveTo(data.PosX, data.PosY, data.time, data.delay, data.ease)
 end
 
-function RiceUI.Animation.Shrink(pnl, data)
+local function shrink(panel, data)
     RL.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -64,48 +63,58 @@ function RiceUI.Animation.Shrink(pnl, data)
         callback = function() end
     })
 
-    pnl:SizeTo(0, 0, data.time, data.delay, data.ease, data.callback)
-    pnl:MoveTo(pnl.AnimData.StartX, pnl.AnimData.StartY, data.time, data.delay, data.ease)
+    panel:SizeTo(0, 0, data.time, data.delay, data.ease, data.callback)
+    panel:MoveTo(panel.AnimData.StartX, panel.AnimData.StartY, data.time, data.delay, data.ease)
 end
 
-function RiceUI.Animation.FadeIn(Pnl,dur,delay,ease)
+local function fadeIn(panel,dur,delay,ease)
     delay = delay or 0
     ease = ease or 0.3
 
-    Pnl:SetVisible(true)
-    local Anim = Pnl:NewAnimation(dur,delay,ease)
+    panel:SetVisible(true)
+    local Anim = panel:NewAnimation(dur,delay,ease)
 
-    Anim.Think = function(_, pnl, fraction)
-        pnl:SetAlpha(255 * fraction)
+    Anim.Think = function(_, panel, fraction)
+        panel:SetAlpha(255 * fraction)
     end
 end
 
-function RiceUI.Animation.FadeOut(Pnl,dur,delay,ease)
+local function fadeOut(panel,dur,delay,ease)
     delay = delay or 0
     ease = ease or 0.3
 
-    local Anim = Pnl:NewAnimation(dur,delay,ease,function(_, pnl)
-        pnl:SetVisible(false)
+    local Anim = panel:NewAnimation(dur,delay,ease,function(_, panel)
+        panel:SetVisible(false)
     end)
 
-    Anim.Think = function(_, pnl, fraction)
-        pnl:SetAlpha(255 - 255 * fraction)
+    Anim.Think = function(_, panel, fraction)
+        panel:SetAlpha(255 - 255 * fraction)
     end
 end
 
-function RiceUI.Animation.FadeInOut(Pnl,data)
+local function fadeInOut(panel,data)
     local dur, delay, ease, func = data.dur, data.delay, data.ease, data.func
 
     delay = delay or 0
     ease = ease or 0.3
 
-    local Anim = Pnl:NewAnimation(dur / 2,delay,ease,function(_, pnl)
-        RiceUI.Animation.FadeIn(Pnl, dur / 2, delay, ease)
+    local Anim = panel:NewAnimation(dur / 2,delay,ease,function(_, panel)
+        fadeIn(panel, dur / 2, delay, ease)
 
-        func(pnl)
+        func(panel)
     end)
 
-    Anim.Think = function(_, pnl, fraction)
-        pnl:SetAlpha(255 - 255 * fraction)
+    Anim.Think = function(_, panel, fraction)
+        panel:SetAlpha(255 - 255 * fraction)
     end
 end
+
+RiceUI.Animation = {
+    ExpandFromPos = expandFromPos,
+    ExpandFromCursor = expandFromCursor,
+    ShrinkToPos = shrinkToPos,
+    Shrink = shrink,
+    FadeIn = fadeIn,
+    FadeOut = fadeOut,
+    FadeInOut = fadeInOut
+}
