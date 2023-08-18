@@ -1,98 +1,92 @@
 RL.URLMaterial = {}
+local matDir = "RiceLib/Materials/"
+file.CreateDir(matDir)
 
 if SERVER then
-    RL.URLMaterial.Materials = {}
-    util.AddNetworkString("RiceLib_SendMaterial")
-    util.AddNetworkString("RiceLib_SendMaterials")
-    file.CreateDir("RiceLib/Materials")
+    local urlMaterials = urlMaterials or {}
+    util.AddNetworkString"RiceLib_SendMaterial"
+    util.AddNetworkString"RiceLib_SendMaterials"
 
-    function RL.URLMaterial.Create(name, url)
-        if not file.Exists("RiceLib/Materials/" .. name .. ".txt", "DATA") then
-            table.insert(RL.URLMaterial.Materials, {name, url})
+    local function createURLMaterial(name, url)
+        if not file.Exists(matDir .. name .. ".txt", "DATA") then
+            table.insert(urlMaterials, {name, url})
         end
 
-        file.Write("RiceLib/Materials/" .. name .. ".txt", url)
-        net.Start("RiceLib_SendMaterial")
+        file.Write(matDir .. name .. ".txt", url)
+        net.Start"RiceLib_SendMaterial"
         net.WriteString(name)
         net.WriteString(url)
         net.Broadcast()
     end
 
     hook.Add("RL_ClientReady", "RL_SendURLMaterials", function(ply)
-        net.Start("RiceLib_SendMaterials")
-        net.WriteTable(RL.URLMaterial.Materials)
+        net.Start"RiceLib_SendMaterials"
+        net.WriteTable(urlMaterials)
         net.Send(ply)
     end)
 
-    local files = file.Find("RiceLib/Materials/*.txt", "DATA")
-
-    for _, v in ipairs(files) do
-        local name = string.StripExtension(v)
-        local url = file.Read("RiceLib/Materials/" .. v)
-
-        table.insert(RL.URLMaterial.Materials, {name, url})
+    local files = file.Find(matDir .. "*.txt", "DATA")
+    for _, v in pairs(files) do
+        table.insert(urlMaterials, {name = v:StripExtension(), url = file.Read(matDir .. v)})
     end
 
-    RL.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
+    createURLMaterial("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
+
+    RL.URLMaterial.Create = createURLMaterial
 else
-    file.CreateDir("RiceLib/Materials")
-
-    net.Receive("RiceLib_SendMaterial", function()
-        RL.URLMaterial.Create(net.ReadString(), net.ReadString())
-    end)
-
-    net.Receive("RiceLib_SendMaterials", function()
-        RL.URLMaterial.Create(net.ReadString(), net.ReadString())
-    end)
-
-    function RL.URLMaterial.Create(name, url)
-        file.Write("RiceLib/Materials/" .. name .. ".txt", url)
-
+    local function createURLMaterial(name, url)
+        file.Write(matDir .. name .. ".txt", url)
         http.Fetch(url, function(body)
-            file.Write("RiceLib/Materials/" .. name .. ".png", body)
+            file.Write(matDir .. name .. ".png", body)
         end)
     end
 
-    function RL.URLMaterial.Reload()
-        local files = file.Find("RiceLib/Materials/*.txt", "DATA")
+    net.Receive("RiceLib_SendMaterial", function()
+        createURLMaterial(net.ReadString(), net.ReadString())
+    end)
 
-        for _, v in ipairs(files) do
-            http.Fetch(file.Read("RiceLib/Materials/" .. v, "DATA"), function(body)
-                file.Write("RiceLib/Materials/" .. string.StripExtension(v) .. ".png", body)
+    net.Receive("RiceLib_SendMaterials", function()
+        for _, v in pairs(net.ReadTable()) do
+            createURLMaterial(v.name, v.url)
+        end
+    end)
+
+    net.Receive("RiceLib_SendMaterials", function()
+        for _, v in pairs(net.ReadTable()) do
+            if file.Exists(matDir .. v.name .. ".png", "DATA") then
+                continue
+            elseif file.Exists(matDir .. v.name .. ".txt", "DATA") then
+                http.Fetch(v.url, function(body)
+                    file.Write(matDir .. v.name .. ".png", body)
+                end)
+            else
+                createURLMaterial(v.name, v.url)
+            end
+        end
+    end)
+
+    RL.URLMaterial.Create = createURLMaterial
+    RL.URLMaterial.Reload = function()
+        local files = file.Find(matDir .. "*.txt", "DATA")
+        for _, v in pairs(files) do
+            http.Fetch(file.Read(matDir .. v, "DATA"), function(body)
+                file.Write(matDir .. v:StripExtension() .. ".png", body)
             end)
         end
     end
 
-    RL.URLMaterial.Cache = {}
-    function RL.URLMaterial.Get(mat, url)
-        if file.Exists("RiceLib/Materials/" .. mat .. ".png", "DATA") then
-            if RL.URLMaterial.Cache[mat] then
-                return RL.URLMaterial.Cache[mat]
-            end
+    local materialCache = materialCache or {}
+    RL.URLMaterial.Get = function(name, url)
+        if file.Exists(matDir .. name .. ".png", "DATA") then
+            if materialCache[name] then return materialCache[name] end
 
-            local material = Material("data/RiceLib/Materials/" .. mat .. ".png", "smooth")
-            RL.URLMaterial.Cache[mat] = material
+            local material = Material("data/" .. matDir .. name .. ".png", "smooth")
+            materialCache[name] = material
 
             return material
         end
 
-        RL.URLMaterial.Create(mat, url)
-        if file.Exists("RiceLib/Materials/" .. mat .. ".txt", "DATA") then return Material("models/error/green") end
+        createURLMaterial(name, url)
+        if file.Exists(matDir .. name .. ".txt", "DATA") then return Material"models/error/green" end
     end
-
-    net.Receive("RiceLib_SendMaterials", function(len, ply)
-        local files = net.ReadTable()
-
-        for _, v in ipairs(files) do
-            if file.Exists("RiceLib/Materials/" .. v[1] .. ".png", "DATA") then
-                continue
-            elseif file.Exists("RiceLib/Materials/" .. v[1] .. ".txt", "DATA") then
-                http.Fetch(v[2], function(body)
-                    file.Write("RiceLib/Materials/" .. v[1] .. ".png", body)
-                end)
-            else
-                RL.URLMaterial.Create(v[1], v[2])
-            end
-        end
-    end)
 end
