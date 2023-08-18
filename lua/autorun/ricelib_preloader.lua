@@ -5,124 +5,110 @@ RL.Language = RL.Language or {}
 RL.Language.Words = RL.Language.Words or {}
 RL.Functions = RL.Functions or {}
 RL.Files = {}
-file.CreateDir("ricelib/settings")
+file.CreateDir"ricelib/settings"
 
 if SERVER then
-    resource.AddWorkshop("2829757059")
+    resource.AddWorkshop"2829757059"
 end
 
-for k, v in pairs({
-    ["Message"] = Color(0, 255, 0),
-    ["Message_Error"] = Color(255, 75, 75),
-    ["Message_Warn"] = Color(255, 150, 0)
-}) do
-    RL[k] = function(msg, name)
-        local color
-
-        if string.StartWith(msg, "#") then
-            msg = RL.Language.Get(string.sub(msg, 2)) or msg
+local function mkMessageFunc(msgColor)
+    return function(msg, name)
+        if msg:StartsWith"#" then
+            msg = RL.Language.Get(msg:sub(2)) or msg
         end
 
-        if SERVER then
-            color = Color(64, 158, 255)
-        else
-            color = Color(255, 255, 150)
-        end
+        local color = (SERVER and {Color(64, 158, 255)} or {Color(255, 255, 150)})[1]
 
-        if not name then
-            name = "RiceLib"
-        end
+        name = name or "RiceLib"
 
-        MsgC(color, "[" .. name .. "] ")
-        MsgC(v, msg .. "\n")
+        MsgC(color, "[" .. name .. "] ", msgColor, msg .. "\n")
     end
 end
 
-local function AddFile(File, directory, silence)
+local message = mkMessageFunc(Color(0, 255, 0))
+RL.Message = message
+RL.Message_Error = mkMessageFunc(Color(255, 75, 75))
+RL.Message_Warn = mkMessageFunc(Color(255, 150, 0))
+
+local function checkSlash(str)
+    if not str:EndsWith("/") then return str .. "/" end
+    return str
+end
+
+local function AddFile(File, directory, quiet)
     local prefix = string.lower(string.Left(File, 3))
-    silence = silence or RL.Debug or true
+    quiet = quiet or RL.Debug or true
 
     if SERVER and prefix == "sv_" then
         include(directory .. File)
 
-        if not silence then
-            RL.Message("Server Load: " .. File)
-        end
+        if quiet then return end
+        message("Server Load: " .. File)
     elseif prefix == "sh_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
 
-            if not silence then
-                RL.Message("Shared AddCS: " .. File)
-            end
+            if quiet then return end
+            message("Shared AddCS: " .. File)
         end
 
         include(directory .. File)
 
-        if not silence then
-            RL.Message("Shared Load: " .. File)
-        end
+        if quiet then return end
+        message("Shared Load: " .. File)
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
 
-            if not silence then
-                RL.Message("Client AddCS: " .. File)
-            end
+            if quiet then return end
+            message("Client AddCS: " .. File)
         elseif CLIENT then
             include(directory .. File)
 
-            if not silence then
-                RL.Message("Client Load: " .. File)
-            end
+            if quiet then return end
+            message("Client Load: " .. File)
         end
     else
         AddCSLuaFile(directory .. File)
         include(directory .. File)
 
-        if not silence then
-            RL.Message("Load: " .. File)
-        end
+        if quiet then return end
+        message("Load: " .. File)
     end
 end
 
-function RL.IncludeDir(directory, silence, nosub)
-    if not string.EndsWith(directory, "/") then
-        directory = directory .. "/"
-    end
+local function includeDir(directory, quiet, nosub)
+    directory = checkSlash(directory)
 
     local files, directories = file.Find(directory .. "*.lua", "LUA")
-    silence = silence or RL.Debug or true
+    quiet = quiet or RL.Debug or true
 
     for _, v in ipairs(files) do
-        AddFile(v, directory, silence)
+        AddFile(v, directory, quiet)
     end
 
     if nosub then
-        if not silence then
-            RL.Message("Done Loading: " .. directory .. "\n")
-        end
+        if quiet then return end
+        message("Done Loading: " .. directory)
 
         return
     end
 
     for i, v in ipairs(directories) do
-        if not silence then
-            RL.Message("Loading Directory: " .. directory .. v)
+        if not quiet then
+            message("Loading Directory: " .. directory .. v)
         end
 
-        RL.IncludeDir(directory .. v, silence)
-        if silence then continue end
+        includeDir(directory .. v, quiet)
+        if quiet then continue end
 
-        if i == #directories then
-            RL.Message("Done Loading Directory: " .. directory .. v)
-        end
+        if i ~= #directories then continue end
+        message("Done Loading Directory: " .. directory .. v)
     end
 
-    if not silence then
-        RL.Message("Done Loading: " .. directory .. "\n")
-    end
+    if quiet then return end
+    message("Done Loading: " .. directory)
 end
 
 local function AddFileAs(File, directory, name)
@@ -130,35 +116,33 @@ local function AddFileAs(File, directory, name)
 
     if SERVER and prefix == "sv_" then
         include(directory .. File)
-        RL.Message("Server Load: " .. File, name)
+        message("Server Load: " .. File, name)
     elseif prefix == "sh_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
-            RL.Message("Shared AddCS: " .. File, name)
+            message("Shared AddCS: " .. File, name)
         end
 
         include(directory .. File)
-        RL.Message("Shared Load: " .. File, name)
+        message("Shared Load: " .. File, name)
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
-            RL.Message("Client AddCS: " .. File, name)
+            message("Client AddCS: " .. File, name)
         elseif CLIENT then
             include(directory .. File)
-            RL.Message("Client Load: " .. File, name)
+            message("Client Load: " .. File, name)
         end
     else
         AddCSLuaFile(directory .. File)
         include(directory .. File)
-        RL.Message("Load: " .. File, name)
+        message("Load: " .. File, name)
     end
 end
 
-function RL.IncludeDirAs(directory, name, nosub)
-    if not string.EndsWith(directory, "/") then
-        directory = directory .. "/"
-    end
+local function includeDirAs(directory, name, nosub)
+    directory = checkSlash(directory)
 
     local files, directories = file.Find(directory .. "*", "LUA")
 
@@ -167,102 +151,81 @@ function RL.IncludeDirAs(directory, name, nosub)
     end
 
     if nosub then
-        if not silence then
-            RL.Message("Done Loading: " .. name .. "\n")
-        end
+        if quiet then return end
+        message("Done Loading: " .. name)
 
         return
     end
 
     for i, v in ipairs(directories) do
-        RL.Message("Loading Directory: " .. directory .. v, name)
-        RL.IncludeDirAs(directory .. v, name)
+        message("Loading Directory: " .. directory .. v, name)
+        includeDirAs(directory .. v, name)
 
-        if i == #directories then
-            RL.Message("Done Loading Directory: " .. directory .. v, name)
-        end
+        if i ~= #directories then continue end
+        message("Done Loading Directory: " .. directory .. v, name)
     end
 
-    RL.Message("Done Loading\n", name)
+    message("Done Loading", name)
 end
 
+RL.IncludeDir = includeDir
+RL.IncludeDirAs = includeDirAs
+
 if SERVER then
-    function RL.AddCSFiles(directory, name, nosub)
-        if not string.EndsWith(directory, "/") then
-            directory = directory .. "/"
-        end
+    local function addCSFiles(directory, name, nosub)
+        directory = checkSlash(directory)
 
         local files, directories = file.Find(directory .. "*", "LUA")
 
         for _, v in ipairs(files) do
-            if name then
-                RL.Message("CSFiles: " .. directory .. v, name)
-            end
-
             AddCSLuaFile(directory .. v)
+            if not name then continue end
+            message("CSFiles: " .. directory .. v, name)
         end
 
         if nosub then
-            if name then
-                RL.Message("Added CSFiles: " .. name .. "\n")
-            end
+            if not name then return end
+            message("Added CSFiles: " .. name)
 
             return
         end
 
         for _, v in ipairs(directories) do
-            if name then
-                RL.Message("CSFiles Dir: " .. directory .. v, name)
-            end
-
-            RL.AddCSFiles(directory .. v, name)
+            addCSFiles(directory .. v, name)
+            if not name then continue end
+            message("CSFiles Dir: " .. directory .. v, name)
         end
 
-        if name then
-            RL.Message("Added CSFiles: " .. name .. "\n")
-        end
+        if not name then return end
+        message("Added CSFiles: " .. name)
     end
+
+    RL.AddCSFiles = addCSFiles
 end
 
-function RL.Files.GetAll(dir, path)
-    if not string.EndsWith(dir, "/") then
-        dir = dir .. "/"
-    end
-
-    local files, _ = file.Find(dir .. "*", path)
-
+RL.Files.GetAll = function(dir, path)
+    local files, _ = file.Find(checkSlash(dir) .. "*", path)
     return files
 end
 
-function RL.Files.GetDir(dir, path)
-    if not string.EndsWith(dir, "/") then
-        dir = dir .. "/"
-    end
-
-    local _, ret_dir = file.Find(dir .. "*", path)
-
+RL.Files.GetDir = function(dir, path)
+    local _, ret_dir = file.Find(checkSlash(dir) .. "*", path)
     return ret_dir
 end
 
-function RL.Files.Iterator(dir, path, iterator)
-    if not string.EndsWith(dir, "/") then
-        dir = dir .. "/"
-    end
-
+RL.Files.Iterator = function(dir, path, iterator)
+    dir = checkSlash(dir)
     for _, v in ipairs(RL.Files.GetAll(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
-function RL.Files.Iterator_Dir(dir, path, iterator)
-    if not string.EndsWith(dir, "/") then
-        dir = dir .. "/"
-    end
-
+RL.Files.Iterator_Dir = function(dir, path, iterator)
+    dir = checkSlash(dir)
     for _, v in ipairs(RL.Files.GetDir(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
-print("==================RL=================")
-RL.IncludeDir("ricelib_preload")
+print"================== RL ================="
+RL.IncludeDir"ricelib_preload"

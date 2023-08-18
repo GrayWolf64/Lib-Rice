@@ -6,7 +6,7 @@ function RiceUI.Smooth_CreateController(controller,time)
 end
 
 function RiceUI.Smooth(controller,val)
-    if ( controller.oldVal == -1 and controller.newVal == -1 ) then
+    if controller.oldVal == -1 and controller.newVal == -1 then
         controller.oldVal = val
         controller.newVal = val
     end
@@ -19,7 +19,7 @@ function RiceUI.Smooth(controller,val)
     local smoothVal = Lerp( (SysTime() - valStart) / time , oldVal, newVal )
 
     if newVal ~= val then
-        if ( smoothVal ~= val ) then
+        if smoothVal ~= val then
             controller.newVal = smoothVal
         end
 
@@ -31,10 +31,10 @@ function RiceUI.Smooth(controller,val)
     return smoothVal
 end
 
-function RiceUI.MergeData(pnl,data)
-    pnl.RiceUI_Data = data
+function RiceUI.MergeData(panel, data)
+    panel.RiceUI_Data = data
 
-    table.Merge(pnl:GetTable(),data)
+    table.Merge(panel:GetTable(), data)
 end
 
 function RiceUI.ProcessData(data)
@@ -56,50 +56,48 @@ function RiceUI.ProcessData(data)
     return newData
 end
 
-function RiceUI.GetWebImage(url,httpFunc)
+function RiceUI.GetWebImage(url, httpFunc)
     if url == nil then return end
+    local dir = "riceui/web_image/"
 
-    if file.Exists("riceui/web_image/" .. util.SHA256(url) .. ".png","DATA") then
-        return Material("data/riceui/web_image/" .. util.SHA256(url) .. ".png","smooth")
+    if file.Exists(dir .. util.SHA256(url) .. ".png", "DATA") then
+        return Material("data/" .. dir .. util.SHA256(url) .. ".png", "smooth")
     else
-        http.Fetch(url,function(body)
-            file.Write("riceui/web_image/" .. util.SHA256(url) .. ".png",body)
+        http.Fetch(url, function(body)
+            file.Write(dir .. util.SHA256(url) .. ".png", body)
 
-            if isfunction(httpFunc) then
-                httpFunc(Material("data/riceui/web_image/" .. util.SHA256(url) .. ".png","smooth"))
-            end
+            if not isfunction(httpFunc) then return end
+            httpFunc(Material("data/" .. dir .. util.SHA256(url) .. ".png", "smooth"))
         end)
     end
 end
 
-function RiceUI.HoverAlpha(pnl,Speed)
-    if not pnl.HoverAlpha then
-        pnl.HoverAlpha = 0
+function RiceUI.HoverAlpha(panel, speed)
+    if not panel.HoverAlpha then
+        panel.HoverAlpha = 0
     end
 
-    if pnl:IsHovered() then
-        pnl.HoverAlpha = math.min(pnl.HoverAlpha + Speed * (RealFrameTime() * 100), 255)
+    if panel:IsHovered() then
+        panel.HoverAlpha = math.min(panel.HoverAlpha + speed * (RealFrameTime() * 100), 255)
     else
-        pnl.HoverAlpha = math.max(pnl.HoverAlpha - Speed * (RealFrameTime() * 100), 0)
+        panel.HoverAlpha = math.max(panel.HoverAlpha - speed * (RealFrameTime() * 100), 0)
     end
 
-    return pnl.HoverAlpha
+    return panel.HoverAlpha
 end
 
-function RiceUI.HoverAlphaEase(pnl,Speed)
-    if not pnl.HoverAlpha then
-        pnl.HoverAlpha = 0
+function RiceUI.HoverAlphaEase(panel, speed)
+    if not panel.HoverAlpha then
+        panel.HoverAlpha = 0
     end
 
-    if pnl:IsHovered() then
-        pnl.HoverAlpha = math.min(pnl.HoverAlpha + Speed * (RealFrameTime() * 100), 255)
+    if panel:IsHovered() then
+        panel.HoverAlpha = math.min(panel.HoverAlpha + speed * (RealFrameTime() * 100), 255)
     else
-        pnl.HoverAlpha = math.max(pnl.HoverAlpha - Speed * (RealFrameTime() * 100), 0)
+        panel.HoverAlpha = math.max(panel.HoverAlpha - speed * (RealFrameTime() * 100), 0)
     end
 
-    return math.ease.InOutCubic(pnl.HoverAlpha / 255) * 255
+    return math.ease.InOutCubic(panel.HoverAlpha / 255) * 255
 end
 
-function RiceUI.AlphaPercent(color, percent)
-    return ColorAlpha(color, 255 * percent)
-end
+RiceUI.AlphaPercent = function(color, percent) return ColorAlpha(color, 255 * percent) end
