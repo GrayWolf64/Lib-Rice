@@ -15,6 +15,8 @@ function RiceUI.SimpleCreate(data, parent)
         return
     end
 
+    if data.ShouldCreate and not data.ShouldCreate() then return end
+
     local pnl = RiceUI.Elements[data.type].Create(data, parent)
     table.insert(RiceUI.UI, pnl)
     RiceUI.DoProcess(pnl)

@@ -181,7 +181,7 @@ tbl.Colors = {
             },
 
             Frame = ColorAlpha(HSLToColor(0, 0, 0.15), 250),
-            Layer = ColorAlpha(color_white, 10),
+            Layer = ColorAlpha(color_black, 30),
 
             Control = {
                 Default = RiceUI.AlphaPercent(color_white, 0.02),
