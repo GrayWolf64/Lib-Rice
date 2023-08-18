@@ -36,7 +36,7 @@ local function checkSlash(str)
 end
 
 local function AddFile(File, directory, quiet)
-    local prefix = string.lower(string.Left(File, 3))
+    local prefix = File:Left(3):lower()
     quiet = quiet or RL.Debug or true
 
     if SERVER and prefix == "sv_" then
@@ -112,7 +112,7 @@ local function includeDir(directory, quiet, nosub)
 end
 
 local function AddFileAs(File, directory, name)
-    local prefix = string.lower(string.Left(File, 3))
+    local prefix = File:Left(3):lower()
 
     if SERVER and prefix == "sv_" then
         include(directory .. File)
