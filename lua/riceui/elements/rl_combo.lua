@@ -111,7 +111,7 @@ function Element.Create(data, parent)
                 DoClick = function()
                     self.OnAnim = true
                     self.Value = choice_data[1]
-                    self:OnSelected(choice_data[1])
+                    self:OnSelected(choice_data[1], choice_data)
                     self:CloseMenu()
                     self:DoAnim()
                 end
