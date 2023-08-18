@@ -1,4 +1,5 @@
-// 一键创建 10 - 100 大小的字体
+local testStr = "Innovation in China 中国智造，慧及全球 0123456789"
+
 function RL.VGUI.RegisterFont(FontName, CodeName, addData)
     for i=1,10 do
         local data = {
@@ -123,7 +124,7 @@ concommand.Add("RiceLib_VGUI_FontView",function(ply,cmd,args)
         local button = vgui.Create("DLabel",panel)
         button:Dock(TOP)
         button:DockMargin(0,RL.hudScaleY(5),0,0)
-        button:SetText(" "..tostring(i*5).." Innovation in China 中国智造，慧及全球 0123456789")
+        button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
         button:SetTheme("ModernDark")
         button:SetTall(RL.hudScaleY(i*5+10))
         button:SetFont("FontView"..args[1].."_"..i*5)
@@ -148,7 +149,7 @@ concommand.Add("RiceLib_VGUI_FontView_Raw",function(ply,cmd,args)
         local button = vgui.Create("DLabel",panel)
         button:Dock(TOP)
         button:DockMargin(0,RL.hudScaleY(5),0,0)
-        button:SetText(" "..tostring(i*5).." Innovation in China 中国智造，慧及全球 0123456789")
+        button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
         button:SetTheme("ModernDark")
         button:SetTall(RL.hudScaleY(i*5+10))
         button:SetFont(args[1].."_"..i*5)
@@ -170,7 +171,7 @@ concommand.Add("RiceLib_VGUI_FontView_New",function(ply,cmd,args)
         local button = vgui.Create("DLabel",panel)
         button:Dock(TOP)
         button:DockMargin(0,RL.hudScaleY(5),0,0)
-        button:SetText(" "..tostring(i*5).." Innovation in China 中国智造，慧及全球 0123456789")
+        button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
         button:SetTheme("ModernDark")
         button:SetTall(RL.hudScaleY(i*5+10))
         button:SetFont(args[1].."_"..i*5)

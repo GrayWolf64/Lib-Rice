@@ -7,25 +7,23 @@ RL.VGUI.ThemeSet = "SciFi"
 function RL.VGUI.ReloadTheme()
     if SERVER then
         local files,_ = file.Find("ricelib_vgui_theme/*.lua", "LUA")
-        
+
         for _, v in ipairs(files) do AddCSLuaFile("ricelib_vgui_theme/"..v) end
     else
         local files,_ = file.Find("ricelib_vgui_theme/*.lua", "LUA")
-    
+
         for _, v in ipairs(files) do
             local Name,Theme = include("ricelib_vgui_theme/" .. v)
             if !Name or !Theme then return end
 
             RL.Message("Loaded " .. Name,"RiceLib VGUI Theme")
-            
+
             RL.VGUI.RegisterTheme(Name,Theme)
         end
     end
 end
 
-if SERVER then
-    
-else
+if CLIENT then
     function RL.VGUI.RegisterTheme(Name,Theme)
         if !Theme.Paint then return end
 
@@ -57,7 +55,7 @@ else
     end
 
     local meta = FindMetaTable("Panel")
-    
+
     function meta:SetTheme(Name)
         if !RL.VGUI.Theme[Name] then return end
 
