@@ -3,7 +3,7 @@ RL.Config = RL.Config or {}
 -- file based config
 function RL.Config.LoadConfig(Config, Name, default)
     local root = "ricelib/settings/" .. Config
-    local dir = "ricelib/settings/" .. Config .. "/" .. Name .. ".json"
+    local dir = root .. "/" .. Name .. ".json"
 
     if file.Exists(root, "DATA") and file.Exists(dir, "DATA") then
         local data = RL.table.Inherit(util.JSONToTable(file.Read(dir)), default)

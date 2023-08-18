@@ -1,26 +1,17 @@
---省事函数
-function RL.VGUI.GetRoot(vgui)
+local function getRoot(vgui)
     local parent = vgui:GetParent()
     if not parent then return vgui end
     if parent:GetClassName() == "CGModBase" then return vgui end
 
-    return RL.VGUI.GetRoot(parent)
+    return getRoot(parent)
 end
 
-function RL.VGUI.Icon(name)
-    return Material("rl_icons/" .. name .. ".png")
-end
-
-function RL.VGUI.IconRaw(name)
-    return "rl_icons/" .. name .. ".png"
-end
-
-local blur = Material("pp/blurscreen")
 local matBlurScreen = Material("pp/blurscreen")
 
-function RL.VGUI.blurPanel(panel, amount)
+local function blurPanel(panel, amount)
     local x, y = panel:LocalToScreen(0, 0)
-    local scrW, scrH = ScrW(), ScrH()
+    local blur = Material("pp/blurscreen")
+
     surface.SetDrawColor(255, 255, 255)
     surface.SetMaterial(blur)
 
@@ -28,32 +19,29 @@ function RL.VGUI.blurPanel(panel, amount)
         blur:SetFloat("$blur", (i / 3) * (amount or 6))
         blur:Recompute()
         render.UpdateScreenEffectTexture()
-        surface.DrawTexturedRect(-x, -y, scrW, scrH)
+        surface.DrawTexturedRect(-x, -y, ScrW(), ScrH())
     end
 end
 
-function RL.VGUI.blurBackground(self, amount)
-    local Fraction = 1
+local function blurBackground(self, amount)
+    local fraction = 1
     local x, y = self:LocalToScreen(0, 0)
-    local wasEnabled = DisableClipping(true)
     surface.SetMaterial(matBlurScreen)
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(color_white:Unpack())
 
     for i = 0.33, 1, 0.33 do
-        matBlurScreen:SetFloat("$blur", Fraction * amount * i)
+        matBlurScreen:SetFloat("$blur", fraction * amount * i)
         matBlurScreen:Recompute()
 
-        if render then
-            render.UpdateScreenEffectTexture()
-        end
+        if render then render.UpdateScreenEffectTexture() end
 
         surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
     end
 
-    DisableClipping(wasEnabled)
+    DisableClipping(DisableClipping(true))
 end
 
-function RL.VGUI.FadeIn(panel, time, func)
+local function FadeIn(panel, time, func)
     func = func or function() end
 
     panel:AlphaTo(0, time / 2, 0, function()
@@ -63,18 +51,18 @@ function RL.VGUI.FadeIn(panel, time, func)
     end)
 end
 
-function RL.VGUI.Notify(Text, FontSize, X, Y, Time)
+local function Notify(text, fontSize, x, y, lifeTime)
     local notify = vgui.Create("DNotify", Panel)
-    notify:SetPos(X, Y)
-    notify:SetLife(Time)
+    notify:SetPos(x, y)
+    notify:SetLife(lifeTime)
     notify:SetSize(ScrW(), ScrH())
     local panel = vgui.Create("DPanel", notify)
 
     panel.Paint = function(self)
-        RL.VGUI.blurPanel(self, 6)
+        blurPanel(self, 6)
     end
 
-    local label = RL.VGUI.ModernLabel(Text, panel, FontSize, 5, 0, Color(255, 255, 255, 255))
+    local label = RL.VGUI.ModernLabel(text, panel, fontSize, 5, 0, Color(255, 255, 255, 255))
     label:SizeToContents()
     panel:SetSize(label:GetWide() + 10, label:GetTall())
     notify:AddItem(panel)
@@ -82,15 +70,25 @@ function RL.VGUI.Notify(Text, FontSize, X, Y, Time)
     return notify, label
 end
 
-function RL.VGUI.DM(l, t, r, b)
+local function DM(l, t, r, b)
     local left, up = RL_hudScale(l or 0, t or 0)
     local right, down = RL_hudScale(r or 0, b or 0)
 
     return left, up, right, down
 end
 
-function RL.VGUI.TextWide(font, text)
+local function TextWide(font, text)
     surface.SetFont(font)
 
     return select(1, surface.GetTextSize(text))
 end
+
+RL.VGUI.GetRoot = getRoot
+RL.VGUI.Icon = function(name) return Material("rl_icons/" .. name .. ".png") end
+RL.VGUI.IconRaw = function(name) return "rl_icons/" .. name .. ".png" end
+RL.VGUI.blurPanel = blurPanel
+RL.VGUI.blurBackground = blurBackground
+RL.VGUI.FadeIn = FadeIn
+RL.VGUI.Notify = Notify
+RL.VGUI.DM = DM
+RL.VGUI.TextWide = TextWide
