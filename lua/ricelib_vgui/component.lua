@@ -10,8 +10,10 @@ function RL.VGUI.Button(text, panel, font, fontSize, x, y, w, h, doClickFunc, ..
     button:SetSize(RL_hudScale(w, h))
     button:SetText(text)
     button:SetFont(font .. fontSize or "OPSans_" .. fontSize)
+
+    local vararg = {...}
     button.DoClick = function()
-        doClickFunc(unpack({...}))
+        doClickFunc(unpack(vararg))
     end
 
     return button
@@ -28,8 +30,10 @@ function RL.VGUI.ImageButton(icon, panel, x, y, w, h, doClickFunc, ...)
     button:SetPos(RL_hudScale(x, y))
     button:SetSize(RL_hudScale(w, h))
     button:SetImage(icon)
+
+    local vararg = {...}
     button.DoClick = function()
-        doClickFunc(unpack({...}))
+        doClickFunc(unpack(vararg))
     end
 
     return button
