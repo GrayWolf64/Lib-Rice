@@ -62,7 +62,7 @@ local function AddFile(File, directory, quiet, name)
 
     if quiet then return end
     local opType = {"sv include", "sh addCSLF or include", "cl receive and include", "addCSLF or include"}
-    message(opType[type] .. " " .. File, name)
+    message(opType[type] .. ": " .. File, name)
 end
 
 AddFileAs = function(File, directory, name) AddFile(File, directory, false, name) end
