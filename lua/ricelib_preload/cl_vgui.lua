@@ -6,7 +6,7 @@ local function getRoot(vgui)
     return getRoot(parent)
 end
 
-local matBlurScreen = Material("pp/blurscreen")
+local matBlurScreen = Material"pp/blurscreen"
 
 local function blurPanel(panel, amount)
     local x, y = panel:LocalToScreen(0, 0)
@@ -33,7 +33,7 @@ local function blurBackground(self, amount)
         matBlurScreen:SetFloat("$blur", fraction * amount * i)
         matBlurScreen:Recompute()
 
-        if render then render.UpdateScreenEffectTexture() end
+        render.UpdateScreenEffectTexture()
 
         surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
     end
