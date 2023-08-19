@@ -35,8 +35,6 @@ local function checkSlash(str)
     return str
 end
 
-local opType = {"sv include", "sh addCSLF or include", "cl receive and include", "addCSLF or include"}
-
 local function AddFile(File, directory, quiet, name)
     local prefix, type = File:Left(3):lower()
     name = name or "RL"
@@ -63,6 +61,7 @@ local function AddFile(File, directory, quiet, name)
     end
 
     if quiet then return end
+    local opType = {"sv include", "sh addCSLF or include", "cl receive and include", "addCSLF or include"}
     message(opType[type] .. " " .. File, name)
 end
 
