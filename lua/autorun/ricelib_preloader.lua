@@ -35,52 +35,40 @@ local function checkSlash(str)
     return str
 end
 
+local opType = {"sv include", "sh addCSLF or include", "cl receive and include", "addCSLF or include"}
+
 local function AddFile(File, directory, quiet, name)
-    local prefix = File:Left(3):lower()
+    local prefix, type = File:Left(3):lower()
     name = name or "RL"
 
     if SERVER and prefix == "sv_" then
-        include(directory .. File)
-
-        if quiet then return end
-        message("Server Load: " .. File, name)
+        include(directory .. File); type = 1
     elseif prefix == "sh_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
-
-            if quiet then return end
-            message("Shared AddCS: " .. File, name)
         end
 
-        include(directory .. File)
-
-        if quiet then return end
-        message("Shared Load: " .. File, name)
+        include(directory .. File); type = 2
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
-
-            if quiet then return end
-            message("Client AddCS: " .. File, name)
-        elseif CLIENT then
+        else
             include(directory .. File)
-
-            if quiet then return end
-            message("Client Load: " .. File, name)
         end
+        type = 3
     else
-        AddCSLuaFile(directory .. File)
+        AddCSLuaFile(directory .. File); type = 4
         include(directory .. File)
-
-        if quiet then return end
-        message("Load: " .. File, name)
     end
+
+    if quiet then return end
+    message(opType[type] .. " " .. File, name)
 end
 
 AddFileAs = function(File, directory, name) AddFile(File, directory, false, name) end
 
-local function includeDir(directory, quiet, nosub, name)
+local function includeDir(directory, quiet, noSub, name)
     directory = checkSlash(directory)
 
     local files, directories = file.Find(directory .. "*.lua", "LUA")
@@ -90,36 +78,32 @@ local function includeDir(directory, quiet, nosub, name)
         AddFile(v, directory, quiet)
     end
 
-    if nosub then
-        if quiet then return end
-        message("Done Loading: " .. directory, name)
-
-        return
+    if not quiet then
+        message("Done loading: " .. directory, name)
     end
+
+    if noSub then return end
 
     for i, v in ipairs(directories) do
         if not quiet then
-            message("Loading Directory: " .. directory .. v, name)
+            message("Loading directory: " .. directory .. v, name)
         end
 
         includeDir(directory .. v, quiet)
         if quiet then continue end
 
         if i ~= #directories then continue end
-        message("Done Loading Directory: " .. directory .. v, name)
+        message("Done loading directory: " .. directory .. v, name)
     end
-
-    if quiet then return end
-    message("Done Loading: " .. directory, name)
 end
 
-includeDirAs = function(directory, name, nosub) includeDir(directory, false, nosub, name) end
+includeDirAs = function(directory, name, noSub) includeDir(directory, false, noSub, name) end
 
 RL.IncludeDir = includeDir
 RL.IncludeDirAs = includeDirAs
 
 if SERVER then
-    local function addCSFiles(directory, name, nosub)
+    local function addCSFiles(directory, name, noSub)
         directory = checkSlash(directory)
 
         local files, directories = file.Find(directory .. "*", "LUA")
@@ -130,21 +114,17 @@ if SERVER then
             message("CSFiles: " .. directory .. v, name)
         end
 
-        if nosub then
-            if not name then return end
+        if name then
             message("Added CSFiles: " .. name)
-
-            return
         end
+
+        if noSub then return end
 
         for _, v in ipairs(directories) do
             addCSFiles(directory .. v, name)
             if not name then continue end
-            message("CSFiles Dir: " .. directory .. v, name)
+            message("CSFiles dir: " .. directory .. v, name)
         end
-
-        if not name then return end
-        message("Added CSFiles: " .. name)
     end
 
     RL.AddCSFiles = addCSFiles
