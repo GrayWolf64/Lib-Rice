@@ -139,7 +139,7 @@ function RiceUI.Prefab.RequestInput(args)
                 Font = "RiceUI_M_36",
 
                 Dock = TOP,
-                Margin = {20,20,0,0}
+                Margin = {16, 16, 0, 0}
             },
 
             {type = "entry",
@@ -147,7 +147,7 @@ function RiceUI.Prefab.RequestInput(args)
                 Placeholder = args.Placeholder,
 
                 Dock = TOP,
-                Margin = {20,15,20,0}
+                Margin = {16, 16, 16,0}
             },
 
             {type = "rl_panel",
@@ -163,7 +163,7 @@ function RiceUI.Prefab.RequestInput(args)
                 h = 80,
 
                 Dock = BOTTOM,
-                Margin = {0,0,0,0},
+                Margin = {0, 0, 0, 0},
 
                 children = {
                     {type = "rl_button",
@@ -171,7 +171,7 @@ function RiceUI.Prefab.RequestInput(args)
                         Font = "RiceUI_30",
 
                         Dock = LEFT,
-                        Margin = {20,20,0,20},
+                        Margin = {16, 16, 0, 16},
 
                         w = wide / 2 - RL.hudScaleX(25),
 
@@ -187,7 +187,111 @@ function RiceUI.Prefab.RequestInput(args)
                         Font = "RiceUI_30",
 
                         Dock = RIGHT,
-                        Margin = {0,20,20,20},
+                        Margin = {0, 16, 16, 16},
+
+                        w = wide / 2 - RL.hudScaleX(25),
+
+                        Theme = {ThemeType = "Button_NT"},
+
+                        DoClick = function(self)
+                            args.OnCancel(self:RiceUI_GetRoot())
+                        end
+                    },
+                }
+            }
+        }
+    })
+end
+
+function RiceUI.Prefab.RequestKey(args)
+    RL.table.Inherit(args,{
+        Title = "请求按键输入",
+
+        OnConfirm = function(self) self:Remove() end,
+        OnCancel = function(self) self:Remove() end,
+
+        Theme = {
+            ThemeName = "modern",
+            ThemeType = "Panel",
+
+            Color = "white",
+            TextColor = "white"
+        },
+    })
+
+    local wide = math.max(500,RL.VGUI.TextWide("RiceUI_36", args.Title))
+
+    RiceUI.SimpleCreate({type = "epanel",
+        w = wide,
+        h = 216,
+
+        Center = true,
+        OnTop = true,
+
+        UseNewTheme = true,
+        Theme = args.Theme,
+
+        KeyCode = 0,
+
+        OnKeyCodePressed = function(self, code)
+            self.Elements.Key.Text = input.GetKeyName(code)
+            self.KeyCode = code
+        end,
+
+        children = {
+            {type = "label",
+                Text = args.Title,
+                Font = "RiceUI_M_36",
+
+                Dock = TOP,
+                Margin = {16, 16, 0, 0}
+            },
+
+            {type = "rl_button",
+                ID = "Key",
+
+                Dock = TOP,
+                Margin = {16, 16, 16, 0}
+            },
+
+            {type = "rl_panel",
+                Theme = {
+                    ThemeType = "PanelNT",
+                    Corner = {false,false,true,true},
+
+                    ColorNT = {"Background", "Soild", "Primary"},
+                    BorderColor = {"Stroke", "Solid"},
+                    Border = true,
+                },
+
+                h = 80,
+
+                Dock = BOTTOM,
+                Margin = {0, 0, 0, 0},
+
+                children = {
+                    {type = "rl_button",
+                        Text = "确定",
+                        Font = "RiceUI_30",
+
+                        Dock = LEFT,
+                        Margin = {16, 16, 0, 16},
+
+                        w = wide / 2 - RL.hudScaleX(25),
+
+                        Theme = {ThemeType = "Button_Accent"},
+
+                        DoClick = function(self)
+                            args.OnConfirm(self:RiceUI_GetRoot(), self:RiceUI_GetRoot().KeyCode)
+                        end
+                    },
+
+                    {type = "rl_button",
+                        Text = "取消",
+                        Font = "RiceUI_30",
+
+                        Dock = RIGHT,
+                        Margin = {0, 16, 16, 16},
 
                         w = wide / 2 - RL.hudScaleX(25),
 
