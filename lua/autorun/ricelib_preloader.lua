@@ -35,37 +35,34 @@ local function checkSlash(str)
     return str
 end
 
-local function AddFile(File, directory, quiet, name)
-    local prefix, type = File:Left(3):lower()
+local function AddFile(fileName, directory, quiet, name)
+    local prefix, type = fileName:Left(3):lower()
     name = name or "RL"
 
-    if SERVER and prefix == "sv_" then
-        include(directory .. File); type = 1
-    elseif prefix == "sh_" then
-        if SERVER then
-            AddCSLuaFile(directory .. File)
-            include(directory .. File)
-        end
+    local mt = {__index = function()
+        return function() AddCSLuaFile(directory .. fileName); include(directory .. fileName); type = 4 end
+    end}
+    local mappedHandlers = setmetatable({
+        sv_ = function() include(directory .. fileName); type = 1 end,
+        sh_ = {
+            [true] = function() AddCSLuaFile(directory .. fileName) end,
+            [false] = function() return end,
+            final = function() include(directory .. fileName); type = 2 end},
+        cl_ = {
+            [true] = function() AddCSLuaFile(directory .. fileName) end,
+            [false] = function() include(directory .. fileName) end,
+            final = function() type = 3 end}
+    }, mt)
 
-        include(directory .. File); type = 2
-    elseif prefix == "cl_" then
-        if SERVER then
-            AddCSLuaFile(directory .. File)
-        else
-            include(directory .. File)
-        end
-        type = 3
-    else
-        AddCSLuaFile(directory .. File); type = 4
-        include(directory .. File)
-    end
+    local handler = mappedHandlers[prefix]
+    if istable(handler) then handler[SERVER](); handler.final() else handler() end
 
     if quiet then return end
-    local opType = {"sv include", "sh addCSLF or include", "cl receive and include", "addCSLF or include"}
-    message(opType[type] .. ": " .. File, name)
+    local opType = {"sv include", "sh send or include", "cl recv and include", "send or include"}
+    message(opType[type] .. ": " .. fileName, name)
 end
 
-AddFileAs = function(File, directory, name) AddFile(File, directory, false, name) end
+AddFileAs = function(fileName, directory, name) AddFile(fileName, directory, false, name) end
 
 local function includeDir(directory, quiet, noSub, name)
     directory = checkSlash(directory)
