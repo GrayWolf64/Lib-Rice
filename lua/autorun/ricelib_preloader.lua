@@ -35,54 +35,56 @@ local function checkSlash(str)
     return str
 end
 
-local function AddFile(File, directory, quiet)
+local function AddFile(File, directory, quiet, name)
     local prefix = File:Left(3):lower()
-    quiet = quiet or RL.Debug or true
+    name = name or "RL"
 
     if SERVER and prefix == "sv_" then
         include(directory .. File)
 
         if quiet then return end
-        message("Server Load: " .. File)
+        message("Server Load: " .. File, name)
     elseif prefix == "sh_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
             include(directory .. File)
 
             if quiet then return end
-            message("Shared AddCS: " .. File)
+            message("Shared AddCS: " .. File, name)
         end
 
         include(directory .. File)
 
         if quiet then return end
-        message("Shared Load: " .. File)
+        message("Shared Load: " .. File, name)
     elseif prefix == "cl_" then
         if SERVER then
             AddCSLuaFile(directory .. File)
 
             if quiet then return end
-            message("Client AddCS: " .. File)
+            message("Client AddCS: " .. File, name)
         elseif CLIENT then
             include(directory .. File)
 
             if quiet then return end
-            message("Client Load: " .. File)
+            message("Client Load: " .. File, name)
         end
     else
         AddCSLuaFile(directory .. File)
         include(directory .. File)
 
         if quiet then return end
-        message("Load: " .. File)
+        message("Load: " .. File, name)
     end
 end
 
-local function includeDir(directory, quiet, nosub)
+AddFileAs = function(File, directory, name) AddFile(File, directory, false, name) end
+
+local function includeDir(directory, quiet, nosub, name)
     directory = checkSlash(directory)
 
     local files, directories = file.Find(directory .. "*.lua", "LUA")
-    quiet = quiet or RL.Debug or true
+    name = name or "RL"
 
     for _, v in ipairs(files) do
         AddFile(v, directory, quiet)
@@ -90,83 +92,28 @@ local function includeDir(directory, quiet, nosub)
 
     if nosub then
         if quiet then return end
-        message("Done Loading: " .. directory)
+        message("Done Loading: " .. directory, name)
 
         return
     end
 
     for i, v in ipairs(directories) do
         if not quiet then
-            message("Loading Directory: " .. directory .. v)
+            message("Loading Directory: " .. directory .. v, name)
         end
 
         includeDir(directory .. v, quiet)
         if quiet then continue end
 
         if i ~= #directories then continue end
-        message("Done Loading Directory: " .. directory .. v)
-    end
-
-    if quiet then return end
-    message("Done Loading: " .. directory)
-end
-
-local function AddFileAs(File, directory, name)
-    local prefix = File:Left(3):lower()
-
-    if SERVER and prefix == "sv_" then
-        include(directory .. File)
-        message("Server Load: " .. File, name)
-    elseif prefix == "sh_" then
-        if SERVER then
-            AddCSLuaFile(directory .. File)
-            include(directory .. File)
-            message("Shared AddCS: " .. File, name)
-        end
-
-        include(directory .. File)
-        message("Shared Load: " .. File, name)
-    elseif prefix == "cl_" then
-        if SERVER then
-            AddCSLuaFile(directory .. File)
-            message("Client AddCS: " .. File, name)
-        elseif CLIENT then
-            include(directory .. File)
-            message("Client Load: " .. File, name)
-        end
-    else
-        AddCSLuaFile(directory .. File)
-        include(directory .. File)
-        message("Load: " .. File, name)
-    end
-end
-
-local function includeDirAs(directory, name, nosub)
-    directory = checkSlash(directory)
-
-    local files, directories = file.Find(directory .. "*", "LUA")
-
-    for _, v in ipairs(files) do
-        AddFileAs(v, directory, name)
-    end
-
-    if nosub then
-        if quiet then return end
-        message("Done Loading: " .. name)
-
-        return
-    end
-
-    for i, v in ipairs(directories) do
-        message("Loading Directory: " .. directory .. v, name)
-        includeDirAs(directory .. v, name)
-
-        if i ~= #directories then continue end
         message("Done Loading Directory: " .. directory .. v, name)
     end
 
-    message("Done Loading", name)
+    if quiet then return end
+    message("Done Loading: " .. directory, name)
 end
+
+includeDirAs = function(directory, name, nosub) includeDir(directory, false, nosub, name) end
 
 RL.IncludeDir = includeDir
 RL.IncludeDirAs = includeDirAs
