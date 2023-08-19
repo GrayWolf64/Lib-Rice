@@ -29,9 +29,9 @@ function RL.Net.SendEntityCommand(entity, command, data, ply)
     net.Broadcast()
 end
 
-net.Receive("Rl_EntityCommand", function(len, ply)
+net.Receive("RL_EntityCommand", function(len, ply)
     local ent = net.ReadEntity()
-    if not ent.RL_NetCommand then return end
+    if ent.RL_NetCommand == nil then return end
 
     ent:RL_NetCommand(net.ReadString(), net.ReadTable(), ply)
 end)
