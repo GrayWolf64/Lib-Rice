@@ -83,12 +83,12 @@ local function TextWide(font, text)
     return select(1, surface.GetTextSize(text))
 end
 
-RL.VGUI.GetRoot = getRoot
-RL.VGUI.Icon = function(name) return Material("rl_icons/" .. name .. ".png") end
-RL.VGUI.IconRaw = function(name) return "rl_icons/" .. name .. ".png" end
-RL.VGUI.blurPanel = blurPanel
+RL.VGUI.GetRoot        = getRoot
+RL.VGUI.Icon           = function(name) return Material("rl_icons/" .. name .. ".png") end
+RL.VGUI.IconRaw        = function(name) return "rl_icons/" .. name .. ".png" end
+RL.VGUI.blurPanel      = blurPanel
 RL.VGUI.blurBackground = blurBackground
-RL.VGUI.FadeIn = FadeIn
-RL.VGUI.Notify = Notify
-RL.VGUI.DM = DM
-RL.VGUI.TextWide = TextWide
+RL.VGUI.FadeIn         = FadeIn
+RL.VGUI.Notify         = Notify
+RL.VGUI.DM             = DM
+RL.VGUI.TextWide       = TextWide
