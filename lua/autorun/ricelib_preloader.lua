@@ -1,10 +1,10 @@
-RL = RL or {}
-RL.VGUI = RL.VGUI or {}
-RL.VGUI.Anim = RL.VGUI.Anim or {}
-RL.Language = RL.Language or {}
+RL                = RL or {}
+RL.VGUI           = RL.VGUI or {}
+RL.VGUI.Anim      = RL.VGUI.Anim or {}
+RL.Language       = RL.Language or {}
 RL.Language.Words = RL.Language.Words or {}
-RL.Functions = RL.Functions or {}
-RL.Files = {}
+RL.Functions      = RL.Functions or {}
+RL.Files          = RL.Files or {}
 
 file.CreateDir"ricelib/settings"
 if SERVER then resource.AddWorkshop"2829757059" end
@@ -23,10 +23,10 @@ local function mkMessageFunc(msgColor)
     end
 end
 
-local message = mkMessageFunc(Color(0, 255, 0))
-RL.Message = message
+local message    = mkMessageFunc(Color(0, 255, 0))
+RL.Message_Warn  = mkMessageFunc(Color(255, 150, 0))
 RL.Message_Error = mkMessageFunc(Color(255, 75, 75))
-RL.Message_Warn = mkMessageFunc(Color(255, 150, 0))
+RL.Message       = message
 
 local function checkSlash(str)
     if not str:EndsWith"/" then return str .. "/" end
@@ -43,13 +43,13 @@ local function AddFile(fileName, directory, quiet, name)
     local mappedHandlers = setmetatable({
         sv_ = function() include(directory .. fileName); type = 1 end,
         sh_ = {
-            [true] = function() AddCSLuaFile(directory .. fileName) end,
+            [true]  = function() AddCSLuaFile(directory .. fileName) end,
             [false] = function() return end,
-            final = function() include(directory .. fileName); type = 2 end},
+            final   = function() include(directory .. fileName); type    = 2 end},
         cl_ = {
-            [true] = function() AddCSLuaFile(directory .. fileName) end,
+            [true]  = function() AddCSLuaFile(directory .. fileName) end,
             [false] = function() include(directory .. fileName) end,
-            final = function() type = 3 end}
+            final   = function() type = 3 end}
     }, mt)
 
     local handler = mappedHandlers[fileName:Left(3):lower()]
@@ -82,10 +82,8 @@ local function includeDir(directory, quiet, noSub, name)
     end
 end
 
-includeDirAs = function(directory, name, noSub) includeDir(directory, false, noSub, name) end
-
-RL.IncludeDir = includeDir
-RL.IncludeDirAs = includeDirAs
+RL.IncludeDir   = includeDir
+RL.IncludeDirAs = function(directory, name, noSub) includeDir(directory, false, noSub, name) end
 
 if SERVER then
     local function addCSFiles(directory, name, noSub)
@@ -112,29 +110,32 @@ if SERVER then
     RL.AddCSFiles = addCSFiles
 end
 
-RL.Files.GetAll = function(dir, path)
+local function getAll(dir, path)
     local files, _ = file.Find(checkSlash(dir) .. "*", path)
     return files
 end
 
-RL.Files.GetDir = function(dir, path)
+local function getDir(dir, path)
     local _, ret_dir = file.Find(checkSlash(dir) .. "*", path)
     return ret_dir
 end
 
 RL.Files.Iterator = function(dir, path, iterator)
     dir = checkSlash(dir)
-    for _, v in ipairs(RL.Files.GetAll(dir, path)) do
+    for _, v in ipairs(getAll(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
 RL.Files.Iterator_Dir = function(dir, path, iterator)
     dir = checkSlash(dir)
-    for _, v in ipairs(RL.Files.GetDir(dir, path)) do
+    for _, v in ipairs(getDir(dir, path)) do
         iterator(v, dir, path)
     end
 end
+
+RL.Files.GetAll = getAll
+RL.Files.GetDir = getDir
 
 print"================== RL ================="
 RL.IncludeDir"ricelib_preload"
