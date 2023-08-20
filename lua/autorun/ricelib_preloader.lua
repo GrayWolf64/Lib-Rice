@@ -29,7 +29,7 @@ RL.Message_Error = mkMessageFunc(Color(255, 75, 75))
 RL.Message_Warn = mkMessageFunc(Color(255, 150, 0))
 
 local function checkSlash(str)
-    if not str:EndsWith("/") then return str .. "/" end
+    if not str:EndsWith"/" then return str .. "/" end
     return str
 end
 
