@@ -80,9 +80,6 @@ local function includeDir(directory, quiet, noSub, name)
         if quiet then continue end
         message("Loaded sub dir: " .. directory .. v, name)
     end
-
-    if quiet then return end
-    message("Done loading dir: " .. directory, name)
 end
 
 includeDirAs = function(directory, name, noSub) includeDir(directory, false, noSub, name) end
