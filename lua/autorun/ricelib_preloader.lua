@@ -15,11 +15,10 @@ local function mkMessageFunc(msgColor)
             msg = RL.Language.Get(msg:sub(2)) or msg
         end
 
-        local color = (SERVER and {Color(64, 158, 255)} or {Color(255, 255, 150)})[1]
-
         name = name or "RiceLib"
+        local nameColor = (SERVER and {Color(64, 158, 255)} or {Color(255, 255, 150)})[1]
 
-        MsgC(color, "[" .. name .. "] ", msgColor, msg .. "\n")
+        MsgC(nameColor, "[" .. name .. "] ", msgColor, msg .. "\n")
     end
 end
 
@@ -60,8 +59,6 @@ local function AddFile(fileName, directory, quiet, name)
     message(opType[type] .. ": " .. fileName, name)
 end
 
-AddFileAs = function(fileName, directory, name) AddFile(fileName, directory, false, name) end
-
 local function includeDir(directory, quiet, noSub, name)
     directory = checkSlash(directory)
     name = name or "RL"
@@ -84,6 +81,7 @@ end
 
 RL.IncludeDir   = includeDir
 RL.IncludeDirAs = function(directory, name, noSub) includeDir(directory, false, noSub, name) end
+RL.AddFileAs    = function(fileName, directory, name) AddFile(fileName, directory, false, name) end
 
 if SERVER then
     local function addCSFiles(directory, name, noSub)
