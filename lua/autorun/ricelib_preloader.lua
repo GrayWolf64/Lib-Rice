@@ -64,9 +64,9 @@ AddFileAs = function(fileName, directory, name) AddFile(fileName, directory, fal
 
 local function includeDir(directory, quiet, noSub, name)
     directory = checkSlash(directory)
+    name = name or "RL"
 
     local files, directories = file.Find(directory .. "*.lua", "LUA")
-    name = name or "RL"
 
     for _, v in ipairs(files) do AddFile(v, directory, quiet) end
 
@@ -74,17 +74,15 @@ local function includeDir(directory, quiet, noSub, name)
 
     if noSub then return end
 
-    for i, v in ipairs(directories) do
-        if not quiet then
-            message("Loading directory: " .. directory .. v, name)
-        end
+    for _, v in ipairs(directories) do
+        includeDir(directory .. v, quiet, false, name)
 
-        includeDir(directory .. v, quiet)
         if quiet then continue end
-
-        if i ~= #directories then continue end
-        message("Done loading directory: " .. directory .. v, name)
+        message("Loaded sub dir: " .. directory .. v, name)
     end
+
+    if quiet then return end
+    message("Done loading dir: " .. directory, name)
 end
 
 includeDirAs = function(directory, name, noSub) includeDir(directory, false, noSub, name) end
@@ -95,23 +93,22 @@ RL.IncludeDirAs = includeDirAs
 if SERVER then
     local function addCSFiles(directory, name, noSub)
         directory = checkSlash(directory)
+        name = name or "RL"
 
         local files, directories = file.Find(directory .. "*", "LUA")
 
         for _, v in ipairs(files) do
             AddCSLuaFile(directory .. v)
-            if not name then continue end
             message("CSFiles: " .. directory .. v, name)
         end
 
-        if name then message("Added CSFiles: " .. name) end
+        message("Added CSFiles: " .. name)
 
         if noSub then return end
 
         for _, v in ipairs(directories) do
             addCSFiles(directory .. v, name)
-            if not name then continue end
-            message("CSFiles dir: " .. directory .. v, name)
+            message("CSFiles sub dir: " .. directory .. v, name)
         end
     end
 
