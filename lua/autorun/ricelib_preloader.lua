@@ -44,7 +44,7 @@ local function AddFile(fileName, directory, quiet, name)
         sh_ = {
             [true]  = function() AddCSLuaFile(directory .. fileName) end,
             [false] = function() return end,
-            final   = function() include(directory .. fileName); type    = 2 end},
+            final   = function() include(directory .. fileName); type = 2 end},
         cl_ = {
             [true]  = function() AddCSLuaFile(directory .. fileName) end,
             [false] = function() include(directory .. fileName) end,
