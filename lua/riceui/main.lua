@@ -5,7 +5,8 @@ RiceUI.RootName = "main"
 file.CreateDir("riceui")
 file.CreateDir("riceui/web_image")
 
-local elements = {}
+local elements = elements or {}
+
 RL.Functions.LoadFiles(elements, "riceui/elements")
 
 --- Create UI Elements
@@ -60,19 +61,19 @@ end
 
 --- Handle generic parameters
 -- @section UniProcess
-local uniprocess = {}
+local uniProcess = uniProcess or {}
 
 function RiceUI.DoProcess(pnl)
     if not pnl.RiceUI_Data then return end
 
     for name,data in pairs(pnl.RiceUI_Data) do
-        if uniprocess[name] == nil then continue end
+        if uniProcess[name] == nil then continue end
 
         local processor
-        if istable(uniprocess[name]) then
-            processor = uniprocess[name][pnl.ProcessID]
+        if istable(uniProcess[name]) then
+            processor = uniProcess[name][pnl.ProcessID]
         else
-            processor = uniprocess[name]
+            processor = uniProcess[name]
         end
 
         if processor then
@@ -82,14 +83,14 @@ function RiceUI.DoProcess(pnl)
 end
 
 function RiceUI.DefineUniProcess(name,data)
-    uniprocess[name] = data
+    uniProcess[name] = data
 end
 
-RL.IncludeDir("riceui/uniprocess",true)
+RL.IncludeDir("riceui/uniProcess",true)
 
 concommand.Add("riceui_reload", function()
     RL.Functions.LoadFiles(elements, "riceui/elements")
-    RL.Functions.LoadFiles(uniprocess, "riceui/uniprocess")
+    RL.Functions.LoadFiles(uniProcess, "riceui/uniprocess")
     RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
 end)
 
@@ -102,7 +103,7 @@ concommand.Add("riceui_panic", function()
 end)
 
 concommand.Add("riceui_elements", function()
-    PrintTable(RiceUI.Elements)
+    PrintTable(elements)
 end)
 
 concommand.Add("riceui_theme", function()
@@ -195,6 +196,3 @@ concommand.Add("riceui_prefabs", function()
         },
     })
 end)
-
-RiceUI.UniProcess = uniprocess
-RiceUI.Elements = elements
