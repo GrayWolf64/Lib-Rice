@@ -1,7 +1,7 @@
 RL.Net = {}
 
 function RL.Net.AddCommandReceiver(netID, commandHandler)
-    net.Receive(netID, function(len, ply)
+    net.Receive(netID, function(_, ply)
         commandHandler[net.ReadString()](net.ReadTable(), ply)
     end)
 end
@@ -29,7 +29,7 @@ function RL.Net.SendEntityCommand(entity, command, data, ply)
     net.Broadcast()
 end
 
-net.Receive("RL_EntityCommand", function(len, ply)
+net.Receive("RL_EntityCommand", function(_, ply)
     local ent = net.ReadEntity()
     if ent.RL_NetCommand == nil then return end
 
