@@ -227,5 +227,12 @@ RL.Files.Iterator_Dir = function(dir, path, iterator)
     end
 end
 
+<<<<<<< Updated upstream
 print"================== RL ================="
 RL.IncludeDir"ricelib_preload"
+=======
+print("==================RL=================")
+RL.IncludeDir("ricelib_preload")
+
+file.Write("flourine/loadfiles.json", util.TableToJSON(RL.Functions.loads, true))
+>>>>>>> Stashed changes
