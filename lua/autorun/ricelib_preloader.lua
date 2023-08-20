@@ -5,11 +5,9 @@ RL.Language = RL.Language or {}
 RL.Language.Words = RL.Language.Words or {}
 RL.Functions = RL.Functions or {}
 RL.Files = {}
-file.CreateDir"ricelib/settings"
 
-if SERVER then
-    resource.AddWorkshop"2829757059"
-end
+file.CreateDir"ricelib/settings"
+if SERVER then resource.AddWorkshop"2829757059" end
 
 local function mkMessageFunc(msgColor)
     return function(msg, name)
@@ -36,7 +34,7 @@ local function checkSlash(str)
 end
 
 local function AddFile(fileName, directory, quiet, name)
-    local prefix, type = fileName:Left(3):lower()
+    local type
     name = name or "RL"
 
     local mt = {__index = function()
@@ -54,7 +52,7 @@ local function AddFile(fileName, directory, quiet, name)
             final = function() type = 3 end}
     }, mt)
 
-    local handler = mappedHandlers[prefix]
+    local handler = mappedHandlers[fileName:Left(3):lower()]
     if istable(handler) then handler[SERVER](); handler.final() else handler() end
 
     if quiet then return end
@@ -70,13 +68,9 @@ local function includeDir(directory, quiet, noSub, name)
     local files, directories = file.Find(directory .. "*.lua", "LUA")
     name = name or "RL"
 
-    for _, v in ipairs(files) do
-        AddFile(v, directory, quiet)
-    end
+    for _, v in ipairs(files) do AddFile(v, directory, quiet) end
 
-    if not quiet then
-        message("Done loading: " .. directory, name)
-    end
+    if not quiet then message("Done loading: " .. directory, name) end
 
     if noSub then return end
 
@@ -110,9 +104,7 @@ if SERVER then
             message("CSFiles: " .. directory .. v, name)
         end
 
-        if name then
-            message("Added CSFiles: " .. name)
-        end
+        if name then message("Added CSFiles: " .. name) end
 
         if noSub then return end
 
