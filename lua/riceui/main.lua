@@ -20,41 +20,41 @@ function RiceUI.SimpleCreate(data, parent)
 
     if data.ShouldCreate and not data.ShouldCreate() then return end
 
-    local pnl = elements[data.type].Create(data, parent)
-    table.insert(RiceUI.UI, pnl)
-    RiceUI.DoProcess(pnl)
-    RiceUI.ApplyExtraFunctions(pnl)
+    local panel = elements[data.type].Create(data, parent)
+    table.insert(RiceUI.UI, panel)
+    RiceUI.DoProcess(panel)
+    RiceUI.ApplyExtraFunctions(panel)
 
     if data.children then
-        RiceUI.Create(data.children, pnl)
+        RiceUI.Create(data.children, panel)
     end
 
     if data.OnCreated then
-        data.OnCreated(pnl)
+        data.OnCreated(panel)
     end
 
-    if pnl.ChildCreated then
-        pnl:ChildCreated()
+    if panel.ChildCreated then
+        panel:ChildCreated()
     end
 
     if data.ID then
-        if not IsValid(parent) then return pnl end
+        if not IsValid(parent) then return panel end
 
         parent.Elements = parent.Elements or {}
-        parent.Elements[data.ID] = pnl
+        parent.Elements[data.ID] = panel
     end
 
-    return pnl
+    return panel
 end
 
 function RiceUI.Create(tbl, parent)
     for i, data in ipairs(tbl) do
-        local pnl = RiceUI.SimpleCreate(data, parent)
-        local parent = parent or pnl
+        local panel = RiceUI.SimpleCreate(data, parent)
+        local parent = parent or panel
         parent.Elements = parent.Elements or {}
 
         if data.ID then
-            parent.Elements[data.ID] = pnl
+            parent.Elements[data.ID] = panel
         end
     end
 end
@@ -63,21 +63,21 @@ end
 -- @section UniProcess
 local uniProcess = uniProcess or {}
 
-function RiceUI.DoProcess(pnl)
-    if not pnl.RiceUI_Data then return end
+function RiceUI.DoProcess(panel)
+    if not panel.RiceUI_Data then return end
 
-    for name,data in pairs(pnl.RiceUI_Data) do
+    for name,data in pairs(panel.RiceUI_Data) do
         if uniProcess[name] == nil then continue end
 
         local processor
         if istable(uniProcess[name]) then
-            processor = uniProcess[name][pnl.ProcessID]
+            processor = uniProcess[name][panel.ProcessID]
         else
             processor = uniProcess[name]
         end
 
         if processor then
-            processor(pnl,data)
+            processor(panel,data)
         end
     end
 end
@@ -151,9 +151,9 @@ concommand.Add("riceui_prefabs", function()
                 y = 40,
                 w = 380,
                 h = 550,
-                OnCreated = function(pnl)
+                OnCreated = function(panel)
                     for k, v in SortedPairs(RiceUI.Prefab) do
-                        pnl:AddItem(RiceUI.SimpleCreate({type = "rl_button",
+                        panel:AddItem(RiceUI.SimpleCreate({type = "rl_button",
                             Dock = TOP,
                             h = 50,
                             Margin = {0, 0, 5, 5},
@@ -166,9 +166,9 @@ concommand.Add("riceui_prefabs", function()
                             },
 
                             DoClick = function() RiceUI.Prefab[k]({}) end
-                        }, pnl))
+                        }, panel))
 
-                        pnl:AddItem(RiceUI.SimpleCreate({type = "rl_button",
+                        panel:AddItem(RiceUI.SimpleCreate({type = "rl_button",
                             Dock = TOP,
                             h = 50,
                             Margin = {0, 0, 5, 5},
@@ -189,7 +189,7 @@ concommand.Add("riceui_prefabs", function()
                                     TextColor = "black"
                                 },
                             }) end
-                        }, pnl))
+                        }, panel))
                     end
                 end
             },
