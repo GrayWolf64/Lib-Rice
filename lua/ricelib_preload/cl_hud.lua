@@ -1,7 +1,6 @@
 local offsetFile = "ricelib/settings/hud_offset.json"
 local scaleFile = "ricelib/settings/scale.json"
 local ratioW, ratioH = ScrW() / 1920, ScrH() / 1080
-CreateClientConVar("RiceLib_ChatBoxOn", 0, false)
 
 if file.Exists(offsetFile, "DATA") then
     RL.VGUI.HUDOffset = util.JSONToTable(file.Read(offsetFile, "DATA"))
@@ -77,7 +76,7 @@ function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
     btn.RLshowName = showName
     btn.Paint = function(self, w, h)
         local color = Color(0, 255, 0, 255)
-        local chatOn = GetConVar("RiceLib_ChatBoxOn"):GetBool()
+        local chatOn = LocalPlayer().rl_chatBoxOn
         if chatOn then color = Color(0, 255, 0, 100) end
         if self.Dragging then color = Color(0, 255, 0, 255) end
 
@@ -127,5 +126,5 @@ function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
     return btn
 end
 
-hook.Add("StartChat", "RiceLib_StartChat", function() GetConVar("RiceLib_ChatBoxOn"):SetBool(true) end)
-hook.Add("FinishChat", "RiceLib_FinishChat", function() GetConVar("RiceLib_ChatBoxOn"):SetBool(false) end)
+hook.Add("StartChat", "RiceLib_StartChat", function() LocalPlayer().rl_chatBoxOn = true end)
+hook.Add("FinishChat", "RiceLib_FinishChat", function() LocalPlayer().rl_chatBoxOn = false end)
