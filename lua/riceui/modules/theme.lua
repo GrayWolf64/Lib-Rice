@@ -1,39 +1,36 @@
 RiceUI = RiceUI or {}
 
---[[
+--- Utility functions to help with themes
+-- @section Util
 
-    Utils
-
-]]--
-
+--- Gets a named Theme
+-- @param name Name of the Theme to obtain
+-- @return table Theme
 function RiceUI.GetTheme(name) return RiceUI.Theme[name] end
 
-function RiceUI.GetColor(tbl,self,name,default)
+function RiceUI.GetColor(tab, self, name, default)
     name = name or ""
     default = default or "white1"
 
-    return self.Theme["Raw" .. name .. "Color"] or tbl[name .. "Color"][self.Theme.Color] or tbl[name .. "Color"][default]
+    return self.Theme["Raw" .. name .. "Color"] or tab[name .. "Color"][self.Theme.Color] or tab[name .. "Color"][default]
 end
 
-function RiceUI.GetColorBase(tbl,self,name,default)
+function RiceUI.GetColorBase(tab, self, name, default)
     name = name or ""
     default = default or "white"
-    color = string.match(self.Theme.Color or "white","^[a-zA-Z]*")
+    color = string.match(self.Theme.Color or "white", "^[a-zA-Z]*")
 
-    return self.Theme["Raw" .. name .. "Color"] or tbl[name .. "Color"][color] or tbl[name .. "Color"][default]
+    return self.Theme["Raw" .. name .. "Color"] or tab[name .. "Color"][color] or tab[name .. "Color"][default]
 end
 
-function RiceUI.GetShadowAlpha(tbl,self)
+function RiceUI.GetShadowAlpha(tab, self)
     color = string.match(self.Theme["Color"] or "white","^[a-zA-Z]*")
 
-    return self.Theme["ShadowAlpha"] or tbl["ShadowAlpha"][color] or 50
+    return self.Theme.ShadowAlpha or tab.ShadowAlpha[color] or 50
 end
 
---[[
-
-    Main Theme System
-
-]]--
+--- `Main Theme System` related
+-- @section MainThemeSystem
 
 function RiceUI.RefreshTheme(self)
     local theme = self.Theme
@@ -79,11 +76,8 @@ function RiceUI.ApplyTheme(self, theme)
     end
 end
 
---[[
-
-    Theme Process
-
-]]--
+--- `Theme Process` related helpers
+-- @section ThemeProcess
 
 RiceUI.ThemeProcess = {}
 
@@ -97,13 +91,13 @@ function RiceUI.DoThemeProcess(self)
     end
 end
 
-function RiceUI.DefineThemeProcess(name,data)
+function RiceUI.DefineThemeProcess(name, data)
     RiceUI.ThemeProcess[name] = RiceUI.ThemeProcess[name] or {}
 
-    table.insert(RiceUI.ThemeProcess[name],data)
+    table.insert(RiceUI.ThemeProcess[name], data)
 end
 
-RL.IncludeDir("riceui/themeprocess",true)
+RL.IncludeDir("riceui/themeprocess", true)
 
 RiceUI.ThemeParamaBlacklist = {}
 
@@ -111,13 +105,10 @@ function RiceUI.AddThemeParamaBlacklist(name)
     RiceUI.ThemeParamaBlacklist[name] = true
 end
 
-RL.IncludeDir("riceui/themeprocess_parmablacklist",true)
+RL.IncludeDir("riceui/themeprocess_parmablacklist", true)
 
---[[
-
-    Themes loader
-
-]]--
+--- Themes Loader
+-- @section ThemesLoader
 
 RiceUI.Theme = {}
 RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
@@ -127,14 +118,10 @@ for k, v in pairs(RiceUI.Theme) do
     v.OnLoaded()
 end
 
---[[
-
-    Themes NT
-
-    Currently abandoned 
-    Some color feature used in old Theme System
-
-]]--
+--- Themes NT
+-- DEPRECATED
+-- Some color feature used in old Theme System
+-- @section ThemesNT
 
 RiceUI.ThemeNT = {}
 RiceUI.ThemeNT.Themes = {}
@@ -148,9 +135,9 @@ function RiceUI.ThemeNT.DefineStyle(ThemeName, ElementID, Styles)
 end
 
 function RiceUI.ThemeNT.LoadThemes()
-    local path = ""
+    local path
 
-    for _, themeName in ipairs(RL.Files.GetDir("riceui/theme", "LUA")) do
+    for _, themeName in pairs(RL.Files.GetDir("riceui/theme", "LUA")) do
         RiceUI.ThemeNT.Themes[themeName] = {}
         RiceUI.ThemeNT.Themes[themeName].Styles = {}
 
@@ -185,7 +172,7 @@ function RiceUI.ThemeNT.ApplyTheme(self, theme)
 
     RiceUI.ThemeNT.RefreshTheme(self)
 
-    for _, v in ipairs(self:GetChildren()) do
+    for _, v in pairs(self:GetChildren()) do
         RiceUI.ThemeNT.ApplyTheme(v, self.Theme)
     end
 end

@@ -6,7 +6,7 @@ local function getRoot(vgui)
     return getRoot(parent)
 end
 
-local matBlurScreen = Material("pp/blurscreen")
+local matBlurScreen = Material"pp/blurscreen"
 
 local function blurPanel(panel, amount)
     local x, y = panel:LocalToScreen(0, 0)
@@ -33,7 +33,7 @@ local function blurBackground(self, amount)
         matBlurScreen:SetFloat("$blur", fraction * amount * i)
         matBlurScreen:Recompute()
 
-        if render then render.UpdateScreenEffectTexture() end
+        render.UpdateScreenEffectTexture()
 
         surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
     end
@@ -83,12 +83,12 @@ local function TextWide(font, text)
     return select(1, surface.GetTextSize(text))
 end
 
-RL.VGUI.GetRoot = getRoot
-RL.VGUI.Icon = function(name) return Material("rl_icons/" .. name .. ".png") end
-RL.VGUI.IconRaw = function(name) return "rl_icons/" .. name .. ".png" end
-RL.VGUI.blurPanel = blurPanel
+RL.VGUI.GetRoot        = getRoot
+RL.VGUI.Icon           = function(name) return Material("rl_icons/" .. name .. ".png") end
+RL.VGUI.IconRaw        = function(name) return "rl_icons/" .. name .. ".png" end
+RL.VGUI.blurPanel      = blurPanel
 RL.VGUI.blurBackground = blurBackground
-RL.VGUI.FadeIn = FadeIn
-RL.VGUI.Notify = Notify
-RL.VGUI.DM = DM
-RL.VGUI.TextWide = TextWide
+RL.VGUI.FadeIn         = FadeIn
+RL.VGUI.Notify         = Notify
+RL.VGUI.DM             = DM
+RL.VGUI.TextWide       = TextWide

@@ -39,8 +39,16 @@ local function drawTexturedCircle(x, y, radius, seg)
 	drawCircle(x, y, radius, seg, nil, true)
 end
 
+local function doCorner(bDraw, circleX, circleY, rectX, rectY, borderSize)
+	if bDraw then
+		drawCircle(circleX, circleY, borderSize, borderSize)
+	else
+		surfaceDrawRect(rectX, rectY, borderSize, borderSize)
+	end
+end
+
 local function drawRoundedBox(borderSize, x, y, w, h, color, corner)
-	local corner = corner or {true,true,true,true}
+	local corner = corner or {true, true, true, true}
 	local topLeft, topRight, bottomLeft, bottomRight = unpack(corner)
 
 	local color = color or color_white
@@ -60,18 +68,10 @@ local function drawRoundedBox(borderSize, x, y, w, h, color, corner)
 	surfaceDrawRect(x, y + borderSize, borderSize, h - borderSize * 2)
 	surfaceDrawRect(x + w - borderSize, y + borderSize, borderSize, h - borderSize * 2)
 
-	local function doCorner(bDraw, circleX, circleY, rectX, rectY)
-		if bDraw then
-			drawCircle(circleX, circleY, borderSize, borderSize)
-		else
-			surfaceDrawRect(rectX, rectY, borderSize, borderSize)
-		end
-	end
-
-	doCorner(topLeft, x + borderSize, y + borderSize, x, y)
-	doCorner(topRight, x + w - borderSize, y + borderSize, x + w - borderSize, y)
-	doCorner(bottomLeft, x + borderSize, y + h - borderSize, x, y + h - borderSize)
-	doCorner(bottomRight, x + w - borderSize, y + h - borderSize, x + w - borderSize, y + h - borderSize)
+	doCorner(topLeft, x + borderSize, y + borderSize, x, y, borderSize)
+	doCorner(topRight, x + w - borderSize, y + borderSize, x + w - borderSize, y, borderSize)
+	doCorner(bottomLeft, x + borderSize, y + h - borderSize, x, y + h - borderSize, borderSize)
+	doCorner(bottomRight, x + w - borderSize, y + h - borderSize, x + w - borderSize, y + h - borderSize, borderSize)
 end
 
 local function drawRoundedBoxOutlined(borderSize, x, y, w, h, color, corner, thickness)
