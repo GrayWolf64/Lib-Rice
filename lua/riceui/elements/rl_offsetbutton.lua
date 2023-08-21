@@ -25,7 +25,7 @@ function Element.Create(data,parent)
     function panel:Paint(w,h)
         if not panel.Outline then return end
 
-        local onChat = (panel.EnableOnChat and LocalPlayer().rl_chatBoxOn)
+        local onChat = (panel.EnableOnChat and LocalPlayer():IsTyping())
         if not (onChat or (RiceUI.RootName == panel.RootName)) then return end
 
         if self.Dragging then return end
@@ -52,7 +52,7 @@ function Element.Create(data,parent)
     end
 
     function panel:OnMousePressed(code)
-        local onChat = (panel.EnableOnChat and LocalPlayer().rl_chatBoxOn)
+        local onChat = (panel.EnableOnChat and LocalPlayer():IsTyping())
         if not (onChat or (RiceUI.RootName == panel.RootName)) then return end
 
         if code == MOUSE_RIGHT then

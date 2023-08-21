@@ -76,16 +76,16 @@ function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
     btn.RLshowName = showName
     btn.Paint = function(self, w, h)
         local color = Color(0, 255, 0, 255)
-        local chatOn = LocalPlayer().rl_chatBoxOn
-        if chatOn then color = Color(0, 255, 0, 100) end
+        local chatVisible = LocalPlayer():IsTyping()
+        if chatVisible then color = Color(0, 255, 0, 100) end
         if self.Dragging then color = Color(0, 255, 0, 255) end
 
-        if self.Dragging or chatOn then
+        if self.Dragging or chatVisible then
             surface.SetDrawColor(color)
             surface.DrawOutlinedRect(0, 0, w, h, 2)
         end
 
-        if self.RLshow and chatOn then
+        if self.RLshow and chatVisible then
             draw.SimpleText(self.RLshowName, "OPPOSans_30", w / 2, h / 2, Color(0, 255, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
@@ -125,6 +125,3 @@ function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
 
     return btn
 end
-
-hook.Add("StartChat", "RiceLib_StartChat", function() LocalPlayer().rl_chatBoxOn = true end)
-hook.Add("FinishChat", "RiceLib_FinishChat", function() LocalPlayer().rl_chatBoxOn = false end)
