@@ -30,7 +30,7 @@ local function mkMessageFunc(msgColor)
         end
 
         name = name or "RiceLib"
-        local nameColor = (SERVER and {Color(64, 158, 255)} or {Color(255, 255, 150)})[1]
+        local nameColor = Either(SERVER, Color(64, 158, 255), Color(255, 255, 150))
 
         MsgC(nameColor, "[" .. name .. "] ", msgColor, msg .. "\n")
     end
@@ -79,7 +79,7 @@ local function AddFile(fileName, dir, quiet, name)
     if istable(handler) then handler[SERVER](); handler.final() else handler() end
 
     if quiet then return end
-    local opType = {"sv include", "sh send or include", "cl recv and include", "send or include"}
+    local opType = {"include", "sh send or include", "send or include", "send and include"}
     message(opType[type] .. ": " .. fileName, name)
 end
 
@@ -93,19 +93,19 @@ local function includeDir(dir, quiet, noSub, name)
     dir = checkSlash(dir)
     name = name or "RL"
 
-    local files, directories = file.Find(dir .. "*.lua", "LUA")
+    local files, dirs = file.Find(dir .. "*.lua", "LUA")
 
     for _, v in ipairs(files) do AddFile(v, dir, quiet) end
 
-    if not quiet then message("Done loading: " .. dir, name) end
+    if not quiet then message("done loading: " .. dir, name) end
 
     if noSub then return end
 
-    for _, v in ipairs(directories) do
+    for _, v in ipairs(dirs) do
         includeDir(dir .. v, quiet, false, name)
 
         if quiet then continue end
-        message("Loaded sub dir: " .. dir .. v, name)
+        message("loaded sub dir: " .. dir .. v, name)
     end
 end
 
@@ -123,20 +123,20 @@ if SERVER then
         dir = checkSlash(dir)
         name = name or "RL"
 
-        local files, directories = file.Find(dir .. "*", "LUA")
+        local files, dirs = file.Find(dir .. "*", "LUA")
 
         for _, v in ipairs(files) do
             AddCSLuaFile(dir .. v)
-            message("CSFiles: " .. dir .. v, name)
+            message("csFiles: " .. dir .. v, name)
         end
 
-        message("Added CSFiles: " .. name)
+        message("added csFiles: " .. name)
 
         if noSub then return end
 
-        for _, v in ipairs(directories) do
+        for _, v in ipairs(dirs) do
             addCSFiles(dir .. v, name)
-            message("CSFiles sub dir: " .. dir .. v, name)
+            message("csFiles sub dir: " .. dir .. v, name)
         end
     end
 

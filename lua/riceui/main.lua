@@ -1,9 +1,9 @@
-RiceUI = RiceUI or {}
-RiceUI.UI = {}
+RiceUI          = RiceUI or {}
+RiceUI.UI       = RiceUI.UI or {}
 RiceUI.RootName = "main"
 
-file.CreateDir("riceui")
-file.CreateDir("riceui/web_image")
+file.CreateDir"riceui"
+file.CreateDir"riceui/web_image"
 
 local elements = elements or {}
 
@@ -12,11 +12,7 @@ RL.Functions.LoadFiles(elements, "riceui/elements")
 --- Create UI Elements
 -- @section CreateElement
 function RiceUI.SimpleCreate(data, parent)
-    if not elements[data.type] then
-        elements["error"].Create(data, parent)
-
-        return
-    end
+    if not elements[data.type] then elements.error.Create(data, parent) return end
 
     if data.ShouldCreate and not data.ShouldCreate() then return end
 
@@ -25,17 +21,11 @@ function RiceUI.SimpleCreate(data, parent)
     RiceUI.DoProcess(panel)
     RiceUI.ApplyExtraFunctions(panel)
 
-    if data.children then
-        RiceUI.Create(data.children, panel)
-    end
+    if data.children then RiceUI.Create(data.children, panel) end
 
-    if data.OnCreated then
-        data.OnCreated(panel)
-    end
+    if data.OnCreated then data.OnCreated(panel) end
 
-    if panel.ChildCreated then
-        panel:ChildCreated()
-    end
+    if panel.ChildCreated then panel:ChildCreated() end
 
     if data.ID then
         if not IsValid(parent) then return panel end
@@ -47,15 +37,13 @@ function RiceUI.SimpleCreate(data, parent)
     return panel
 end
 
-function RiceUI.Create(tbl, parent)
-    for i, data in ipairs(tbl) do
+function RiceUI.Create(tab, parent)
+    for _, data in ipairs(tab) do
         local panel = RiceUI.SimpleCreate(data, parent)
         local parent = parent or panel
         parent.Elements = parent.Elements or {}
 
-        if data.ID then
-            parent.Elements[data.ID] = panel
-        end
+        if data.ID then parent.Elements[data.ID] = panel end
     end
 end
 
@@ -76,9 +64,8 @@ function RiceUI.DoProcess(panel)
             processor = uniProcess[name]
         end
 
-        if processor then
-            processor(panel,data)
-        end
+        if not processor then continue end
+        processor(panel, data)
     end
 end
 
@@ -86,7 +73,7 @@ function RiceUI.DefineUniProcess(name,data)
     uniProcess[name] = data
 end
 
-RL.IncludeDir("riceui/uniProcess",true)
+RL.IncludeDir("riceui/uniprocess", true)
 
 concommand.Add("riceui_reload", function()
     RL.Functions.LoadFiles(elements, "riceui/elements")
