@@ -97,7 +97,7 @@ local function includeDir(dir, quiet, noSub, name)
 
     for _, v in ipairs(files) do AddFile(v, dir, quiet) end
 
-    if not quiet then message("done loading: " .. dir, name) end
+    if not quiet then message("loaded: " .. dir, name) end
 
     if noSub then return end
 
@@ -127,16 +127,14 @@ if SERVER then
 
         for _, v in ipairs(files) do
             AddCSLuaFile(dir .. v)
-            message("csFiles: " .. dir .. v, name)
+            message("cslf: " .. dir .. v, name)
         end
-
-        message("added csFiles: " .. name)
 
         if noSub then return end
 
         for _, v in ipairs(dirs) do
             addCSFiles(dir .. v, name)
-            message("csFiles sub dir: " .. dir .. v, name)
+            message("cslf sub dir: " .. dir .. v, name)
         end
     end
 
