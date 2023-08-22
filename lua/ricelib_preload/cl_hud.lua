@@ -1,70 +1,69 @@
-local offsetFile = "ricelib/settings/hud_offset.json"
-local scaleFile = "ricelib/settings/scale.json"
-local ratioW, ratioH = ScrW() / 1920, ScrH() / 1080
-CreateClientConVar("RiceLib_ChatBoxOn", 0, false)
+local OFFSET_FILE = "ricelib/settings/hud_offset.json"
+local SCALE_FILE = "ricelib/settings/scale.json"
+local RATIO_W, RATIO_H = ScrW() / 1920, ScrH() / 1080
 
-if file.Exists(offsetFile, "DATA") then
-    RL.VGUI.HUDOffset = util.JSONToTable(file.Read(offsetFile, "DATA"))
+if file.Exists(OFFSET_FILE, "DATA") then
+    RL.VGUI.HUDOffset = util.JSONToTable(file.Read(OFFSET_FILE, "DATA"))
 else
     RL.VGUI.HUDOffset = {}
-    file.Write(offsetFile, "[]")
+    file.Write(OFFSET_FILE, "[]")
 end
 
-if file.Exists(scaleFile, "DATA") then
-    RL.VGUI.ScaleProfile = util.JSONToTable(file.Read(scaleFile, "DATA"))
+if file.Exists(SCALE_FILE, "DATA") then
+    RL.VGUI.ScaleProfile = util.JSONToTable(file.Read(SCALE_FILE, "DATA"))
 else
     RL.VGUI.ScaleProfile = {}
-    file.Write(scaleFile, "[]")
+    file.Write(SCALE_FILE, "[]")
 end
 
-function RL_hudScaleX(x) return x * ratioW end
-function RL_hudScaleY(y) return y * ratioH end
-function RL_hudScale(x, y) return x * ratioW, y * ratioH end
+function RL_hudScaleX(x) return x * RATIO_W end
+function RL_hudScaleY(y) return y * RATIO_H end
+function RL_hudScale(x, y) return x * RATIO_W, y * RATIO_H end
 
 function RL.hudScale(x, y, profile)
     local scale = RL.VGUI.ScaleProfile[profile]
-    if scale then return x * ratioW * scale, y * ratioH * scale end
-    return x * ratioW, y * ratioH
+    if scale then return x * RATIO_W * scale, y * RATIO_H * scale end
+    return x * RATIO_W, y * RATIO_H
 end
 
 function RL.hudScaleX(x, profile)
     local scale = RL.VGUI.ScaleProfile[profile]
-    if scale then return x * ratioW * scale end
-    return x * ratioW
+    if scale then return x * RATIO_W * scale end
+    return x * RATIO_W
 end
 
 function RL.hudScaleY(y, profile)
     local scale = RL.VGUI.ScaleProfile[profile]
-    if scale then return y * ratioH * scale end
-    return y * ratioH
+    if scale then return y * RATIO_H * scale end
+    return y * RATIO_H
 end
 
 function RL.hudOffset(x, y, profile)
     local offset = RL.VGUI.HUDOffset[profile]
     if offset then return offset.x, offset.y end
-    return x * ratioW, y * ratioH
+    return x * RATIO_W, y * RATIO_H
 end
 
 function RL.hudOffsetX(x, profile)
     local offset = RL.VGUI.HUDOffset[profile]
     if offset then return offset.x end
-    return x * ratioW
+    return x * RATIO_W
 end
 
 function RL.hudOffsetY(y, profile)
     local offset = RL.VGUI.HUDOffset[profile]
     if offset then return offset.y end
-    return y * ratioH
+    return y * RATIO_H
 end
 
 function RL.Change_HUDOffset(profile, x, y)
     RL.VGUI.HUDOffset[profile] = {x = x, y = y}
-    file.Write(offsetFile, util.TableToJSON(RL.VGUI.HUDOffset, true))
+    file.Write(OFFSET_FILE, util.TableToJSON(RL.VGUI.HUDOffset, true))
 end
 
 function RL.Clear_HUDOffset(profile)
     RL.VGUI.HUDOffset[profile] = nil
-    file.Write(offsetFile, "[]")
+    file.Write(OFFSET_FILE, "[]")
 end
 
 function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
@@ -77,16 +76,16 @@ function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
     btn.RLshowName = showName
     btn.Paint = function(self, w, h)
         local color = Color(0, 255, 0, 255)
-        local chatOn = GetConVar("RiceLib_ChatBoxOn"):GetBool()
-        if chatOn then color = Color(0, 255, 0, 100) end
+        local chatVisible = LocalPlayer():IsTyping()
+        if chatVisible then color = Color(0, 255, 0, 100) end
         if self.Dragging then color = Color(0, 255, 0, 255) end
 
-        if self.Dragging or chatOn then
+        if self.Dragging or chatVisible then
             surface.SetDrawColor(color)
             surface.DrawOutlinedRect(0, 0, w, h, 2)
         end
 
-        if self.RLshow and chatOn then
+        if self.RLshow and chatVisible then
             draw.SimpleText(self.RLshowName, "OPPOSans_30", w / 2, h / 2, Color(0, 255, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
@@ -126,6 +125,3 @@ function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
 
     return btn
 end
-
-hook.Add("StartChat", "RiceLib_StartChat", function() GetConVar("RiceLib_ChatBoxOn"):SetBool(true) end)
-hook.Add("FinishChat", "RiceLib_FinishChat", function() GetConVar("RiceLib_ChatBoxOn"):SetBool(false) end)

@@ -1,3 +1,14 @@
+--- Loads `RiceLib` ahead of time
+-- @script ricelib_preloader
+-- @author RiceMCUT, GrayWolf
+if SERVER then resource.AddWorkshop"2829757059" end
+
+--- RiceLib global table
+-- @table RL
+-- @field VGUI
+-- @field Language
+-- @field Functions
+-- @field Files
 RL                = RL or {}
 RL.VGUI           = RL.VGUI or {}
 RL.VGUI.Anim      = RL.VGUI.Anim or {}
@@ -7,8 +18,11 @@ RL.Functions      = RL.Functions or {}
 RL.Files          = RL.Files or {}
 
 file.CreateDir"ricelib/settings"
-if SERVER then resource.AddWorkshop"2829757059" end
 
+--- Makes a log function
+-- @local
+-- @param msgColor Customize output function's log msg color
+-- @return function log function
 local function mkMessageFunc(msgColor)
     return function(msg, name)
         if msg:StartsWith"#" then
@@ -16,7 +30,7 @@ local function mkMessageFunc(msgColor)
         end
 
         name = name or "RiceLib"
-        local nameColor = (SERVER and {Color(64, 158, 255)} or {Color(255, 255, 150)})[1]
+        local nameColor = Either(SERVER, Color(64, 158, 255), Color(255, 255, 150))
 
         MsgC(nameColor, "[" .. name .. "] ", msgColor, msg .. "\n")
     end
@@ -27,27 +41,37 @@ RL.Message_Warn  = mkMessageFunc(Color(255, 150, 0))
 RL.Message_Error = mkMessageFunc(Color(255, 75, 75))
 RL.Message       = message
 
+--- Checks if a string is properly ended with '/'
+-- @local
+-- @param str String to check
+-- @return string checked string
 local function checkSlash(str)
     if not str:EndsWith"/" then return str .. "/" end
     return str
 end
 
-local function AddFile(fileName, directory, quiet, name)
+--- Adds a `.lua` file on whatever state
+-- @local
+-- @param fileName File name with extension
+-- @param dir Directory where file lies
+-- @param quiet Boolean for determining whether or not to output log msgs
+-- @param name Log as who? Default value is `RL`
+local function AddFile(fileName, dir, quiet, name)
     local type
     name = name or "RL"
 
     local mt = {__index = function()
-        return function() AddCSLuaFile(directory .. fileName); include(directory .. fileName); type = 4 end
+        return function() AddCSLuaFile(dir .. fileName); include(dir .. fileName); type = 4 end
     end}
     local mappedHandlers = setmetatable({
-        sv_ = function() include(directory .. fileName); type = 1 end,
+        sv_ = function() include(dir .. fileName); type = 1 end,
         sh_ = {
-            [true]  = function() AddCSLuaFile(directory .. fileName) end,
+            [true]  = function() AddCSLuaFile(dir .. fileName) end,
             [false] = function() return end,
-            final   = function() include(directory .. fileName); type = 2 end},
+            final   = function() include(dir .. fileName); type = 2 end},
         cl_ = {
-            [true]  = function() AddCSLuaFile(directory .. fileName) end,
-            [false] = function() include(directory .. fileName) end,
+            [true]  = function() AddCSLuaFile(dir .. fileName) end,
+            [false] = function() include(dir .. fileName) end,
             final   = function() type = 3 end}
     }, mt)
 
@@ -55,67 +79,84 @@ local function AddFile(fileName, directory, quiet, name)
     if istable(handler) then handler[SERVER](); handler.final() else handler() end
 
     if quiet then return end
-    local opType = {"sv include", "sh send or include", "cl recv and include", "send or include"}
+    local opType = {"include", "sh send or include", "send or include", "send and include"}
     message(opType[type] .. ": " .. fileName, name)
 end
 
-local function includeDir(directory, quiet, noSub, name)
-    directory = checkSlash(directory)
+--- Adds(include) all the files in a dir
+-- @function RL.IncludeDir
+-- @param dir Directory where files exist
+-- @param quiet Boolean for determining whether or not to output log msgs
+-- @param noSub Boolean for determining whether or not to also include `dir`'s sub dir's files / dirs(recursive)
+-- @param name Log as who? Default value is `RL`
+local function includeDir(dir, quiet, noSub, name)
+    dir = checkSlash(dir)
     name = name or "RL"
 
-    local files, directories = file.Find(directory .. "*.lua", "LUA")
+    local files, dirs = file.Find(dir .. "*.lua", "LUA")
 
-    for _, v in ipairs(files) do AddFile(v, directory, quiet) end
+    for _, v in ipairs(files) do AddFile(v, dir, quiet) end
 
-    if not quiet then message("Done loading: " .. directory, name) end
+    if not quiet then message("loaded: " .. dir, name) end
 
     if noSub then return end
 
-    for _, v in ipairs(directories) do
-        includeDir(directory .. v, quiet, false, name)
+    for _, v in ipairs(dirs) do
+        includeDir(dir .. v, quiet, false, name)
 
         if quiet then continue end
-        message("Loaded sub dir: " .. directory .. v, name)
+        message("loaded sub dir: " .. dir .. v, name)
     end
 end
 
 RL.IncludeDir   = includeDir
-RL.IncludeDirAs = function(directory, name, noSub) includeDir(directory, false, noSub, name) end
-RL.AddFileAs    = function(fileName, directory, name) AddFile(fileName, directory, false, name) end
+RL.IncludeDirAs = function(dir, name, noSub) includeDir(dir, false, noSub, name) end
+RL.AddFileAs    = function(fileName, dir, name) AddFile(fileName, dir, false, name) end
 
 if SERVER then
-    local function addCSFiles(directory, name, noSub)
-        directory = checkSlash(directory)
+    --- Adds `.lua` files to be sent to client
+    -- @function RL.AddCSFiles
+    -- @param dir Directory where files lie
+    -- @param Log as who? Default value is `RL`
+    -- @param noSub Boolean for determining whether or not to also add `dir`'s sub dir's files / dirs(recursive)
+    local function addCSFiles(dir, name, noSub)
+        dir = checkSlash(dir)
         name = name or "RL"
 
-        local files, directories = file.Find(directory .. "*", "LUA")
+        local files, dirs = file.Find(dir .. "*", "LUA")
 
         for _, v in ipairs(files) do
-            AddCSLuaFile(directory .. v)
-            message("CSFiles: " .. directory .. v, name)
+            AddCSLuaFile(dir .. v)
+            message("cslf: " .. dir .. v, name)
         end
-
-        message("Added CSFiles: " .. name)
 
         if noSub then return end
 
-        for _, v in ipairs(directories) do
-            addCSFiles(directory .. v, name)
-            message("CSFiles sub dir: " .. directory .. v, name)
+        for _, v in ipairs(dirs) do
+            addCSFiles(dir .. v, name)
+            message("cslf sub dir: " .. dir .. v, name)
         end
     end
 
     RL.AddCSFiles = addCSFiles
 end
 
+--- Gets all file names found in dir under path
+-- @function RL.Files.GetAll
+-- @param dir Directory where files may lie
+-- @param path Game path
 local function getAll(dir, path)
-    local files, _ = file.Find(checkSlash(dir) .. "*", path)
+    local files = file.Find(checkSlash(dir) .. "*", path)
     return files
 end
 
+--- Gets all dirs found in dir under path
+-- @function RL.Files.GetDir
+-- @param dir Directory where sub dirs may lie
+-- @param path Game path
 local function getDir(dir, path)
-    local _, ret_dir = file.Find(checkSlash(dir) .. "*", path)
-    return ret_dir
+    local _, dirs = file.Find(checkSlash(dir) .. "*", path)
+    return dirs
 end
 
 RL.Files.Iterator = function(dir, path, iterator)
