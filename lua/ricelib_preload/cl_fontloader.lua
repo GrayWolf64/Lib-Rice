@@ -1,164 +1,120 @@
+local ratioW  = ScrW() / 1920
 local testStr = "Innovation in China 中国智造，慧及全球 0123456789"
 
-function RL.VGUI.RegisterFont(fontName, codeName, addData)
-    for i=1,10 do
-        local data = {
-            font = fontName,
-            size = i*10*(ScrW()/1920),
-            weight = 500,
-            antialias = true,
-            additive = false,
-            outline = false,
-            extended = true
-        }
-
-        table.Merge(data, (addData or {}))
-
-        surface.CreateFont(codeName.."_"..i*10,data)
-    end
-
-    RL.Message("RegisterFont: "..codeName.." ("..fontName..")","Ricelib Font")
+local function mkFontData(font, size, weight)
+    return {
+        font = font,
+        size = size,
+        weight = weight,
+        antialias = true,
+        additive = false,
+        outline = false,
+        extended = true
+    }
 end
 
-function RL.VGUI.RegisterFontFixed(fontName, codeName, addData)
-    for i=1,10 do
-        local data = {
-            font = fontName,
-            size = i*10,
-            weight = 500,
-            antialias = true,
-            additive = false,
-            outline = false,
-            extended = true
-        }
+function RL.VGUI.RegisterFont(fontName, codeName, dataEx)
+    for i = 1, 10 do
+        local data = mkFontData(fontName, i * 10 * ratioW, 500)
+        table.Merge(data, (dataEx or {}))
 
-        table.Merge(data, (addData or {}))
-
-        surface.CreateFont(codeName.."_"..i*10,data)
+        surface.CreateFont(codeName .. "_".. i * 10, data)
     end
-
-    RL.Message("Register FixedFont: "..codeName.." ("..fontName..")","Ricelib Font")
 end
 
-function RL.VGUI.RegisterFontAdv(fontName, codeName, addData)
-    for i=1,60 do
-        local data = {
-            font = fontName,
-            size = i*5*(ScrW()/1920),
-            weight = 500,
-            antialias = true,
-            additive = false,
-            outline = false,
-            extended = true
-        }
+function RL.VGUI.RegisterFontFixed(fontName, codeName, dataEx)
+    for i = 1, 10 do
+        local data = mkFontData(fontName, i * 10, 500)
+        table.Merge(data, (dataEx or {}))
 
-        table.Merge(data, (addData or {}))
-
-        surface.CreateFont(codeName.."_"..i*5,data)
+        surface.CreateFont(codeName .. "_" .. i * 10, data)
     end
-
-    RL.Message("<ADV> RegisterFont: "..codeName.." ("..fontName..")","Ricelib Font")
 end
 
-function RL.VGUI.RegisterFontFixedAdv(fontName, codeName, addData)
-    for i=1,60 do
-        local data = {
-            font = fontName,
-            size = i*5,
-            weight = 500,
-            antialias = true,
-            additive = false,
-            outline = false,
-            extended = true
-        }
+function RL.VGUI.RegisterFontAdv(fontName, codeName, dataEx)
+    for i = 1, 60 do
+        local data = mkFontData(fontName, i * 5 * ratioW, 500)
+        table.Merge(data, (dataEx or {}))
 
-        table.Merge(data, (addData or {}))
-
-        surface.CreateFont(codeName.."_"..i*5,data)
+        surface.CreateFont(codeName .. "_" .. i * 5, data)
     end
+end
 
-    RL.Message("<ADV> Register FixedFont: "..codeName.." ("..fontName..")","Ricelib Font")
+function RL.VGUI.RegisterFontFixedAdv(fontName, codeName, dataEx)
+    for i = 1, 60 do
+        local data = mkFontData(fontName, i * 5, 500)
+        table.Merge(data, (dataEx or {}))
+
+        surface.CreateFont(codeName .. "_" .. i * 5, data)
+    end
 end
 
 function RL.VGUI.RegisterFont_New(data)
     local codeName, fontName = data.CodeName, data.FontName or "OPlusSans 3.0"
 
-    for i=1, 100 do
-        local base = {
-            font = fontName,
-            size = i * 2 * (ScrW()/1920),
-            weight = 500,
-            antialias = true,
-            additive = false,
-            outline = false,
-            extended = true
-        }
+    for i = 1, 100 do
+        local base = mkFontData(fontName, i * 2 * ratioW, 500)
+        local FontData = RL.table.Inherit(base, data)
 
-        local FontData = RL.table.Inherit(base,data)
+        if data.Debug then print(i * 2 * ratioW, FontData.size) end
 
-        if data.Debug then print(i * 2 * (ScrW()/1920), FontData.size) end
-
-        surface.CreateFont(codeName .. "_" .. i * 2, FontData )
+        surface.CreateFont(codeName .. "_" .. i * 2, FontData)
     end
-
-    if not data.ShowMessage then return end
-
-    RL.Message("<ADV> RegisterFont: "..codeName.." ("..fontName..")","Ricelib Font")
 end
 
-concommand.Add("RiceLib_VGUI_FontView",function(ply,cmd,args)
+concommand.Add("RiceLib_VGUI_FontView",function(_, _, args)
     local frame = vgui.Create("DFrame")
-    frame:SetSize(RL.hudScale(1800,900))
+    frame:SetSize(RL.hudScale(1800, 900))
     frame:Center()
     frame:MakePopup()
-    frame:SetTitle("RiceLib VGUI Font Viewer "..args[1])
+    frame:SetTitle("RiceLib VGUI Font Viewer " .. args[1])
     frame:SetTheme("ModernDark")
 
-    local panel,bar,barGrip = RL.VGUI.ScrollPanel(frame)
+    local panel, bar, barGrip = RL.VGUI.ScrollPanel(frame)
     panel:Dock(FILL)
     panel:SetTheme("ModernDark")
 
-    RL.VGUI.RegisterFontAdv(args[1],"FontView"..args[1])
+    RL.VGUI.RegisterFontAdv(args[1], "FontView" .. args[1])
 
-    for i = 1,20 do
-        local button = vgui.Create("DLabel",panel)
+    for i = 1, 20 do
+        local button = vgui.Create("DLabel", panel)
         button:Dock(TOP)
-        button:DockMargin(0,RL.hudScaleY(5),0,0)
+        button:DockMargin(0, RL.hudScaleY(5), 0, 0)
         button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
         button:SetTheme("ModernDark")
-        button:SetTall(RL.hudScaleY(i*5+10))
-        button:SetFont("FontView"..args[1].."_"..i*5)
+        button:SetTall(RL.hudScaleY(i * 5 + 10))
+        button:SetFont("FontView" .. args[1] .. "_" .. i * 5)
 
         panel:AddItem(button)
     end
 end)
 
-concommand.Add("RiceLib_VGUI_FontView_Raw",function(ply,cmd,args)
+concommand.Add("RiceLib_VGUI_FontView_Raw",function(_, _, args)
     local frame = vgui.Create("DFrame")
-    frame:SetSize(RL.hudScale(1800,900))
+    frame:SetSize(RL.hudScale(1800, 900))
     frame:Center()
     frame:MakePopup()
-    frame:SetTitle("RiceLib VGUI Font Viewer "..args[1])
+    frame:SetTitle("RiceLib VGUI Font Viewer " .. args[1])
     frame:SetTheme("ModernDark")
 
-    local panel,bar,barGrip = RL.VGUI.ScrollPanel(frame)
+    local panel, bar, barGrip = RL.VGUI.ScrollPanel(frame)
     panel:Dock(FILL)
     panel:SetTheme("ModernDark")
 
-    for i = 1,20 do
-        local button = vgui.Create("DLabel",panel)
+    for i = 1, 20 do
+        local button = vgui.Create("DLabel", panel)
         button:Dock(TOP)
-        button:DockMargin(0,RL.hudScaleY(5),0,0)
+        button:DockMargin(0, RL.hudScaleY(5), 0, 0)
         button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
         button:SetTheme("ModernDark")
-        button:SetTall(RL.hudScaleY(i*5+10))
-        button:SetFont(args[1].."_"..i*5)
+        button:SetTall(RL.hudScaleY(i * 5 + 10))
+        button:SetFont(args[1] .. "_" .. i * 5)
 
         panel:AddItem(button)
     end
 end)
 
-concommand.Add("RiceLib_VGUI_FontView_New",function(ply,cmd,args)
+concommand.Add("RiceLib_VGUI_FontView_New",function(_, _, args)
     local frame = RiceUI.SimpleCreate({type = "rl_frame",
         Center = true,
         Root = true,
@@ -167,14 +123,14 @@ concommand.Add("RiceLib_VGUI_FontView_New",function(ply,cmd,args)
         h = 900,
     })
 
-    for i = 1,20 do
-        local button = vgui.Create("DLabel",panel)
+    for i = 1, 20 do
+        local button = vgui.Create("DLabel", panel)
         button:Dock(TOP)
-        button:DockMargin(0,RL.hudScaleY(5),0,0)
+        button:DockMargin(0, RL.hudScaleY(5), 0, 0)
         button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
         button:SetTheme("ModernDark")
-        button:SetTall(RL.hudScaleY(i*5+10))
-        button:SetFont(args[1].."_"..i*5)
+        button:SetTall(RL.hudScaleY(i * 5 + 10))
+        button:SetFont(args[1] .. "_" .. i * 5)
 
         panel:AddItem(button)
     end
