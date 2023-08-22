@@ -1,6 +1,13 @@
+local WEIGHT  = 500
 local ratioW  = ScrW() / 1920
 local testStr = "Innovation in China 中国智造，慧及全球 0123456789"
 
+--- Makes font data to be used with `RegisterFont` function family
+-- @local
+-- @param font Font name
+-- @param size Font size
+-- @param weight Font weight
+-- @return table Font data
 local function mkFontData(font, size, weight)
     return {
         font = font,
@@ -13,47 +20,44 @@ local function mkFontData(font, size, weight)
     }
 end
 
-function RL.VGUI.RegisterFont(fontName, codeName, dataEx)
-    for i = 1, 10 do
-        local data = mkFontData(fontName, i * 10 * ratioW, 500)
-        table.Merge(data, (dataEx or {}))
+--- Prototype for `RegisterFont` function family
+-- @local
+-- @param fontName Name of the font to register
+-- @param codeName Code name of the font
+-- @param dataEx Font data to override
+-- @param ratio A magic number, can be `ScrW() / 1920`
+-- @param sizeMul A magic number
+-- @param maxIter Create the font for `n` times
+local function pRegisterFont(fontName, codeName, dataEx, ratio, sizeMul, maxIter)
+    for i = 1, maxIter do
+        local data = mkFontData(fontName, i * sizeMul * ratio, WEIGHT)
+        table.Merge(data, dataEx or {})
 
-        surface.CreateFont(codeName .. "_".. i * 10, data)
+        surface.CreateFont(codeName .. "_".. i * sizeMul, data)
     end
+end
+
+function RL.VGUI.RegisterFont(fontName, codeName, dataEx)
+    pRegisterFont(fontName, codeName, dataEx, ratioW, 10, 10)
 end
 
 function RL.VGUI.RegisterFontFixed(fontName, codeName, dataEx)
-    for i = 1, 10 do
-        local data = mkFontData(fontName, i * 10, 500)
-        table.Merge(data, (dataEx or {}))
-
-        surface.CreateFont(codeName .. "_" .. i * 10, data)
-    end
+    pRegisterFont(fontName, codeName, dataEx, 1, 10, 10)
 end
 
 function RL.VGUI.RegisterFontAdv(fontName, codeName, dataEx)
-    for i = 1, 60 do
-        local data = mkFontData(fontName, i * 5 * ratioW, 500)
-        table.Merge(data, (dataEx or {}))
-
-        surface.CreateFont(codeName .. "_" .. i * 5, data)
-    end
+    pRegisterFont(fontName, codeName, dataEx, ratioW, 5, 60)
 end
 
 function RL.VGUI.RegisterFontFixedAdv(fontName, codeName, dataEx)
-    for i = 1, 60 do
-        local data = mkFontData(fontName, i * 5, 500)
-        table.Merge(data, (dataEx or {}))
-
-        surface.CreateFont(codeName .. "_" .. i * 5, data)
-    end
+    pRegisterFont(fontName, codeName, dataEx, 1, 5, 60)
 end
 
 function RL.VGUI.RegisterFont_New(data)
     local codeName, fontName = data.CodeName, data.FontName or "OPlusSans 3.0"
 
     for i = 1, 100 do
-        local base = mkFontData(fontName, i * 2 * ratioW, 500)
+        local base = mkFontData(fontName, i * 2 * ratioW, WEIGHT)
         local FontData = RL.table.Inherit(base, data)
 
         if data.Debug then print(i * 2 * ratioW, FontData.size) end
