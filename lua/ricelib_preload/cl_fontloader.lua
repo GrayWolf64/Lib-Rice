@@ -1,6 +1,6 @@
 local WEIGHT  = 500
-local ratioW  = ScrW() / 1920
-local testStr = "Innovation in China 中国智造，慧及全球 0123456789"
+local RATIO_W  = ScrW() / 1920
+local TESTSTR = "Innovation in China 中国智造，慧及全球 0123456789"
 
 --- Makes font data to be used with `RegisterFont` function family
 -- @local
@@ -37,18 +37,30 @@ local function pRegisterFont(fontName, codeName, dataEx, ratio, sizeMul, maxIter
     end
 end
 
+--- Register 10 fonts with different sizes
+-- @param fontName Name of the font to register
+-- @param codeName Code name of the font
+-- @param dataEx Font data to override
 function RL.VGUI.RegisterFont(fontName, codeName, dataEx)
-    pRegisterFont(fontName, codeName, dataEx, ratioW, 10, 10)
+    pRegisterFont(fontName, codeName, dataEx, RATIO_W, 10, 10)
 end
 
+--- Register 10 fonts with different sizes, but don't vary from monitor to monitor
+-- @see RL.VGUI.RegisterFont
 function RL.VGUI.RegisterFontFixed(fontName, codeName, dataEx)
     pRegisterFont(fontName, codeName, dataEx, 1, 10, 10)
 end
 
+--- Register 60 fonts with different sizes
+-- @param fontName Name of the font to register
+-- @param codeName Code name of the font
+-- @param dataEx Font data to override
 function RL.VGUI.RegisterFontAdv(fontName, codeName, dataEx)
-    pRegisterFont(fontName, codeName, dataEx, ratioW, 5, 60)
+    pRegisterFont(fontName, codeName, dataEx, RATIO_W, 5, 60)
 end
 
+--- Register 60 fonts with different sizes, but don't vary from monitor to monitor
+-- @see RL.VGUI.RegisterFontAdv
 function RL.VGUI.RegisterFontFixedAdv(fontName, codeName, dataEx)
     pRegisterFont(fontName, codeName, dataEx, 1, 5, 60)
 end
@@ -57,10 +69,10 @@ function RL.VGUI.RegisterFont_New(data)
     local codeName, fontName = data.CodeName, data.FontName or "OPlusSans 3.0"
 
     for i = 1, 100 do
-        local base = mkFontData(fontName, i * 2 * ratioW, WEIGHT)
+        local base = mkFontData(fontName, i * 2 * RATIO_W, WEIGHT)
         local FontData = RL.table.Inherit(base, data)
 
-        if data.Debug then print(i * 2 * ratioW, FontData.size) end
+        if data.Debug then print(i * 2 * RATIO_W, FontData.size) end
 
         surface.CreateFont(codeName .. "_" .. i * 2, FontData)
     end
@@ -84,7 +96,7 @@ concommand.Add("RiceLib_VGUI_FontView",function(_, _, args)
         local button = vgui.Create("DLabel", panel)
         button:Dock(TOP)
         button:DockMargin(0, RL.hudScaleY(5), 0, 0)
-        button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
+        button:SetText(" " .. tostring(i * 5) .. " " .. TESTSTR)
         button:SetTheme("ModernDark")
         button:SetTall(RL.hudScaleY(i * 5 + 10))
         button:SetFont("FontView" .. args[1] .. "_" .. i * 5)
@@ -109,7 +121,7 @@ concommand.Add("RiceLib_VGUI_FontView_Raw",function(_, _, args)
         local button = vgui.Create("DLabel", panel)
         button:Dock(TOP)
         button:DockMargin(0, RL.hudScaleY(5), 0, 0)
-        button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
+        button:SetText(" " .. tostring(i * 5) .. " " .. TESTSTR)
         button:SetTheme("ModernDark")
         button:SetTall(RL.hudScaleY(i * 5 + 10))
         button:SetFont(args[1] .. "_" .. i * 5)
@@ -131,7 +143,7 @@ concommand.Add("RiceLib_VGUI_FontView_New",function(_, _, args)
         local button = vgui.Create("DLabel", panel)
         button:Dock(TOP)
         button:DockMargin(0, RL.hudScaleY(5), 0, 0)
-        button:SetText(" " .. tostring(i * 5) .. " " .. testStr)
+        button:SetText(" " .. tostring(i * 5) .. " " .. TESTSTR)
         button:SetTheme("ModernDark")
         button:SetTall(RL.hudScaleY(i * 5 + 10))
         button:SetFont(args[1] .. "_" .. i * 5)
