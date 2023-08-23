@@ -19,10 +19,12 @@ if SERVER then
         net.Broadcast()
     end
 
-    hook.Add("RL_ClientReady", "RL_SendURLMaterials", function(ply)
+    gameevent.Listen("player_connect")
+    hook.Add("player_connect", "RiceLib_SendURLMaterials", function(data)
+        if data.bot == 1 then return end
         net.Start"RiceLib_SendMaterials"
         net.WriteTable(urlMaterials)
-        net.Send(ply)
+        net.Send(Entity(data.index + 1))
     end)
 
     local files = file.Find(matDir .. "*.txt", "DATA")
@@ -32,6 +34,8 @@ if SERVER then
 
     RL.URLMaterial.Create = createURLMaterial
 else
+    local materialCache = materialCache or {}
+
     local function createURLMaterial(name, url)
         file.Write(matDir .. name .. ".txt", url)
         http.Fetch(url, function(body)
@@ -41,12 +45,6 @@ else
 
     net.Receive("RiceLib_SendMaterial", function()
         createURLMaterial(net.ReadString(), net.ReadString())
-    end)
-
-    net.Receive("RiceLib_SendMaterials", function()
-        for _, v in pairs(net.ReadTable()) do
-            createURLMaterial(v.name, v.url)
-        end
     end)
 
     net.Receive("RiceLib_SendMaterials", function()
@@ -63,7 +61,6 @@ else
         end
     end)
 
-    RL.URLMaterial.Create = createURLMaterial
     RL.URLMaterial.Reload = function()
         local files = file.Find(matDir .. "*.txt", "DATA")
         for _, v in pairs(files) do
@@ -73,7 +70,6 @@ else
         end
     end
 
-    local materialCache = materialCache or {}
     RL.URLMaterial.Get = function(name, url)
         if file.Exists(matDir .. name .. ".png", "DATA") then
             if materialCache[name] then return materialCache[name] end
@@ -87,4 +83,6 @@ else
         createURLMaterial(name, url)
         if file.Exists(matDir .. name .. ".txt", "DATA") then return Material"models/error/green" end
     end
+
+    RL.URLMaterial.Create = createURLMaterial
 end
