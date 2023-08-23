@@ -30,8 +30,6 @@ if SERVER then
         table.insert(urlMaterials, {name = v:StripExtension(), url = file.Read(matDir .. v)})
     end
 
-    createURLMaterial("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
-
     RL.URLMaterial.Create = createURLMaterial
 else
     local function createURLMaterial(name, url)
