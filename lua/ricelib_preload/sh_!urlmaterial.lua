@@ -1,18 +1,17 @@
 RL.URLMaterial = {}
-local matDir = "RiceLib/Materials/"
-file.CreateDir(matDir)
+local MAT_DIR = "ricelib/materials/"
+local MANIFEST = MAT_DIR .. "manifest.json"
+file.CreateDir(MAT_DIR)
+if not file.Exists(MANIFEST, "DATA") then file.Write(MANIFEST, "[]") end
 
 if SERVER then
-    local urlMaterials = urlMaterials or {}
     util.AddNetworkString"RiceLib_SendMaterial"
     util.AddNetworkString"RiceLib_SendMaterials"
 
     local function createURLMaterial(name, url)
-        if not file.Exists(matDir .. name .. ".txt", "DATA") then
-            table.insert(urlMaterials, {name = name, url = url})
-        end
+        local oldContent = util.JSONToTable(file.Read(MANIFEST, "DATA"))
+        file.Write(MANIFEST, table.insert(oldContent, {name = name, url = url}))
 
-        file.Write(matDir .. name .. ".txt", url)
         net.Start"RiceLib_SendMaterial"
         net.WriteString(name)
         net.WriteString(url)
@@ -23,66 +22,59 @@ if SERVER then
     hook.Add("player_connect", "RiceLib_SendURLMaterials", function(data)
         if data.bot == 1 then return end
         net.Start"RiceLib_SendMaterials"
-        net.WriteTable(urlMaterials)
+        net.WriteString(file.Read(MANIFEST, "DATA"))
         net.Send(Entity(data.index + 1))
     end)
 
-    local files = file.Find(matDir .. "*.txt", "DATA")
-    for _, v in pairs(files) do
-        table.insert(urlMaterials, {name = v:StripExtension(), url = file.Read(matDir .. v)})
-    end
-
     RL.URLMaterial.Create = createURLMaterial
 else
-    local materialCache = materialCache or {}
+    local matCache = matCache or {}
 
-    local function createURLMaterial(name, url)
-        file.Write(matDir .. name .. ".txt", url)
+    local function downloadImage(name, url)
+        local imageFile = MAT_DIR .. name .. ".png"
+        if file.Exists(imageFile, "DATA") then return end
+
         http.Fetch(url, function(body)
-            file.Write(matDir .. name .. ".png", body)
+            file.Write(imageFile, body)
         end)
     end
 
     net.Receive("RiceLib_SendMaterial", function()
-        createURLMaterial(net.ReadString(), net.ReadString())
+        downloadImage(net.ReadString(), net.ReadString())
     end)
 
     net.Receive("RiceLib_SendMaterials", function()
-        for _, v in pairs(net.ReadTable()) do
-            if file.Exists(matDir .. v.name .. ".png", "DATA") then
-                continue
-            elseif file.Exists(matDir .. v.name .. ".txt", "DATA") then
-                http.Fetch(v.url, function(body)
-                    file.Write(matDir .. v.name .. ".png", body)
-                end)
-            else
-                createURLMaterial(v.name, v.url)
-            end
+        local manifest = net.ReadString()
+        file.Write(MANIFEST, manifest)
+
+        for _, v in pairs(util.JSONToTable(manifest)) do
+            if file.Exists(MAT_DIR .. v.name .. ".png", "DATA") then continue end
+            downloadImage(v.name, v.url)
         end
     end)
 
     RL.URLMaterial.Reload = function()
-        local files = file.Find(matDir .. "*.txt", "DATA")
-        for _, v in pairs(files) do
-            http.Fetch(file.Read(matDir .. v, "DATA"), function(body)
-                file.Write(matDir .. v:StripExtension() .. ".png", body)
+        for _, v in pairs(util.JSONToTable(file.Read(MANIFEST, "DATA"))) do
+            http.Fetch(v.url, function(body)
+                file.Write(MAT_DIR .. v.name .. ".png", body)
             end)
         end
     end
 
     RL.URLMaterial.Get = function(name, url)
-        if file.Exists(matDir .. name .. ".png", "DATA") then
-            if materialCache[name] then return materialCache[name] end
+        local imageFile = MAT_DIR .. name .. ".png"
+        if file.Exists(imageFile, "DATA") then
+            if matCache[name] then return matCache[name] end
 
-            local material = Material("data/" .. matDir .. name .. ".png", "smooth")
-            materialCache[name] = material
+            local material = Material("data/" .. imageFile, "smooth")
+            matCache[name] = material
 
             return material
         end
 
-        createURLMaterial(name, url)
-        if file.Exists(matDir .. name .. ".txt", "DATA") then return Material"models/error/green" end
+        downloadImage(name, url)
+        if not file.Exists(imageFile, "DATA") then return Material"models/error/green" end
     end
 
-    RL.URLMaterial.Create = createURLMaterial
+    RL.URLMaterial.Create = downloadImage
 end
