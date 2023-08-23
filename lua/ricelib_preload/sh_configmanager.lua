@@ -245,7 +245,7 @@ else
 
     list.Set("DesktopWindows", "Lib-Rice ControllCenter", {
         title = "控制中心",
-        icon = "data/RiceLib/Materials/rl_logo.png",
+        icon = "data/ricelib/materials/rl_logo.png",
         init = function()
             RunConsoleCommand("rl_config")
         end
