@@ -146,6 +146,10 @@ function Element.Create(data, parent)
         return self.Value
     end
 
+    function panel:GetValue()
+        return self.Value
+    end
+
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
 
     return panel

@@ -19,7 +19,8 @@ if SERVER then
         net.Start"RiceLib_SendMaterials"
 
         local oldContent = util.JSONToTable(file.Read(MANIFEST, "DATA"))
-        file.Write(MANIFEST, util.TableToJSON(table.insert(oldContent, {name = name, url = url})))
+        table.insert(oldContent, {name = name, url = url})
+        file.Write(MANIFEST, util.TableToJSON(oldContent))
 
         net.WriteString(file.Read(MANIFEST, "DATA"))
         net.Broadcast()
