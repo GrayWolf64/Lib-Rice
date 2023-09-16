@@ -2,12 +2,18 @@ RL.Net = {}
 
 function RL.Net.AddCommandReceiver(netID, commandHandler)
     net.Receive(netID, function(_, ply)
-        commandHandler[net.ReadString()](net.ReadTable(), ply)
+        local command = net.ReadString()
+        local func = commandHandler[command]
+        if func == nil then RL.Message_Error("Net Command Not Found: " .. command) return end
+
+        func(net.ReadTable(), ply)
     end)
 end
 
 function RL.Net.SendCommand(netID, command, data, ply)
-    net.Start(netID)
+    if data == nil then return end
+
+    net.Start(netID, data.Unreliable)
     net.WriteString(command)
     net.WriteTable(data)
 
@@ -18,7 +24,9 @@ function RL.Net.SendCommand(netID, command, data, ply)
 end
 
 function RL.Net.SendEntityCommand(entity, command, data, ply)
-    net.Start("RL_EntityCommand")
+    if data == nil then return end
+
+    net.Start("RL_EntityCommand", data.Unreliable)
     net.WriteEntity(entity)
     net.WriteString(command)
     net.WriteTable(data)
