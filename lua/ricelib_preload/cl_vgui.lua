@@ -6,37 +6,24 @@ local function getRoot(vgui)
     return getRoot(parent)
 end
 
+local BLUR_PASSES = 6
 local matBlurScreen = Material"pp/blurscreen"
 
 local function blurPanel(panel, amount)
     local x, y = panel:LocalToScreen(0, 0)
-    local blur = Material("pp/blurscreen")
+    surface.SetMaterial(matBlurScreen)
+    surface.SetDrawColor(color_white:Unpack())
 
-    surface.SetDrawColor(255, 255, 255)
-    surface.SetMaterial(blur)
-
-    for i = 1, 6 do
-        blur:SetFloat("$blur", (i / 3) * (amount or 6))
-        blur:Recompute()
+    for i = 1, BLUR_PASSES do
+        matBlurScreen:SetFloat("$blur", (i / 3) * (amount or BLUR_PASSES))
+        matBlurScreen:Recompute()
         render.UpdateScreenEffectTexture()
         surface.DrawTexturedRect(-x, -y, ScrW(), ScrH())
     end
 end
 
 local function blurBackground(self, amount)
-    local fraction = 1
-    local x, y = self:LocalToScreen(0, 0)
-    surface.SetMaterial(matBlurScreen)
-    surface.SetDrawColor(color_white:Unpack())
-
-    for i = 0.33, 1, 0.33 do
-        matBlurScreen:SetFloat("$blur", fraction * amount * i)
-        matBlurScreen:Recompute()
-
-        render.UpdateScreenEffectTexture()
-
-        surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
-    end
+    blurPanel(self, amount)
 
     DisableClipping(DisableClipping(true))
 end
@@ -58,11 +45,9 @@ local function Notify(text, fontSize, x, y, lifeTime)
     notify:SetSize(ScrW(), ScrH())
     local panel = vgui.Create("DPanel", notify)
 
-    panel.Paint = function(self)
-        blurPanel(self, 6)
-    end
+    panel.Paint = function(self) blurPanel(self) end
 
-    local label = RL.VGUI.ModernLabel(text, panel, fontSize, 5, 0, Color(255, 255, 255, 255))
+    local label = RL.VGUI.ModernLabel(text, panel, fontSize, 5, 0, color_white)
     label:SizeToContents()
     panel:SetSize(label:GetWide() + 10, label:GetTall())
     notify:AddItem(panel)
