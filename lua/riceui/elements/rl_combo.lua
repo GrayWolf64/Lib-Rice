@@ -65,6 +65,8 @@ function Element.Create(data, parent)
         self.Menu:SizeTo(-1, 0, 0.3, 0, 0.2, function(anim, pnl)
             pnl:Remove()
         end)
+
+        self:NeedScaling(0)
     end
 
     function panel:DoClick()
@@ -129,6 +131,7 @@ function Element.Create(data, parent)
         end
 
         self.Menu:SizeTo(-1, h, 0.3, 0, 0.3)
+        self:NeedScaling(h)
     end
 
     function panel:SetValue(value)

@@ -93,10 +93,13 @@ tbl.Colors = {
         Stroke = {
             Default = RiceUI.AlphaPercent(color_black, 0.05),
             Solid = HSLToColor(0, 0, 0.92),
+
             Control = {
                 Default = RiceUI.AlphaPercent(color_black, 0.07),
                 Secondary = RiceUI.AlphaPercent(color_black, 0.16),
-            }
+            },
+
+            Frame = RiceUI.AlphaPercent(color_white, 0.75)
         },
 
         Background = {
@@ -160,10 +163,13 @@ tbl.Colors = {
         Stroke = {
             Default = RiceUI.AlphaPercent(color_black, 0.1),
             Solid = HSLToColor(0, 0, 0.11),
+
             Control = {
                 Default = RiceUI.AlphaPercent(HSLToColor(0, 0, 1), 0.04),
                 Secondary = RiceUI.AlphaPercent(HSLToColor(0, 0, 1), 0.06),
-            }
+            },
+
+            Frame = Color(50, 50, 50, 191)
         },
 
         Background = {
@@ -371,6 +377,14 @@ function tbl.RL_Frame2(self, w, h)
     render.SetStencilFailOperation(STENCIL_KEEP)
 
     RL.VGUI.blurPanel(self, 8)
+
+    render.SetStencilCompareFunction(STENCIL_INVERT)
+
+    local thickness = RL.hudScaleY(2)
+
+    DisableClipping(true)
+    draw.RoundedBoxEx(self.Theme.Curver or tbl.DefaultCurver, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Stroke", "Frame"), true, true, true, true)
+    DisableClipping(false)
 
     render.SetStencilEnable(false)
 
@@ -657,7 +671,7 @@ function tbl.Slider(self, w, h)
     RL.Draw.Circle(pos, h / 2, h / 2 - 2, 32, Color(250, 250, 250))
 
     if self:GetDragging() then
-        draw.SimpleText(tostring(self:GetValue()), "OPPOSans_" .. tostring(h), pos, -h / 2, RiceUI.GetColorBase(tbl, self, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(tostring(self:GetValue()), "RiceUI_32", pos, -h / 2, RiceUI.GetColorBase(tbl, self, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     DisableClipping(false)

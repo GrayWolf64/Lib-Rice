@@ -1,50 +1,55 @@
 RiceUI          = RiceUI or {}
-RiceUI.UI       = RiceUI.UI or {}
 RiceUI.RootName = "main"
 
 file.CreateDir"riceui"
 file.CreateDir"riceui/web_image"
 
-local elements = elements or {}
+local elements = {}
+local UI_Elements = {}
 
 RL.Functions.LoadFiles(elements, "riceui/elements")
 
 --- Create UI Elements
 -- @section CreateElement
-function RiceUI.SimpleCreate(data, parent)
+function RiceUI.SimpleCreate(data, parent, root)
     if not elements[data.type] then elements.error.Create(data, parent) return end
-
     if data.ShouldCreate and not data.ShouldCreate() then return end
 
     local panel = elements[data.type].Create(data, parent)
-    table.insert(RiceUI.UI, panel)
+
+    root = root or panel
+
     RiceUI.DoProcess(panel)
     RiceUI.ApplyExtraFunctions(panel)
 
-    if data.children then RiceUI.Create(data.children, panel) end
-
+    if data.children then RiceUI.Create(data.children, panel, root) end
     if data.OnCreated then data.OnCreated(panel) end
-
     if panel.ChildCreated then panel:ChildCreated() end
 
     if data.ID then
         if not IsValid(parent) then return panel end
 
+        -- Remove this soon
         parent.Elements = parent.Elements or {}
         parent.Elements[data.ID] = panel
+
+        root.RiceUI_Elements = root.RiceUI_Elements or {}
+        root.RiceUI_Elements[data.ID] = panel
     end
+
+    table.insert(UI_Elements, panel)
 
     return panel
 end
 
-function RiceUI.Create(tab, parent)
-    for _, data in ipairs(tab) do
-        local panel = RiceUI.SimpleCreate(data, parent)
-        local parent = parent or panel
-        parent.Elements = parent.Elements or {}
+function RiceUI.Create(tab, parent, root)
+    local elements = {}
 
-        if data.ID then parent.Elements[data.ID] = panel end
+    for _, data in ipairs(tab) do
+        table.insert(elements, RiceUI.SimpleCreate(data, parent, root))
     end
+
+    return elements
 end
 
 --- Handle generic parameters
@@ -82,11 +87,13 @@ concommand.Add("riceui_reload", function()
 end)
 
 concommand.Add("riceui_panic", function()
-    for _, v in pairs(RiceUI.UI) do
-        if IsValid(v) then
-            v:Remove()
+    for _, panel in ipairs(UI_Elements) do
+        if IsValid(panel) then
+            panel:Remove()
         end
     end
+
+    UI_Elements = {}
 end)
 
 concommand.Add("riceui_elements", function()
@@ -98,7 +105,7 @@ concommand.Add("riceui_theme", function()
 end)
 
 concommand.Add("riceui_all", function()
-    PrintTable(RiceUI.UI)
+    PrintTable(UI_Elements)
 end)
 
 RiceUI.Prefab = {}

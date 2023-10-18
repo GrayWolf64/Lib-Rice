@@ -17,6 +17,8 @@ function Element.Create(data,parent)
     function panel:SetImage(url)
         self.Image = url
         self.Mat = RiceUI.GetWebImage(self.Image, function(mat)
+            if self == nil then return end
+
             self.Mat = mat
         end)
     end
