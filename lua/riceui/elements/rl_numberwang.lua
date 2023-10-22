@@ -92,7 +92,13 @@ function Element.Create(data, parent)
     end
 
     function panel:OnMouseWheeled(dlt)
-        self:SetValue(math.Clamp(self.Value + dlt * self.Step, self.Min, self.Max))
+        local val =  dlt * self.Step
+
+        if input.IsKeyDown(KEY_LCONTROL) then
+            val = math.Round(val / 10, self.Dec)
+        end
+
+        self:SetValue(math.Clamp(self.Value + val, self.Min, self.Max))
     end
 
     function panel:OnChange()

@@ -28,3 +28,8 @@ RL.VGUI.RegisterFont_New{
     CodeName = "Smiley",
     FontName = "Smiley Sans Oblique"
 }
+
+RL.VGUI.RegisterFont_New{
+    CodeName = "Ali",
+    FontName = "Alimama ShuHeiTi"
+}

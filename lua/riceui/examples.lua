@@ -2,21 +2,13 @@ RiceUI = RiceUI or {}
 
 RiceUI.Examples = {
     Modern = {
-        {type = "rl_frame",
+        {type = "rl_frame2",
             Text = "Example",
             Center = true,
             Root = true,
 
             w = 1200,
             h = 800,
-
-            UseNewTheme = true,
-            Theme = {
-                ThemeName = "modern",
-                ThemeType = "RL_Frame2",
-                Color = "white",
-                TextColor = "white",
-            },
 
             Alpha = 0,
             Anim = {
@@ -130,10 +122,12 @@ RiceUI.Examples = {
                     x = 10,
                     y = 405,
                 },
-                {type = "rl_frame",
+                {type = "rl_frame2",
                     x = 520,
                     y = 40,
                     w = 670,
+                    h = 300,
+
                     Text = "Frame In Frame",
 
                     Theme = {ThemeType = "RL_Frame2"},

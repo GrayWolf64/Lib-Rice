@@ -1,23 +1,25 @@
 local Element = {}
 
 Element.Editor = {
-    Category = "display"
+    Category = "base"
 }
 
 function Element.Create(data, parent)
     RL.table.Inherit(data, {
         x = 10,
         y = 10,
-        w = 50,
-        h = 50,
-        Image = "gui/contenticon-normal.png"
+        w = 500,
+        h = 300,
+
+        NoGTheme = true,
     })
 
-    local panel = vgui.Create("DImageButton", parent)
+    local panel = vgui.Create(data.PanelName, parent)
     panel:SetPos(RL.hudScale(data.x, data.y))
     panel:SetSize(RL.hudScale(data.w, data.h))
+    panel.IsBase = true
+
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
-    panel:SetImage(data.Image)
 
     return panel
 end
