@@ -46,7 +46,8 @@ function RiceUI.Create(tab, parent, root)
     local elements = {}
 
     for _, data in ipairs(tab) do
-        table.insert(elements, RiceUI.SimpleCreate(data, parent, root))
+        local panel = RiceUI.SimpleCreate(data, parent, root)
+        table.insert(elements, panel)
     end
 
     return elements
