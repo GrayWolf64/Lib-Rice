@@ -33,6 +33,8 @@ function RL.Config.Set(NameSpace, Key, Value)
 end
 
 function RL.Config.Get(NameSpace, Key)
+    if NameSpace == nil or Key == nil then return end
+
     RL.Config.All[NameSpace] = RL.Config.All[NameSpace] or {}
 
     return RL.Config.All[NameSpace][Key]

@@ -61,6 +61,9 @@ function Element.Create(data, parent)
         end
     end
 
+    function panel:NeedScaling(height)
+    end
+
     function panel:CloseMenu()
         self.Menu:SizeTo(-1, 0, 0.3, 0, 0.2, function(anim, pnl)
             pnl:Remove()
