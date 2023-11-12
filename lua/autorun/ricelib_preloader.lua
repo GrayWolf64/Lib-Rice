@@ -6,14 +6,11 @@ if SERVER then resource.AddWorkshop"2829757059" end
 --- RiceLib global table
 -- @table RL
 -- @field VGUI
--- @field Language
 -- @field Functions
 -- @field Files
 RL                = RL or {}
 RL.VGUI           = RL.VGUI or {}
 RL.VGUI.Anim      = RL.VGUI.Anim or {}
-RL.Language       = RL.Language or {}
-RL.Language.Words = RL.Language.Words or {}
 RL.Functions      = RL.Functions or {}
 RL.Files          = RL.Files or {}
 
@@ -26,7 +23,7 @@ file.CreateDir"ricelib/settings"
 local function mkMessageFunc(msgColor)
     return function(msg, name)
         if msg:StartsWith"#" then
-            msg = RL.Language.Get(msg:sub(2)) or msg
+            msg = language.GetPhrase(msg:sub(2)) or msg
         end
 
         name = name or "RiceLib"

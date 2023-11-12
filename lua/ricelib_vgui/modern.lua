@@ -4,7 +4,7 @@ function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
         FontSize = tostring(FontSize)
     end
 
-    if string.StartWith(Text,"#") then Text = RL.Language.Get(string.sub(Text,2)) or Text end
+    if string.StartWith(Text,"#") then Text = language.GetPhrase(string.sub(Text,2)) or Text end
 
     local lb = vgui.Create("DLabel",Panel)
     lb:SetText(Text)
@@ -21,7 +21,7 @@ function RL.VGUI.ModernLabelEditable(Text,Panel,FontSize,X,Y,color)
         FontSize = tostring(FontSize)
     end
 
-    if string.StartWith(Text,"#") then Text = RL.Language.Get(string.sub(Text,2)) or Text end
+    if string.StartWith(Text,"#") then Text = language.GetPhrase(string.sub(Text,2)) or Text end
 
     local lb = vgui.Create("DLabelEditable",Panel)
     lb:SetText(Text)
