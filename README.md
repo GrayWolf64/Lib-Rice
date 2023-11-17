@@ -1,1 +1,7 @@
-# 很新的大变
+# 迎来了很新的大变
+
+更新依赖此插件的项目的指南：
+
+1. 使用 `RL.UpdateHUDOffset` 而不是 `RL.Change_HUDOffset`.
+2. 使用 `RL.ClearHUDOffset` 而不是 `RL.Clear_HUDOffset`.
+3. `RL.VGUI.OffsetButton` 不再可用
