@@ -102,59 +102,8 @@ if CLIENT then
 
     RL.VGUI.SetGlobalTheme("Default")
 
-    concommand.Add("RiceLib_VGUI_ReloadTheme", function()
+    concommand.Add("ricelib_vgui_reloadtheme", function()
         RL.VGUI.ReloadTheme()
-    end)
-
-    concommand.Add("RiceLib_VGUI_ThemeView", function()
-        local frame = vgui.Create("DFrame")
-        frame:SetSize(RL.hudScale(500, 500))
-        frame:Center()
-        frame:MakePopup()
-        frame:SetTitle("RiceLib VGUI Theme Viewer")
-        frame:SetTheme("ModernDark")
-
-        local panel = RL.VGUI.ScrollPanel(frame)
-        panel:Dock(FILL)
-        panel:SetTheme("ModernDark")
-
-        for k in SortedPairs(RL.VGUI.Theme) do
-            local button = vgui.Create("DButton", panel)
-            button:Dock(TOP)
-            button:DockMargin(0, RL.hudScaleY(5), 0, 0)
-            button:SetText(k)
-            button:SetTheme(k)
-            button:SetTall(RL.hudScaleY(50))
-
-            panel:AddItem(button)
-        end
-    end)
-
-    concommand.Add("RiceLib_VGUI_ColorThemeView", function()
-        local frame = vgui.Create("DFrame")
-        frame:SetSize(RL.hudScale(500, 500))
-        frame:Center()
-        frame:MakePopup()
-        frame:SetTitle("RiceLib VGUI ColorTheme Viewer")
-        frame:SetTheme("Modern")
-        frame:SetColorTheme("Dark1")
-
-        local panel = RL.VGUI.ScrollPanel(frame)
-        panel:Dock(FILL)
-        panel:SetTheme("Modern")
-        panel:SetColorTheme("Dark1")
-
-        for k in SortedPairs(RL.VGUI.ColorTheme) do
-            local button = vgui.Create("DButton", panel)
-            button:Dock(TOP)
-            button:DockMargin(0, RL.hudScaleY(5), 0, 0)
-            button:SetText(k)
-            button:SetTheme("Modern")
-            button:SetTall(RL.hudScaleY(50))
-            button:SetColorTheme(k)
-
-            panel:AddItem(button)
-        end
     end)
 end
 
