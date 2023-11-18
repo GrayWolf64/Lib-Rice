@@ -1,93 +1,96 @@
 RL.VGUI = RL.VGUI or {}
-RL.VGUI.Theme = {}
-RL.VGUI.ColorTheme = RL.VGUI.ColorTheme or {}
-RL.VGUI.GlobalTheme = {}
-RL.VGUI.ThemeSet = "SciFi"
 
 function RL.VGUI.ReloadTheme()
-    if SERVER then
-        local files,_ = file.Find("ricelib_vgui_theme/*.lua", "LUA")
+    local themes_folder = "ricelib_vgui_theme/"
 
-        for _, v in ipairs(files) do AddCSLuaFile("ricelib_vgui_theme/"..v) end
+    if SERVER then
+        local files = file.Find(themes_folder .. "*.lua", "LUA")
+
+        for _, v in ipairs(files) do AddCSLuaFile(themes_folder .. v) end
     else
-        local files,_ = file.Find("ricelib_vgui_theme/*.lua", "LUA")
+        local files = file.Find(themes_folder .. "*.lua", "LUA")
 
         for _, v in ipairs(files) do
-            local Name,Theme = include("ricelib_vgui_theme/" .. v)
-            if !Name or !Theme then return end
+            local name, theme = include(themes_folder .. v)
+            if not name or not theme then return end
 
-            RL.Message("Loaded " .. Name,"RiceLib VGUI Theme")
+            RL.VGUI.RegisterTheme(name, theme)
 
-            RL.VGUI.RegisterTheme(Name,Theme)
+            RL.Message("Loaded " .. name, "RiceLib VGUI Theme")
         end
     end
 end
 
 if CLIENT then
-    function RL.VGUI.RegisterTheme(Name,Theme)
-        if !Theme.Paint then return end
+    RL.VGUI.Theme = RL.VGUI.Theme or {}
+    RL.VGUI.ColorTheme = RL.VGUI.ColorTheme or {}
+    RL.VGUI.GlobalTheme = RL.VGUI.GlobalTheme or {}
+    RL.VGUI.ThemeSet = RL.VGUI.ThemeSet or "SciFi"
 
-        RL.VGUI.Theme[Name] = Theme
+    function RL.VGUI.RegisterTheme(name, theme)
+        if not theme.Paint then return end
+
+        RL.VGUI.Theme[name] = theme
     end
 
-    function RL.VGUI.RegisterColorTheme(Name,Theme)
-        RL.VGUI.ColorTheme[Name] = Theme
+    function RL.VGUI.RegisterColorTheme(name, theme)
+        RL.VGUI.ColorTheme[name] = theme
     end
 
-    function RL.VGUI.SetGlobalTheme(Name)
-        if !RL.VGUI.Theme[Name] then return end
+    function RL.VGUI.SetGlobalTheme(name)
+        if not RL.VGUI.Theme[name] then return end
 
-        RL.VGUI.GlobalTheme = RL.VGUI.Theme[Name]
+        RL.VGUI.GlobalTheme = RL.VGUI.Theme[name]
     end
 
-    function RL.VGUI.SetThemeSet(Name)
-        if !RL.VGUI.Theme[Name] then return end
+    function RL.VGUI.SetThemeSet(name)
+        if not RL.VGUI.Theme[name] then return end
 
-        RL.VGUI.ThemeSet = Name
+        RL.VGUI.ThemeSet = name
     end
 
-    function RL.VGUI.ThemeSetTextColor(Name)
-        return RL.VGUI.Theme[RL.VGUI.ThemeSet..(Name or "")].TextColor or Color(255,255,255)
+    function RL.VGUI.ThemeSetTextColor(name)
+        return RL.VGUI.Theme[RL.VGUI.ThemeSet..(name or "")].TextColor or Color(255,255,255)
     end
 
-    function RL.VGUI.ThemeSetTextFont(Name)
-        return RL.VGUI.Theme[RL.VGUI.ThemeSet..(Name or "")].TextFont or Color(255,255,255)
+    function RL.VGUI.ThemeSetTextFont(name)
+        return RL.VGUI.Theme[RL.VGUI.ThemeSet..(name or "")].TextFont or Color(255,255,255)
     end
 
     local meta = FindMetaTable("Panel")
 
-    function meta:SetTheme(Name)
-        if !RL.VGUI.Theme[Name] then return end
+    function meta:SetTheme(name)
+        if not RL.VGUI.Theme[name] then return end
 
-        self.Paint = RL.VGUI.Theme[Name].Paint
-        self.Theme = table.Copy(RL.VGUI.Theme[Name])
+        self.Paint = RL.VGUI.Theme[name].Paint
+        self.Theme = table.Copy(RL.VGUI.Theme[name])
 
-        pcall(function(panel) panel:SetTextColor(RL.VGUI.Theme[Name].TextColor) end,self)
-        pcall(function(panel) panel:SetFont(RL.VGUI.Theme[Name].TextFont) end,self)
+        pcall(function(panel) panel:SetTextColor(RL.VGUI.Theme[name].TextColor) end,self)
+        pcall(function(panel) panel:SetFont(RL.VGUI.Theme[name].TextFont) end,self)
 
         pcall(function(panel)
             local bar = panel:GetVBar()
 
-            bar:SetTheme(Name)
-            bar.btnGrip:SetTheme(Name.."ScrollBar")
-        end,self)
+            bar:SetTheme(name)
+            bar.btnGrip:SetTheme(name.."ScrollBar")
+        end, self)
     end
 
-    function meta:ThemeColorOverride(Main,Hover,Text,Outline)
+    function meta:ThemeColorOverride(Main, Hover, Text, Outline)
         self.Theme.MainColor = Main or self.Theme.MainColor
         self.Theme.HoverColor = Hover or self.Theme.HoverColor
         self.Theme.TextColor = Text or self.Theme.TextColor
         self.Theme.OutlineColor = Outline or self.Theme.OutlineColor
 
-        if Text then pcall(function(panel) panel:SetTextColor(Text) end,self) end
+        if Text then pcall(function(panel) panel:SetTextColor(Text) end, self) end
     end
 
-    function meta:SetColorTheme(Name)
-        self:ThemeColorOverride(unpack(RL.VGUI.ColorTheme[Name]))
+    function meta:SetColorTheme(name)
+        self:ThemeColorOverride(unpack(RL.VGUI.ColorTheme[name]))
     end
 
-    function meta:UseThemeSet(Name)
-        self:SetTheme(RL.VGUI.ThemeSet..(Name or ""))
+    function meta:UseThemeSet(name)
+        self:SetTheme(RL.VGUI.ThemeSet..(name or ""))
     end
 
     function meta:UseGlobalTheme()
@@ -99,13 +102,13 @@ if CLIENT then
 
     RL.VGUI.SetGlobalTheme("Default")
 
-    concommand.Add("RiceLib_VGUI_ReloadTheme",function()
+    concommand.Add("RiceLib_VGUI_ReloadTheme", function()
         RL.VGUI.ReloadTheme()
     end)
 
-    concommand.Add("RiceLib_VGUI_ThemeView",function()
+    concommand.Add("RiceLib_VGUI_ThemeView", function()
         local frame = vgui.Create("DFrame")
-        frame:SetSize(RL.hudScale(500,500))
+        frame:SetSize(RL.hudScale(500, 500))
         frame:Center()
         frame:MakePopup()
         frame:SetTitle("RiceLib VGUI Theme Viewer")
@@ -115,10 +118,10 @@ if CLIENT then
         panel:Dock(FILL)
         panel:SetTheme("ModernDark")
 
-        for k,v in SortedPairs(RL.VGUI.Theme) do
-            local button = vgui.Create("DButton",panel)
+        for k in SortedPairs(RL.VGUI.Theme) do
+            local button = vgui.Create("DButton", panel)
             button:Dock(TOP)
-            button:DockMargin(0,RL.hudScaleY(5),0,0)
+            button:DockMargin(0, RL.hudScaleY(5), 0, 0)
             button:SetText(k)
             button:SetTheme(k)
             button:SetTall(RL.hudScaleY(50))
@@ -127,9 +130,9 @@ if CLIENT then
         end
     end)
 
-    concommand.Add("RiceLib_VGUI_ColorThemeView",function()
+    concommand.Add("RiceLib_VGUI_ColorThemeView", function()
         local frame = vgui.Create("DFrame")
-        frame:SetSize(RL.hudScale(500,500))
+        frame:SetSize(RL.hudScale(500, 500))
         frame:Center()
         frame:MakePopup()
         frame:SetTitle("RiceLib VGUI ColorTheme Viewer")
@@ -141,10 +144,10 @@ if CLIENT then
         panel:SetTheme("Modern")
         panel:SetColorTheme("Dark1")
 
-        for k,v in SortedPairs(RL.VGUI.ColorTheme) do
-            local button = vgui.Create("DButton",panel)
+        for k in SortedPairs(RL.VGUI.ColorTheme) do
+            local button = vgui.Create("DButton", panel)
             button:Dock(TOP)
-            button:DockMargin(0,RL.hudScaleY(5),0,0)
+            button:DockMargin(0, RL.hudScaleY(5), 0, 0)
             button:SetText(k)
             button:SetTheme("Modern")
             button:SetTall(RL.hudScaleY(50))
