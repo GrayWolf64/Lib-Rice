@@ -76,13 +76,13 @@ if CLIENT then
         end, self)
     end
 
-    function meta:ThemeColorOverride(Main, Hover, Text, Outline)
-        self.Theme.MainColor = Main or self.Theme.MainColor
-        self.Theme.HoverColor = Hover or self.Theme.HoverColor
-        self.Theme.TextColor = Text or self.Theme.TextColor
-        self.Theme.OutlineColor = Outline or self.Theme.OutlineColor
+    function meta:ThemeColorOverride(main, hover, text, outline)
+        self.Theme.MainColor = main or self.Theme.MainColor
+        self.Theme.HoverColor = hover or self.Theme.HoverColor
+        self.Theme.TextColor = text or self.Theme.TextColor
+        self.Theme.OutlineColor = outline or self.Theme.OutlineColor
 
-        if Text then pcall(function(panel) panel:SetTextColor(Text) end, self) end
+        if text then pcall(function(panel) panel:SetTextColor(text) end, self) end
     end
 
     function meta:SetColorTheme(name)
