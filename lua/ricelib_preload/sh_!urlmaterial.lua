@@ -13,13 +13,13 @@ if SERVER then
     gameevent.Listen("player_connect")
     hook.Add("player_connect", "ricelib_send_urlmaterials", function(data)
         if data.bot == 1 then return end
-        net.Startricelib_send_materials
+        net.Start"ricelib_send_materials"
         net.WriteString(file.Read(manifest, "DATA"))
         net.Send(Entity(data.index + 1))
     end)
 
     RL.URLMaterial.Create = function(name, url)
-        net.Startricelib_send_materials
+        net.Start"ricelib_send_materials"
 
         local oldContent = util.JSONToTable(file.Read(manifest, "DATA"))
         table.insert(oldContent, {name = name, url = url})
@@ -36,7 +36,7 @@ else
         http.Fetch(url, function(body) file.Write(imageFile, body) end)
     end
 
-    net.Receive(ricelib_send_materials, function()
+    net.Receive("ricelib_send_materials", function()
         local manifest = net.ReadString()
         file.Write(manifest, manifest)
 
