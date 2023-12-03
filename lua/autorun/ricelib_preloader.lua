@@ -173,7 +173,25 @@ end
 RL.Files.GetAll = getAll
 RL.Files.GetDir = getDir
 
+if SERVER then
+    util.AddNetworkString("ricelib_clientready")
+
+    net.Receive("ricelib_clientready", function(_, ply)
+        hook.Run("ricelib_clientready", ply)
+    end)
+else
+    local function ready()
+        net.Start("ricelib_clientready")
+        net.SendToServer()
+    end
+
+    hook.Add("InitPostEntity", "ricelib_clientready", ready)
+
+    concommand.Add("ricelib_simulate_clientready", ready)
+end
+
 print"================== RL ================="
+
 RL.IncludeDir"ricelib_preload"
 RL.IncludeDir"ricelib"
 
