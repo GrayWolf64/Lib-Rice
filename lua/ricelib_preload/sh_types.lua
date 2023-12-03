@@ -8,9 +8,3 @@ function RL.Vector.RoundVector(vec, dec)
 
     return Vector(math.Round(x, dec), math.Round(y, dec), math.Round(z, dec))
 end
-
-function RL.Vector.ConvertString(str)
-    local x,y,z = unpack(string.Split(str," "))
-
-    return Vector(tonumber(x),tonumber(y),tonumber(z))
-end
