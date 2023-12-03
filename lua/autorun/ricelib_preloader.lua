@@ -14,8 +14,6 @@ RL.VGUI.Anim      = RL.VGUI.Anim or {}
 RL.Functions      = RL.Functions or {}
 RL.Files          = RL.Files or {}
 
-file.CreateDir"ricelib/settings"
-
 --- Makes a log function
 -- @local
 -- @param msgColor Customize output function's log msg color
