@@ -81,10 +81,14 @@ end
 
 RL.IncludeDir("riceui/uniprocess", true)
 
+RiceUI.Prefab = {}
+RL.IncludeDir("riceui/prefabs", true)
+RL.IncludeDir("riceui/modules", true, true)
+
 concommand.Add("riceui_reload", function()
     RL.Functions.LoadFiles(elements, "riceui/elements")
     RL.Functions.LoadFiles(uniProcess, "riceui/uniprocess")
-    RL.Functions.LoadFiles(RiceUI.Theme, "riceui/theme")
+    RiceUI.ReloadThemes()
 end)
 
 concommand.Add("riceui_panic", function()
@@ -101,17 +105,9 @@ concommand.Add("riceui_elements", function()
     PrintTable(elements)
 end)
 
-concommand.Add("riceui_theme", function()
-    PrintTable(RiceUI.Theme)
-end)
-
 concommand.Add("riceui_all", function()
     PrintTable(UI_Elements)
 end)
-
-RiceUI.Prefab = {}
-RL.IncludeDir("riceui/prefabs", true)
-RL.IncludeDir("riceui/modules", true, true)
 
 concommand.Add("riceui_prefabs", function()
     RiceUI.SimpleCreate({type = "rl_frame",
