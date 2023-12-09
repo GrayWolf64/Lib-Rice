@@ -20,7 +20,7 @@ function RiceUI.SimpleCreate(data, parent, root)
     root = root or panel
 
     RiceUI.DoProcess(panel)
-    RiceUI.ApplyExtraFunctions(panel)
+    RiceUI.ApplyMixins(panel)
 
     if data.children then RiceUI.Create(data.children, panel, root) end
     if data.OnCreated then data.OnCreated(panel) end
