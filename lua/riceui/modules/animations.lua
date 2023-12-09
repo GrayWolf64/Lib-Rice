@@ -1,5 +1,3 @@
-RiceUI = RiceUI or {}
-
 local function expandFromPos(panel, data)
     RL.table.Inherit(data, {
         time = 0.35,

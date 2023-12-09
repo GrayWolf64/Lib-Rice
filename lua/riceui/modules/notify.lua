@@ -1,4 +1,3 @@
-RiceUI = RiceUI or {}
 RiceUI.Notify = RiceUI.Notify or {}
 
 function RiceUI.Notify.Message(arg)
