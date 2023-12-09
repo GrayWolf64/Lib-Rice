@@ -175,7 +175,7 @@ if SERVER then
     util.AddNetworkString("ricelib_clientready")
 
     net.Receive("ricelib_clientready", function(_, ply)
-        hook.Run("ricelib_clientready", ply)
+        hook.Run("RiceLibClientReady", ply)
     end)
 else
     local function ready()
@@ -183,7 +183,7 @@ else
         net.SendToServer()
     end
 
-    hook.Add("InitPostEntity", "ricelib_clientready", ready)
+    hook.Add("InitPostEntity", "RiceLibClientReady", ready)
 
     concommand.Add("ricelib_simulate_clientready", ready)
 end

@@ -11,7 +11,7 @@ if SERVER then
     util.AddNetworkString"ricelib_send_materials"
 
     gameevent.Listen("player_connect")
-    hook.Add("player_connect", "ricelib_send_urlmaterials", function(data)
+    hook.Add("player_connect", "RiceLibURLMaterialsDispatch", function(data)
         if data.bot == 1 then return end
         net.Start"ricelib_send_materials"
         net.WriteString(file.Read(manifest, "DATA"))
