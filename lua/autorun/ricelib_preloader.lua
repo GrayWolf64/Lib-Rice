@@ -8,11 +8,11 @@ if SERVER then resource.AddWorkshop"2829757059" end
 -- @field VGUI
 -- @field Functions
 -- @field Files
-RL                = RL or {}
-RL.VGUI           = RL.VGUI or {}
-RL.VGUI.Anim      = RL.VGUI.Anim or {}
-RL.Functions      = RL.Functions or {}
-RL.Files          = RL.Files or {}
+RL           = RL or {}
+RL.VGUI      = RL.VGUI or {}
+RL.VGUI.Anim = RL.VGUI.Anim or {}
+RL.IO        = RL.IO or {}
+RL.Files     = RL.Files or {}
 
 --- Makes a log function
 -- @local

@@ -113,7 +113,7 @@ function apply_theme(self, theme)
 end
 
 local function reload_themes()
-    RL.Functions.LoadFiles(themes, "riceui/theme")
+    RL.IO.LoadFiles(themes, "riceui/theme")
 end
 
 concommand.Add("riceui_theme", function()

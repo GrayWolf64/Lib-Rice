@@ -40,11 +40,11 @@ local function load_files(target, dir)
     end
 end
 
-function RL.Functions.LoadFiles(tbl, dir)
+function RL.IO.LoadFiles(tbl, dir)
     load_files(tbl, dir)
 end
 
-function RL.Functions.LoadFilesRaw(loader, dir)
+function RL.IO.LoadFilesRaw(loader, dir)
     load_files(loader, dir)
 end
 
