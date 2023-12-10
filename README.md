@@ -12,4 +12,4 @@
    `RiceUI.DefineExtraFunction()` 不再可用，使用 `RiceUI.DefineMixin()`
 7. 表 `RiceUI.ThemeParamaBlacklist` 不再可用，已替换为局部变量
    表 `RiceUI.ThemeProcess` 不再可用，已替换为局部变量
-8. 表 `RL.Functions` 已被更为 `RL.IO`
+8. 表 `RL.IO` 已被更为 `RL.IO`

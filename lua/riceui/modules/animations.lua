@@ -35,7 +35,6 @@ local function expandFromCursor(panel, data)
     panel:SetPos(x, y)
     panel:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
     panel:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
-
     panel.AnimData = data
     panel.AnimData.StartX = x
     panel.AnimData.StartY = y
@@ -65,23 +64,22 @@ local function shrink(panel, data)
     panel:MoveTo(panel.AnimData.StartX, panel.AnimData.StartY, data.time, data.delay, data.ease)
 end
 
-local function fadeIn(panel,dur,delay,ease)
+local function fadeIn(panel, dur, delay, ease)
     delay = delay or 0
     ease = ease or 0.3
-
     panel:SetVisible(true)
-    local Anim = panel:NewAnimation(dur,delay,ease)
+    local Anim = panel:NewAnimation(dur, delay, ease)
 
     Anim.Think = function(_, panel, fraction)
         panel:SetAlpha(255 * fraction)
     end
 end
 
-local function fadeOut(panel,dur,delay,ease)
+local function fadeOut(panel, dur, delay, ease)
     delay = delay or 0
     ease = ease or 0.3
 
-    local Anim = panel:NewAnimation(dur,delay,ease,function(_, panel)
+    local Anim = panel:NewAnimation(dur, delay, ease, function(_, panel)
         panel:SetVisible(false)
     end)
 
@@ -90,15 +88,13 @@ local function fadeOut(panel,dur,delay,ease)
     end
 end
 
-local function fadeInOut(panel,data)
+local function fadeInOut(panel, data)
     local dur, delay, ease, func = data.dur, data.delay, data.ease, data.func
-
     delay = delay or 0
     ease = ease or 0.3
 
-    local Anim = panel:NewAnimation(dur / 2,delay,ease,function(_, panel)
+    local Anim = panel:NewAnimation(dur / 2, delay, ease, function(_, panel)
         fadeIn(panel, dur / 2, delay, ease)
-
         func(panel)
     end)
 

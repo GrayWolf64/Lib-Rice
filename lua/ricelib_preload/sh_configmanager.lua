@@ -44,7 +44,7 @@ end
 
 if SERVER then
     util.AddNetworkString("RL_Config_Command")
-    RL.Net.AddCommandReceiver("RL_Config_Command", {})
+    RL.Net.RegisterCommandReceiver("RL_Config_Command", {})
 else
     RL.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
 

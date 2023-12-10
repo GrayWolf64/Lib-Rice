@@ -64,14 +64,14 @@ local function hud_offset_y(y, profile)
 end
 
 local function update_hud_offset(profile, x, y)
-    local data_previous = read_hud_offsets()
-    data_previous[profile] = {x = x, y = y}
+    local data_previous = read_settings()
+    data_previous.hud_offsets[profile] = {x = x, y = y}
     file.Write(settings_file, util.TableToJSON(data_previous, true))
 end
 
 local function clear_hud_offset(profile)
-    local data_previous = read_hud_offsets()
-    data_previous[profile] = nil
+    local data_previous = read_settings()
+    data_previous.hud_offsets[profile] = nil
     file.Write(settings_file, util.TableToJSON(data_previous, true))
 end
 
