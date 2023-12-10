@@ -1,127 +1,87 @@
-local OFFSET_FILE = "ricelib/settings/hud_offset.json"
-local SCALE_FILE = "ricelib/settings/scale.json"
-local RATIO_W, RATIO_H = ScrW() / 1920, ScrH() / 1080
+local settings_file = "ricelib/settings.json"
+local ratio_w = ScrW() / 1920
+local ratio_h = ScrH() / 1080
 
-if file.Exists(OFFSET_FILE, "DATA") then
-    RL.VGUI.HUDOffset = util.JSONToTable(file.Read(OFFSET_FILE, "DATA"))
-else
-    RL.VGUI.HUDOffset = {}
-    file.Write(OFFSET_FILE, "[]")
+local function read_settings()
+    if not file.Exists(settings_file, "DATA") then
+        file.Write(settings_file, util.TableToJSON({
+            hud_offsets = {},
+            scale_profiles = {}
+        }, true))
+    end
+
+    return util.JSONToTable(file.Read(settings_file, "DATA"))
 end
 
-if file.Exists(SCALE_FILE, "DATA") then
-    RL.VGUI.ScaleProfile = util.JSONToTable(file.Read(SCALE_FILE, "DATA"))
-else
-    RL.VGUI.ScaleProfile = {}
-    file.Write(SCALE_FILE, "[]")
+local function read_hud_offsets()
+    return read_settings().hud_offsets
 end
 
-function RL_hudScaleX(x) return x * RATIO_W end
-function RL_hudScaleY(y) return y * RATIO_H end
-function RL_hudScale(x, y) return x * RATIO_W, y * RATIO_H end
-
-function RL.hudScale(x, y, profile)
-    local scale = RL.VGUI.ScaleProfile[profile]
-    if scale then return x * RATIO_W * scale, y * RATIO_H * scale end
-    return x * RATIO_W, y * RATIO_H
+local function read_scale_profiles()
+    return read_settings().scale_profiles
 end
 
-function RL.hudScaleX(x, profile)
-    local scale = RL.VGUI.ScaleProfile[profile]
-    if scale then return x * RATIO_W * scale end
-    return x * RATIO_W
+function RL_hudScale(x, y) return x * ratio_w, y * ratio_h end
+function RL_hudScaleX(x) return x * ratio_w end
+function RL_hudScaleY(y) return y * ratio_h end
+
+local function hud_scale(x, y, profile)
+    local scale = read_scale_profiles()[profile]
+    if scale then return x * ratio_w * scale, y * ratio_h * scale end
+    return x * ratio_w, y * ratio_h
 end
 
-function RL.hudScaleY(y, profile)
-    local scale = RL.VGUI.ScaleProfile[profile]
-    if scale then return y * RATIO_H * scale end
-    return y * RATIO_H
+local function hud_scale_single(xory, profile, ratio)
+    local scale = read_scale_profiles()[profile]
+    if scale then return xory * ratio * scale end
+    return xory * ratio
 end
 
-function RL.hudOffset(x, y, profile)
-    local offset = RL.VGUI.HUDOffset[profile]
+local function hud_scale_x(x, profile)
+    return hud_scale_single(x, profile, ratio_w)
+end
+
+local function hud_scale_y(y, profile)
+    return hud_scale_single(y, profile, ratio_h)
+end
+
+local function hud_offset(x, y, profile)
+    local offset = read_hud_offsets()[profile]
     if offset then return offset.x, offset.y end
-    return x * RATIO_W, y * RATIO_H
+    return x * ratio_w, y * ratio_h
 end
 
-function RL.hudOffsetX(x, profile)
-    local offset = RL.VGUI.HUDOffset[profile]
+local function hud_offset_x(x, profile)
+    local offset = read_hud_offsets()[profile]
     if offset then return offset.x end
-    return x * RATIO_W
+    return x * ratio_w
 end
 
-function RL.hudOffsetY(y, profile)
-    local offset = RL.VGUI.HUDOffset[profile]
+local function hud_offset_y(y, profile)
+    local offset = read_hud_offsets()[profile]
     if offset then return offset.y end
-    return y * RATIO_H
+    return y * ratio_h
 end
 
-function RL.Change_HUDOffset(profile, x, y)
-    RL.VGUI.HUDOffset[profile] = {x = x, y = y}
-    file.Write(OFFSET_FILE, util.TableToJSON(RL.VGUI.HUDOffset, true))
+local function update_hud_offset(profile, x, y)
+    local data_previous = read_hud_offsets()
+    data_previous[profile] = {x = x, y = y}
+    file.Write(settings_file, util.TableToJSON(data_previous, true))
 end
 
-function RL.Clear_HUDOffset(profile)
-    RL.VGUI.HUDOffset[profile] = nil
-    file.Write(OFFSET_FILE, "[]")
+local function clear_hud_offset(profile)
+    local data_previous = read_hud_offsets()
+    data_previous[profile] = nil
+    file.Write(settings_file, util.TableToJSON(data_previous, true))
 end
 
-function RL.VGUI.OffsetButton(panel, profile, x, y, show, showName, resetFun)
-    resetFun = resetFun or function() end
+RL.hudScale = hud_scale
+RL.hudScaleX = hud_scale_x
+RL.hudScaleY = hud_scale_y
 
-    local btn = vgui.Create("DButton", panel)
-    btn:SetSize(btn:GetParent():GetSize())
-    btn:SetText("")
-    btn.RLshow = show
-    btn.RLshowName = showName
-    btn.Paint = function(self, w, h)
-        local color = Color(0, 255, 0, 255)
-        local chatVisible = LocalPlayer():IsTyping()
-        if chatVisible then color = Color(0, 255, 0, 100) end
-        if self.Dragging then color = Color(0, 255, 0, 255) end
+RL.hudOffset = hud_offset
+RL.hudOffsetX = hud_offset_x
+RL.hudOffsetY = hud_offset_y
 
-        if self.Dragging or chatVisible then
-            surface.SetDrawColor(color)
-            surface.DrawOutlinedRect(0, 0, w, h, 2)
-        end
-
-        if self.RLshow and chatVisible then
-            draw.SimpleText(self.RLshowName, "OPPOSans_30", w / 2, h / 2, Color(0, 255, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        end
-    end
-    btn.DoClick = function(self)
-        if not panel.Dragging then
-            panel.Dragging = true
-            self.Dragging = true
-
-            local x, y = input.GetCursorPos()
-            panel.DragOrgX, panel.DragOrgY = panel:GetX() - x, panel:GetY() - y
-
-            return
-        else
-            panel.Dragging = false
-            self.Dragging = false
-
-            RL.Change_HUDOffset(profile, panel:GetX(), panel:GetY())
-        end
-    end
-    btn.DoRightClick = function(self)
-        panel.Dragging = false
-        self.Dragging = false
-        panel:SetPos(RL.hudScale(x, y))
-
-        RL.Clear_HUDOffset(profile, 0, 0)
-
-        self:SetSize(self:GetParent():GetSize())
-        self.OnPosReset(self)
-    end
-    btn.OnPosReset = resetFun
-
-    btn.Think = function(self)
-        if not self:GetParent().Dragging then return end
-        local x, y = input.GetCursorPos()
-        self:GetParent():SetPos(self:GetParent().DragOrgX + x, self:GetParent().DragOrgY + y)
-    end
-
-    return btn
-end
+RL.UpdateHUDOffset = update_hud_offset
+RL.ClearHUDOffset = clear_hud_offset

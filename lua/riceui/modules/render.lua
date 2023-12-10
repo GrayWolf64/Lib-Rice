@@ -1,4 +1,3 @@
-RiceUI = RiceUI or {}
 local gradient = Material"gui/gradient"
 local hudScale = RL.hudScale
 local hudScaleY = RL.hudScaleY

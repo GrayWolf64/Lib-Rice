@@ -1,5 +1,3 @@
-RiceUI = RiceUI or {}
-
 function RiceUI.Smooth_CreateController(controller,time)
     controller.valStart, controller.oldVal, controller.newVal = 0, -1, -1
     controller.time = controller.time or 0.25

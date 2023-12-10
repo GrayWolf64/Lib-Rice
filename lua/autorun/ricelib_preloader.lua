@@ -6,18 +6,13 @@ if SERVER then resource.AddWorkshop"2829757059" end
 --- RiceLib global table
 -- @table RL
 -- @field VGUI
--- @field Language
 -- @field Functions
 -- @field Files
-RL                = RL or {}
-RL.VGUI           = RL.VGUI or {}
-RL.VGUI.Anim      = RL.VGUI.Anim or {}
-RL.Language       = RL.Language or {}
-RL.Language.Words = RL.Language.Words or {}
-RL.Functions      = RL.Functions or {}
-RL.Files          = RL.Files or {}
-
-file.CreateDir"ricelib/settings"
+RL           = RL or {}
+RL.VGUI      = RL.VGUI or {}
+RL.VGUI.Anim = RL.VGUI.Anim or {}
+RL.IO        = RL.IO or {}
+RL.Files     = RL.Files or {}
 
 --- Makes a log function
 -- @local
@@ -26,7 +21,7 @@ file.CreateDir"ricelib/settings"
 local function mkMessageFunc(msgColor)
     return function(msg, name)
         if msg:StartsWith"#" then
-            msg = RL.Language.Get(msg:sub(2)) or msg
+            msg = language.GetPhrase(msg:sub(2)) or msg
         end
 
         name = name or "RiceLib"
@@ -176,5 +171,32 @@ end
 RL.Files.GetAll = getAll
 RL.Files.GetDir = getDir
 
+if SERVER then
+    util.AddNetworkString("ricelib_clientready")
+
+    net.Receive("ricelib_clientready", function(_, ply)
+        hook.Run("RiceLibClientReady", ply)
+    end)
+else
+    local function ready()
+        net.Start("ricelib_clientready")
+        net.SendToServer()
+    end
+
+    hook.Add("InitPostEntity", "RiceLibClientReady", ready)
+
+    concommand.Add("ricelib_simulate_clientready", ready)
+end
+
 print"================== RL ================="
+
 RL.IncludeDir"ricelib_preload"
+RL.IncludeDir"ricelib"
+
+if CLIENT then
+    RL.IncludeDirAs("ricelib_vgui", "RiceLib VGUI")
+    RL.IncludeDir("riceui", true, true)
+else
+    RL.AddCSFiles("ricelib_vgui", "RiceLib VGUI")
+    RL.AddCSFiles("riceui")
+end

@@ -1,5 +1,7 @@
 RL.Config = RL.Config or {}
 
+file.CreateDir"ricelib/settings"
+
 -- file based config
 function RL.Config.LoadConfig(Config, Name, default)
     local root = "ricelib/settings/" .. Config
