@@ -188,7 +188,7 @@ else
     concommand.Add("ricelib_simulate_clientready", ready)
 end
 
-print"================== RL ================="
+print"================ RL ================"
 
 RL.IncludeDir"ricelib_preload"
 RL.IncludeDir"ricelib"
