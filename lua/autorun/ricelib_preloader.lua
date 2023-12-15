@@ -6,7 +6,7 @@ if SERVER then resource.AddWorkshop"2829757059" end
 --- RiceLib global table
 -- @table RL
 -- @field VGUI
--- @field Functions
+-- @field IO
 -- @field Files
 RL           = RL or {}
 RL.VGUI      = RL.VGUI or {}
@@ -53,7 +53,7 @@ end
 -- @param name Log as who? Default value is `RL`
 local function AddFile(fileName, dir, quiet, name)
     local type
-    name = name or "RL"
+    name = name or "RiceLib"
 
     local mt = {__index = function()
         return function() AddCSLuaFile(dir .. fileName); include(dir .. fileName); type = 4 end
@@ -86,7 +86,7 @@ end
 -- @param name Log as who? Default value is `RL`
 local function includeDir(dir, quiet, noSub, name)
     dir = checkSlash(dir)
-    name = name or "RL"
+    name = name or "RiceLib"
 
     local files, dirs = file.Find(dir .. "*.lua", "LUA")
 
@@ -116,7 +116,7 @@ if SERVER then
     -- @param noSub Boolean for determining whether or not to also add `dir`'s sub dir's files / dirs(recursive)
     local function addCSFiles(dir, name, noSub)
         dir = checkSlash(dir)
-        name = name or "RL"
+        name = name or "RiceLib"
 
         local files, dirs = file.Find(dir .. "*", "LUA")
 
