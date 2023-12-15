@@ -247,7 +247,7 @@ RiceUI.Examples = {
                     Paint = function(self,w,h)
                         surface.SetDrawColor(255,255,255)
                         surface.SetMaterial(Material("gui/colors_dark.png"))
-                        RL.Draw.TexturedCircle(w / 2, h / 2, h/2, h)
+                        RiceLib.Draw.TexturedCircle(w / 2, h / 2, h/2, h)
                     end
                 }
             }

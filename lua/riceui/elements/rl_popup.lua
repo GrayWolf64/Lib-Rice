@@ -1,13 +1,13 @@
 local Element = {}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         w = 300,
         h = 300,
         Theme = {ThemeName = "modern", ThemeType = "Panel", Color = "white", TextColor = "white", Shadow = true},
     })
 
     local panel = vgui.Create("DPanel")
-    panel:SetSize(RL.hudScale(data.w,0))
+    panel:SetSize(RiceLib.hudScale(data.w,0))
     panel.ProcessID = "RL_Popup"
 
     function panel:OnFocusChanged(gained)
@@ -22,7 +22,7 @@ function Element.Create(data,parent)
         local x,y = self.Parent:LocalToScreen()
         local px,py = x + self.Parent:GetWide() / 2, y + self.Parent:GetTall()
 
-        self:SetPos(px - self:GetWide() / 2, py + RL.hudScaleY(10))
+        self:SetPos(px - self:GetWide() / 2, py + RiceLib.hudScaleY(10))
     end
 
     function panel.RiceUI_Event(self,name,id,data)
@@ -35,7 +35,7 @@ function Element.Create(data,parent)
 
     panel:MakePopup()
     panel:Layout()
-    panel:SizeTo(-1, RL.hudScaleY(data.h), 0.3, 0, 0.3)
+    panel:SizeTo(-1, RiceLib.hudScaleY(data.h), 0.3, 0, 0.3)
 
     return panel
 end

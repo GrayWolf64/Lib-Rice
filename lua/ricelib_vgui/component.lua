@@ -1,4 +1,4 @@
-function RL.VGUI.Button(text, panel, font, fontSize, x, y, w, h, doClickFunc, ...)
+function RiceLib.VGUI.Button(text, panel, font, fontSize, x, y, w, h, doClickFunc, ...)
     doClickFunc = doClickFunc or function() end
 
     if isnumber(fontSize) then
@@ -19,7 +19,7 @@ function RL.VGUI.Button(text, panel, font, fontSize, x, y, w, h, doClickFunc, ..
     return button
 end
 
-function RL.VGUI.ImageButton(icon, panel, x, y, w, h, doClickFunc, ...)
+function RiceLib.VGUI.ImageButton(icon, panel, x, y, w, h, doClickFunc, ...)
     doClickFunc = doClickFunc or function() end
 
     if isnumber(fontSize) then
@@ -39,7 +39,7 @@ function RL.VGUI.ImageButton(icon, panel, x, y, w, h, doClickFunc, ...)
     return button
 end
 
-function RL.VGUI.Toggle(panel, x, y, w, h, func)
+function RiceLib.VGUI.Toggle(panel, x, y, w, h, func)
     func = func or function() end
 
     local checkBox = vgui.Create("DCheckBox", panel)
@@ -60,8 +60,8 @@ function RL.VGUI.Toggle(panel, x, y, w, h, func)
 
         if h <= 25 then r = 5 end
 
-        draw.RoundedBox(RL.hudScaleY(r), 0, 0, w, h, self:GetColor())
-        draw.RoundedBox(RL.hudScaleY(r), self.togglePos, 2, h - 2, h - 4, checkBox.toggleColor)
+        draw.RoundedBox(RiceLib.hudScaleY(r), 0, 0, w, h, self:GetColor())
+        draw.RoundedBox(RiceLib.hudScaleY(r), self.togglePos, 2, h - 2, h - 4, checkBox.toggleColor)
     end
 
     function checkBox:doToggle(bool, setvalue)
@@ -87,7 +87,7 @@ function RL.VGUI.Toggle(panel, x, y, w, h, func)
     return checkBox
 end
 
-function RL.VGUI.LabelToggle(text, panel, fontSize, x, y, w, h, cWidth, func)
+function RiceLib.VGUI.LabelToggle(text, panel, fontSize, x, y, w, h, cWidth, func)
     func = func or function() end
 
     local body = vgui.Create("DPanel", panel)
@@ -113,8 +113,8 @@ function RL.VGUI.LabelToggle(text, panel, fontSize, x, y, w, h, cWidth, func)
 
         if h <= 25 then r = 5 end
 
-        draw.RoundedBox(RL.hudScaleY(r), 0, 0, w, h, self:GetColor())
-        draw.RoundedBox(RL.hudScaleY(r), self.togglePos, 2, h - 2, h - 4, checkBox.toggleColor)
+        draw.RoundedBox(RiceLib.hudScaleY(r), 0, 0, w, h, self:GetColor())
+        draw.RoundedBox(RiceLib.hudScaleY(r), self.togglePos, 2, h - 2, h - 4, checkBox.toggleColor)
     end
 
     function checkBox:doToggle(bool, setvalue)
@@ -137,18 +137,18 @@ function RL.VGUI.LabelToggle(text, panel, fontSize, x, y, w, h, cWidth, func)
         end
     end
 
-    local label = RL.VGUI.ModernLabel(text, body, fontSize, x, y)
+    local label = RiceLib.VGUI.ModernLabel(text, body, fontSize, x, y)
     label:Dock(LEFT)
 
     return body, checkBox, label
 end
 
-function RL.VGUI.Slider(panel, x, y, w, h, min, max, decimal, val ,func)
+function RiceLib.VGUI.Slider(panel, x, y, w, h, min, max, decimal, val ,func)
     func = func or function() end
 
     local slider = vgui.Create("RL_Slider", panel)
-    slider:SetPos(RL.hudScale(x, y))
-    slider:SetSize(RL.hudScale(w, h))
+    slider:SetPos(RiceLib.hudScale(x, y))
+    slider:SetSize(RiceLib.hudScale(w, h))
     slider.Decimals = decimal
     slider:SetMin(min)
     slider:SetMax(max)
@@ -160,7 +160,7 @@ function RL.VGUI.Slider(panel, x, y, w, h, min, max, decimal, val ,func)
     return slider
 end
 
-function RL.VGUI.LabelSlider(text, panel, fontSize, x, y, w, h, cWidth, cHeight, min, max, decimal, val, func)
+function RiceLib.VGUI.LabelSlider(text, panel, fontSize, x, y, w, h, cWidth, cHeight, min, max, decimal, val, func)
     func = func or function() end
 
     local body = vgui.Create("DPanel", panel)
@@ -169,8 +169,8 @@ function RL.VGUI.LabelSlider(text, panel, fontSize, x, y, w, h, cWidth, cHeight,
     body.Paint = function() end
 
     local slider = vgui.Create("RL_Slider", body)
-    slider:SetPos(RL.hudScale(w - cWidth, h / 2 - cHeight / 2))
-    slider:SetSize(RL.hudScale(cWidth, cHeight))
+    slider:SetPos(RiceLib.hudScale(w - cWidth, h / 2 - cHeight / 2))
+    slider:SetSize(RiceLib.hudScale(cWidth, cHeight))
     slider.Decimals = decimal
     slider:SetMin(min)
     slider:SetMax(max)
@@ -179,7 +179,7 @@ function RL.VGUI.LabelSlider(text, panel, fontSize, x, y, w, h, cWidth, cHeight,
         func(val)
     end
 
-    local label = RL.VGUI.ModernLabel(text, body, fontSize, x, y)
+    local label = RiceLib.VGUI.ModernLabel(text, body, fontSize, x, y)
     label:Dock(LEFT)
 
     return body, slider, label

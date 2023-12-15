@@ -1,5 +1,5 @@
 if SERVER then
-    if RL.Config.Get("LibRice", "PlayerRecord_Disable") then return end
+    if RiceLib.Config.Get("LibRice", "PlayerRecord_Disable") then return end
 
     sql.Query("CREATE TABLE IF NOT EXISTS LibRice_PlayerRecord ( SteamID TEXT PRIMARY KEY NOT NULL, Name TEXT, LastSpawn TEXT, LastDisconnect TEXT)")
 
@@ -26,11 +26,11 @@ if SERVER then
         return sql.QueryValue(string.format("SELECT Name FROM LibRice_PlayerRecord WHERE SteamID = '%s'", steamID))
     end
 
-    RL.Net.RegisterResponsiveReceiver("RL_PlayerRecord", {
+    RiceLib.Net.RegisterResponsiveReceiver("RL_PlayerRecord", {
         GetBySteamID = getBySteamID
     })
 
-    RL.PlayerRecord = {
+    RiceLib.PlayerRecord = {
         GetBySteamID = getBySteamID
     }
 
@@ -43,7 +43,7 @@ if SERVER then
     end)
 else
     local function getBySteamID_CL(steamID, callback)
-        RL.Net.Responsive({
+        RiceLib.Net.Responsive({
             NameSpace = "RL_PlayerRecord",
             Command = "GetBySteamID",
             Data = steamID,
@@ -51,7 +51,7 @@ else
         })
     end
 
-    RL.PlayerRecord = {
+    RiceLib.PlayerRecord = {
         GetBySteamID = getBySteamID_CL
     }
 end

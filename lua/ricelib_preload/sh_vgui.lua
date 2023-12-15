@@ -1,4 +1,4 @@
-RL.VGUI = RL.VGUI or {}
+RiceLib.VGUI = RiceLib.VGUI or {}
 
 local function reload_themes()
     local themes_folder = "ricelib_vgui_theme/"
@@ -11,9 +11,9 @@ local function reload_themes()
             local name, theme = include(themes_folder .. v)
             if not name or not theme then return end
 
-            RL.VGUI.RegisterTheme(name, theme)
+            RiceLib.VGUI.RegisterTheme(name, theme)
 
-            RL.Message("Loaded " .. name, "RiceLib VGUI Theme")
+            RiceLib.Message("Loaded " .. name, "RiceLib VGUI Theme")
         end
     end
 end
@@ -68,7 +68,7 @@ if CLIENT then
 
         panel.Paint = function(self) blurPanel(self) end
 
-        local label = RL.VGUI.ModernLabel(text, panel, fontSize, 5, 0, color_white)
+        local label = RiceLib.VGUI.ModernLabel(text, panel, fontSize, 5, 0, color_white)
         label:SizeToContents()
         panel:SetSize(label:GetWide() + 10, label:GetTall())
         notify:AddItem(panel)
@@ -95,61 +95,61 @@ if CLIENT then
         return select(2, surface.GetTextSize(text))
     end
 
-    RL.VGUI.GetRoot        = get_root
-    RL.VGUI.Icon           = function(name) return Material("rl_icons/" .. name .. ".png") end
-    RL.VGUI.IconRaw        = function(name) return "rl_icons/" .. name .. ".png" end
-    RL.VGUI.blurPanel      = blurPanel
-    RL.VGUI.blurBackground = blurBackground
-    RL.VGUI.FadeIn         = FadeIn
-    RL.VGUI.Notify         = Notify
-    RL.VGUI.DM             = dock_margin
-    RL.VGUI.TextWide       = TextWide
-    RL.VGUI.TextHeight     = TextHeight
-    RL.VGUI.Theme          = RL.VGUI.Theme or {}
-    RL.VGUI.ColorTheme     = RL.VGUI.ColorTheme or {}
-    RL.VGUI.GlobalTheme    = RL.VGUI.GlobalTheme or {}
-    RL.VGUI.ThemeSet       = RL.VGUI.ThemeSet or "SciFi"
+    RiceLib.VGUI.GetRoot        = get_root
+    RiceLib.VGUI.Icon           = function(name) return Material("rl_icons/" .. name .. ".png") end
+    RiceLib.VGUI.IconRaw        = function(name) return "rl_icons/" .. name .. ".png" end
+    RiceLib.VGUI.blurPanel      = blurPanel
+    RiceLib.VGUI.blurBackground = blurBackground
+    RiceLib.VGUI.FadeIn         = FadeIn
+    RiceLib.VGUI.Notify         = Notify
+    RiceLib.VGUI.DM             = dock_margin
+    RiceLib.VGUI.TextWide       = TextWide
+    RiceLib.VGUI.TextHeight     = TextHeight
+    RiceLib.VGUI.Theme          = RiceLib.VGUI.Theme or {}
+    RiceLib.VGUI.ColorTheme     = RiceLib.VGUI.ColorTheme or {}
+    RiceLib.VGUI.GlobalTheme    = RiceLib.VGUI.GlobalTheme or {}
+    RiceLib.VGUI.ThemeSet       = RiceLib.VGUI.ThemeSet or "SciFi"
 
-    function RL.VGUI.RegisterTheme(name, theme)
+    function RiceLib.VGUI.RegisterTheme(name, theme)
         if not theme.Paint then return end
 
-        RL.VGUI.Theme[name] = theme
+        RiceLib.VGUI.Theme[name] = theme
     end
 
-    function RL.VGUI.RegisterColorTheme(name, theme)
-        RL.VGUI.ColorTheme[name] = theme
+    function RiceLib.VGUI.RegisterColorTheme(name, theme)
+        RiceLib.VGUI.ColorTheme[name] = theme
     end
 
-    function RL.VGUI.SetGlobalTheme(name)
-        if not RL.VGUI.Theme[name] then return end
+    function RiceLib.VGUI.SetGlobalTheme(name)
+        if not RiceLib.VGUI.Theme[name] then return end
 
-        RL.VGUI.GlobalTheme = RL.VGUI.Theme[name]
+        RiceLib.VGUI.GlobalTheme = RiceLib.VGUI.Theme[name]
     end
 
-    function RL.VGUI.SetThemeSet(name)
-        if not RL.VGUI.Theme[name] then return end
+    function RiceLib.VGUI.SetThemeSet(name)
+        if not RiceLib.VGUI.Theme[name] then return end
 
-        RL.VGUI.ThemeSet = name
+        RiceLib.VGUI.ThemeSet = name
     end
 
-    function RL.VGUI.ThemeSetTextColor(name)
-        return RL.VGUI.Theme[RL.VGUI.ThemeSet..(name or "")].TextColor or Color(255,255,255)
+    function RiceLib.VGUI.ThemeSetTextColor(name)
+        return RiceLib.VGUI.Theme[RiceLib.VGUI.ThemeSet..(name or "")].TextColor or Color(255,255,255)
     end
 
-    function RL.VGUI.ThemeSetTextFont(name)
-        return RL.VGUI.Theme[RL.VGUI.ThemeSet..(name or "")].TextFont or Color(255,255,255)
+    function RiceLib.VGUI.ThemeSetTextFont(name)
+        return RiceLib.VGUI.Theme[RiceLib.VGUI.ThemeSet..(name or "")].TextFont or Color(255,255,255)
     end
 
     local meta = FindMetaTable("Panel")
 
     function meta:SetTheme(name)
-        if not RL.VGUI.Theme[name] then return end
+        if not RiceLib.VGUI.Theme[name] then return end
 
-        self.Paint = RL.VGUI.Theme[name].Paint
-        self.Theme = table.Copy(RL.VGUI.Theme[name])
+        self.Paint = RiceLib.VGUI.Theme[name].Paint
+        self.Theme = table.Copy(RiceLib.VGUI.Theme[name])
 
-        pcall(function(panel) panel:SetTextColor(RL.VGUI.Theme[name].TextColor) end,self)
-        pcall(function(panel) panel:SetFont(RL.VGUI.Theme[name].TextFont) end,self)
+        pcall(function(panel) panel:SetTextColor(RiceLib.VGUI.Theme[name].TextColor) end,self)
+        pcall(function(panel) panel:SetFont(RiceLib.VGUI.Theme[name].TextFont) end,self)
 
         pcall(function(panel)
             local bar = panel:GetVBar()
@@ -169,21 +169,21 @@ if CLIENT then
     end
 
     function meta:SetColorTheme(name)
-        self:ThemeColorOverride(unpack(RL.VGUI.ColorTheme[name]))
+        self:ThemeColorOverride(unpack(RiceLib.VGUI.ColorTheme[name]))
     end
 
     function meta:UseThemeSet(name)
-        self:SetTheme(RL.VGUI.ThemeSet..(name or ""))
+        self:SetTheme(RiceLib.VGUI.ThemeSet..(name or ""))
     end
 
     function meta:UseGlobalTheme()
-        self.Paint = RL.VGUI.GlobalTheme.Paint
+        self.Paint = RiceLib.VGUI.GlobalTheme.Paint
 
-        pcall(function(panel) panel:SetTextColor(RL.VGUI.GlobalTheme.TextColor) end,self)
-        pcall(function(panel) panel:SetFont(RL.VGUI.GlobalTheme.TextFont) end,self)
+        pcall(function(panel) panel:SetTextColor(RiceLib.VGUI.GlobalTheme.TextColor) end,self)
+        pcall(function(panel) panel:SetFont(RiceLib.VGUI.GlobalTheme.TextFont) end,self)
     end
 
-    RL.VGUI.SetGlobalTheme("Default")
+    RiceLib.VGUI.SetGlobalTheme("Default")
 
     concommand.Add("ricelib_vgui_reloadtheme", function()
         reload_themes()

@@ -1,51 +1,51 @@
-function RL.VGUI.HDiv(panel, left, right, width, lmin, rmin, lw)
+function RiceLib.VGUI.HDiv(panel, left, right, width, lmin, rmin, lw)
     local div = vgui.Create("DHorizontalDivider", panel)
     div:Dock(FILL)
     div:SetLeft(left)
     div:SetRight(right)
-    div:SetDividerWidth(RL.hudScaleX(width or 4))
-    div:SetLeftMin(RL.hudScaleX(lmin or 250))
-    div:SetRightMin(RL.hudScaleX(rmin or 100))
-    div:SetLeftWidth(RL.hudScaleX(lw or 250))
+    div:SetDividerWidth(RiceLib.hudScaleX(width or 4))
+    div:SetLeftMin(RiceLib.hudScaleX(lmin or 250))
+    div:SetRightMin(RiceLib.hudScaleX(rmin or 100))
+    div:SetLeftWidth(RiceLib.hudScaleX(lw or 250))
 end
 
-function RL.VGUI.VDiv(panel, top, buttom, width, tmin, bmin, th)
+function RiceLib.VGUI.VDiv(panel, top, buttom, width, tmin, bmin, th)
     local div = vgui.Create("DVerticalDivider", panel)
     div:Dock(FILL)
     div:SetTop(top)
     div:SetBottom(buttom)
-    div:SetDividerHeight(RL.hudScaleY(width or 4))
-    div:SetTopMin(RL.hudScaleY(tmin or 150))
-    div:SetBottomMin(RL.hudScaleY(bmin or 100))
-    div:SetTopHeight(RL.hudScaleY(th or 150))
+    div:SetDividerHeight(RiceLib.hudScaleY(width or 4))
+    div:SetTopMin(RiceLib.hudScaleY(tmin or 150))
+    div:SetBottomMin(RiceLib.hudScaleY(bmin or 100))
+    div:SetTopHeight(RiceLib.hudScaleY(th or 150))
 end
 
-function RL.VGUI.Layout(panel, spacex, spacey, x, y, w, h)
+function RiceLib.VGUI.Layout(panel, spacex, spacey, x, y, w, h)
     local layout = vgui.Create("DIconLayout", panel)
-    layout:SetPos(RL.hudScale(x, y))
-    layout:SetSize(RL.hudScale(w, h))
-    layout:SetSpaceX(RL.hudScaleX(spacex))
-    layout:SetSpaceY(RL.hudScaleY(spacey))
+    layout:SetPos(RiceLib.hudScale(x, y))
+    layout:SetSize(RiceLib.hudScale(w, h))
+    layout:SetSpaceX(RiceLib.hudScaleX(spacex))
+    layout:SetSpaceY(RiceLib.hudScaleY(spacey))
 
     return layout
 end
 
-function RL.VGUI.DockLayout(panel, spacex, spacey, l, t, r, b)
+function RiceLib.VGUI.DockLayout(panel, spacex, spacey, l, t, r, b)
     l, t, r, b = l or 0, t or 0, r or 0, b or 0
     local layout = vgui.Create("DIconLayout", panel)
     layout:Dock(FILL)
-    layout:DockMargin(RL.hudOffsetX(l), RL.hudOffsetY(t), RL.hudOffsetX(r), RL.hudOffsetY(b))
-    layout:SetSpaceX(RL.hudScaleX(spacex))
-    layout:SetSpaceY(RL.hudScaleY(spacey))
+    layout:DockMargin(RiceLib.hudOffsetX(l), RiceLib.hudOffsetY(t), RiceLib.hudOffsetX(r), RiceLib.hudOffsetY(b))
+    layout:SetSpaceX(RiceLib.hudScaleX(spacex))
+    layout:SetSpaceY(RiceLib.hudScaleY(spacey))
 
     return layout
 end
 
-function RL.VGUI.ScrollPanel(Panel, X, Y, W, H)
+function RiceLib.VGUI.ScrollPanel(Panel, X, Y, W, H)
     local X, Y, W, H = X or 0, Y or 0, W or 0, H or 0
     local panel = vgui.Create("DScrollPanel", Panel)
-    panel:SetPos(RL.hudScale(X or 0, Y or 0))
-    panel:SetSize(RL.hudScale(W or 0, H or 0))
+    panel:SetPos(RiceLib.hudScale(X or 0, Y or 0))
+    panel:SetSize(RiceLib.hudScale(W or 0, H or 0))
     local bar = panel.VBar
     bar:SetHideButtons(true)
     bar.a_length = 0.5 -- animation length.

@@ -40,13 +40,13 @@ end
 -- @param fontName Name of the font to register
 -- @param codeName Code name of the font
 -- @param dataEx Font data to override
-function RL.VGUI.RegisterFont(fontName, codeName, dataEx)
+function RiceLib.VGUI.RegisterFont(fontName, codeName, dataEx)
     pRegisterFont(fontName, codeName, dataEx, ratio_w, 10, 10)
 end
 
 --- Register 10 fonts with different sizes, but don't vary from monitor to monitor
--- @see RL.VGUI.RegisterFont
-function RL.VGUI.RegisterFontFixed(fontName, codeName, dataEx)
+-- @see RiceLib.VGUI.RegisterFont
+function RiceLib.VGUI.RegisterFontFixed(fontName, codeName, dataEx)
     pRegisterFont(fontName, codeName, dataEx, 1, 10, 10)
 end
 
@@ -54,22 +54,22 @@ end
 -- @param fontName Name of the font to register
 -- @param codeName Code name of the font
 -- @param dataEx Font data to override
-function RL.VGUI.RegisterFontAdv(fontName, codeName, dataEx)
+function RiceLib.VGUI.RegisterFontAdv(fontName, codeName, dataEx)
     pRegisterFont(fontName, codeName, dataEx, ratio_w, 5, 60)
 end
 
 --- Register 60 fonts with different sizes, but don't vary from monitor to monitor
--- @see RL.VGUI.RegisterFontAdv
-function RL.VGUI.RegisterFontFixedAdv(fontName, codeName, dataEx)
+-- @see RiceLib.VGUI.RegisterFontAdv
+function RiceLib.VGUI.RegisterFontFixedAdv(fontName, codeName, dataEx)
     pRegisterFont(fontName, codeName, dataEx, 1, 5, 60)
 end
 
-function RL.VGUI.RegisterFont_New(data)
+function RiceLib.VGUI.RegisterFont_New(data)
     local codeName, fontName = data.CodeName, data.FontName or "OPlusSans 3.0"
 
     for i = 1, 100 do
         local base = mkFontData(fontName, i * 2 * ratio_w, weight)
-        local FontData = RL.table.Inherit(base, data)
+        local FontData = RiceLib.table.Inherit(base, data)
 
         if data.Debug then print(i * 2 * ratio_w, FontData.size) end
 

@@ -73,7 +73,7 @@ local zoom = Material("icon16/zoom.png")
 
 function tbl.DrawBox(pnl, w, h, color)
     if pnl.Theme.Blur then
-        RL.VGUI.blurPanel(pnl, pnl.Theme.Blur)
+        RiceLib.VGUI.blurPanel(pnl, pnl.Theme.Blur)
     end
 
     if pnl.Theme.Shadow then
@@ -96,7 +96,7 @@ function tbl.DrawButton(pnl, w, h)
         color = RiceUI.GetColor(tbl, pnl, "Focus")
     end
 
-    local height = RL.hudOffsetY(3)
+    local height = RiceLib.hudOffsetY(3)
 
     surface.SetDrawColor(color)
     surface.DrawRect(0, h - height, w, height)
@@ -108,18 +108,18 @@ function tbl.DrawButton(pnl, w, h)
 end
 
 function tbl.DrawTextCursor(pnl, w, h, offset)
-    offset = offset or RL.hudScaleY(2)
+    offset = offset or RiceLib.hudScaleY(2)
 
     if pnl:HasFocus() then
         surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl, pnl, "Text"), 255 * math.abs(math.sin(SysTime() * 6 % 360))))
 
         local len = 0
         for i = 1,pnl:GetCaretPos() do
-            local w = RL.VGUI.TextWide(pnl:GetFont(), utf8.sub(pnl:GetText(),i,i))
+            local w = RiceLib.VGUI.TextWide(pnl:GetFont(), utf8.sub(pnl:GetText(),i,i))
 
             len = len + w
         end
-        surface.DrawRect(RL.hudScaleX(10) + len, 4 - offset / 2, 1, h - 8 - offset)
+        surface.DrawRect(RiceLib.hudScaleX(10) + len, 4 - offset / 2, 1, h - 8 - offset)
     end
 end
 
@@ -157,7 +157,7 @@ end
 
 function tbl.Spacer(pnl, w, h)
     surface.SetDrawColor(RiceUI.GetColor(tbl, pnl, "Outline"))
-    surface.DrawRect(0, h / 2 - RL.hudOffsetY(1), w, RL.hudOffsetY(2))
+    surface.DrawRect(0, h / 2 - RiceLib.hudOffsetY(1), w, RiceLib.hudOffsetY(2))
 end
 
 function tbl.Panel(pnl, w, h)
@@ -171,7 +171,7 @@ function tbl.RL_Frame(pnl, w, h)
 end
 
 function tbl.Raw(pnl, w, h)
-    RL.VGUI.blurPanel(pnl, pnl.Theme.Blur)
+    RiceLib.VGUI.blurPanel(pnl, pnl.Theme.Blur)
 end
 
 --[[
@@ -206,7 +206,7 @@ function tbl.TransButton_TextLeft(pnl, w, h)
     surface.SetDrawColor(ColorAlpha(color, RiceUI.HoverAlpha(pnl, 20) / 3))
     surface.DrawRect(0, 0, w, h)
 
-    draw.SimpleText(pnl.Text, pnl:GetFont(), RL.hudScaleX(10), h / 2, RiceUI.GetColorBase(tbl, pnl, "NonContentText"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(pnl.Text, pnl:GetFont(), RiceLib.hudScaleX(10), h / 2, RiceUI.GetColorBase(tbl, pnl, "NonContentText"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.TransButton_F(pnl, w, h)
@@ -231,7 +231,7 @@ end
 function tbl.Entry(pnl, w, h)
     tbl.DrawButton(pnl, w, h)
 
-    local height = RL.hudScaleY(2)
+    local height = RiceLib.hudScaleY(2)
 
     if pnl:GetValue() == "" then
         draw.SimpleText(pnl:GetPlaceholderText(), pnl:GetFont(), 10, h / 2 - height, RiceUI.GetColorBase(tbl, pnl, "Disable"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -283,7 +283,7 @@ function tbl.RL_Combo(pnl, w, h)
 end
 
 function tbl.RL_Combo_Choice(pnl, w, h)
-    local height = RL.hudOffsetY(3)
+    local height = RiceLib.hudOffsetY(3)
 
     if pnl:IsHovered() then
         surface.SetDrawColor(RiceUI.GetColorBase(tbl, pnl, "Hover"))
@@ -299,9 +299,9 @@ function tbl.RL_Combo_Choice(pnl, w, h)
     end
 
     surface.SetDrawColor(bar_color)
-    surface.DrawRect(RL.hudOffsetY(2), height, RL.hudOffsetY(2) + RL.hudOffsetY(1), h - height * 2)
+    surface.DrawRect(RiceLib.hudOffsetY(2), height, RiceLib.hudOffsetY(2) + RiceLib.hudOffsetY(1), h - height * 2)
 
-    RiceUI.Render.ShadowText(pnl.Text, pnl:GetFont(), RL.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    RiceUI.Render.ShadowText(pnl.Text, pnl:GetFont(), RiceLib.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.RL_NumberWang(pnl, w, h)
@@ -314,7 +314,7 @@ end
 function tbl.NumberWang_Button(pnl, w, h)
     surface.SetDrawColor(RiceUI.GetColorBase(tbl, pnl, "Text"))
     surface.SetMaterial(point)
-    local size = h / 2 + RL.hudScaleY(pnl.Theme.Scale or 0)
+    local size = h / 2 + RiceLib.hudScaleY(pnl.Theme.Scale or 0)
     surface.DrawTexturedRectRotated(w / 2, h / 2, size, size, pnl.Theme.Ang)
 end
 

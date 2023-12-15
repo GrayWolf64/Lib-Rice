@@ -7,7 +7,7 @@ file.CreateDir"riceui/web_image"
 local elements = {}
 local UI_Elements = {}
 
-RL.IO.LoadFiles(elements, "riceui/elements")
+RiceLib.IO.LoadFiles(elements, "riceui/elements")
 
 --- Create UI Elements
 -- @section CreateElement
@@ -79,15 +79,15 @@ function RiceUI.DefineUniProcess(name,data)
     uniProcess[name] = data
 end
 
-RL.IncludeDir("riceui/uniprocess", true)
+RiceLib.IncludeDir("riceui/uniprocess", true)
 
 RiceUI.Prefab = {}
-RL.IncludeDir("riceui/prefabs", true)
-RL.IncludeDir("riceui/modules", true, true)
+RiceLib.IncludeDir("riceui/prefabs", true)
+RiceLib.IncludeDir("riceui/modules", true, true)
 
 concommand.Add("riceui_reload", function()
-    RL.IO.LoadFiles(elements, "riceui/elements")
-    RL.IO.LoadFiles(uniProcess, "riceui/uniprocess")
+    RiceLib.IO.LoadFiles(elements, "riceui/elements")
+    RiceLib.IO.LoadFiles(uniProcess, "riceui/uniprocess")
     RiceUI.ReloadThemes()
 end)
 

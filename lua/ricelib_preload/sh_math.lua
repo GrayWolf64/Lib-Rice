@@ -1,6 +1,6 @@
-RL.math = RL.math or {}
+RiceLib.math = RiceLib.math or {}
 
-function RL.math.CubicSmooth5(input,store)
+function RiceLib.math.CubicSmooth5(input,store)
     store = store or {}
 
     table.insert(store,input)
@@ -16,7 +16,7 @@ function RL.math.CubicSmooth5(input,store)
     return output
 end
 
-function RL.math.CubicSmooth7(input,store)
+function RiceLib.math.CubicSmooth7(input,store)
     store = store or {}
 
     table.insert(store,input)
@@ -32,13 +32,13 @@ function RL.math.CubicSmooth7(input,store)
     return output
 end
 
-function RL.math.Sin(speed)
+function RiceLib.math.Sin(speed)
     speed = speed or 6
 
     return math.abs(math.sin(SysTime() * speed % 360))
 end
 
-function RL.math.Cos(speed)
+function RiceLib.math.Cos(speed)
     speed = speed or 6
 
     return math.abs(math.cos(SysTime() * speed % 360))

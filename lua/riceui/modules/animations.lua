@@ -1,5 +1,5 @@
 local function expandFromPos(panel, data)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
         ease = 0.3,
@@ -9,13 +9,13 @@ local function expandFromPos(panel, data)
     panel:SetAlpha(255)
     panel:SetSize(0, 0)
     panel:SetPos(data.StartX, data.StartY)
-    panel:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
+    panel:SizeTo(RiceLib.hudScaleX(data.SizeW), RiceLib.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
     panel:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
     panel.AnimData = data
 end
 
 local function expandFromCursor(panel, data)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
         ease = 0.3,
@@ -33,7 +33,7 @@ local function expandFromCursor(panel, data)
 
     panel:SetSize(0, 0)
     panel:SetPos(x, y)
-    panel:SizeTo(RL.hudScaleX(data.SizeW), RL.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
+    panel:SizeTo(RiceLib.hudScaleX(data.SizeW), RiceLib.hudScaleY(data.SizeH), data.time, data.delay, data.ease, data.callback)
     panel:MoveTo(data.EndX, data.EndY, data.time, data.delay, data.ease)
     panel.AnimData = data
     panel.AnimData.StartX = x
@@ -41,7 +41,7 @@ local function expandFromCursor(panel, data)
 end
 
 local function shrinkToPos(panel, data)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
         ease = 0.3,
@@ -53,7 +53,7 @@ local function shrinkToPos(panel, data)
 end
 
 local function shrink(panel, data)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
         ease = 0.3,

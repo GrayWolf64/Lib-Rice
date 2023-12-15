@@ -1,6 +1,6 @@
-RL.table = RL.table or {}
+RiceLib.table = RiceLib.table or {}
 
-function RL.table.Inherit( t, base, override, blacklist )
+function RiceLib.table.Inherit( t, base, override, blacklist )
 	override = override or {}
 	blacklist = blacklist or {}
 
@@ -20,7 +20,7 @@ function RL.table.Inherit( t, base, override, blacklist )
 
 end
 
-function RL.table.InheritCopy( t, base, override, blacklist )
+function RiceLib.table.InheritCopy( t, base, override, blacklist )
 	local tbl = table.Copy(t)
 
 	override = override or {}
@@ -42,7 +42,7 @@ function RL.table.InheritCopy( t, base, override, blacklist )
 
 end
 
-function RL.table.GetByString(str)
+function RiceLib.table.GetByString(str)
 	local tbl = _G
 	for _,v in ipairs(string.Split(str,".")) do
 		tbl = tbl[v]

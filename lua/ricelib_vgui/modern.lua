@@ -1,5 +1,5 @@
 // 现代VGUI组件
-function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
+function RiceLib.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
     end
@@ -16,7 +16,7 @@ function RL.VGUI.ModernLabel(Text,Panel,FontSize,X,Y,color)
     return lb
 end
 
-function RL.VGUI.ModernLabelEditable(Text,Panel,FontSize,X,Y,color)
+function RiceLib.VGUI.ModernLabelEditable(Text,Panel,FontSize,X,Y,color)
     if isnumber(FontSize) then
         FontSize = tostring(FontSize)
     end
@@ -33,7 +33,7 @@ function RL.VGUI.ModernLabelEditable(Text,Panel,FontSize,X,Y,color)
     return lb
 end
 
-function RL.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
+function RiceLib.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
     local var = {...}
     DoClickFun = DoClickFun or function() end
 
@@ -58,7 +58,7 @@ function RL.VGUI.ModernButton(Text,Panel,FontSize,X,Y,W,H,DoClickFun,...)
     return btn
 end
 
-function RL.VGUI.ModernImageButton(Text,Icon,Panel,FontSize,X,Y,W,H,DoClickFun,...)
+function RiceLib.VGUI.ModernImageButton(Text,Icon,Panel,FontSize,X,Y,W,H,DoClickFun,...)
     local var = {...}
     DoClickFun = DoClickFun or function() end
 
@@ -90,7 +90,7 @@ function RL.VGUI.ModernImageButton(Text,Icon,Panel,FontSize,X,Y,W,H,DoClickFun,.
     return btn
 end
 
-function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
+function RiceLib.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     Fun = Fun or function() end
 
     if isnumber(FontSize) then
@@ -102,7 +102,7 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     body:SetPos(RL_hudScale(X,Y))
     body.Paint = function() end
 
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0)
+    local label = RiceLib.VGUI.ModernLabel(Text,body,FontSize,0,0)
     label:Dock(LEFT)
 
     local TE = vgui.Create("DTextEntry", body)
@@ -116,7 +116,7 @@ function RL.VGUI.ModernTextEntry(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     return body,TE,label
 end
 
-function RL.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
+function RiceLib.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
     Fun = Fun or function() end
 
     if isnumber(FontSize) then
@@ -142,14 +142,14 @@ function RL.VGUI.ModernCheckBox(Text,Panel,FontSize,X,Y,W,H,Fun)
         Fun(bool)
     end
 
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0)
+    local label = RiceLib.VGUI.ModernLabel(Text,body,FontSize,0,0)
     label:Dock(LEFT)
-    label:DockMargin(RL.hudScaleX(5),0,0,0)
+    label:DockMargin(RiceLib.hudScaleX(5),0,0,0)
 
     return body,CB,label
 end
 
-function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun,DarkMode)
+function RiceLib.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun,DarkMode)
     Fun = Fun or function() end
 
     local darkmode = "Dark"
@@ -164,7 +164,7 @@ function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun,DarkMode)
     body:SetPos(RL_hudScale(X,Y))
     body.Paint = function() end
 
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0)
+    local label = RiceLib.VGUI.ModernLabel(Text,body,FontSize,0,0)
     label:Dock(LEFT)
 
     local CB = vgui.Create("DComboBox", body)
@@ -192,7 +192,7 @@ function RL.VGUI.ModernComboBox(Text,Panel,FontSize,X,Y,W,H,CW,Fun,DarkMode)
     return body,CB,label
 end
 
-function RL.VGUI.ModernNumberWang(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
+function RiceLib.VGUI.ModernNumberWang(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     Fun = Fun or function() end
 
     if isnumber(FontSize) then
@@ -204,7 +204,7 @@ function RL.VGUI.ModernNumberWang(Text,Panel,FontSize,X,Y,W,H,CW,Fun)
     body:SetPos(RL_hudScale(X,Y))
     body.Paint = function() end
 
-    local label = RL.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
+    local label = RiceLib.VGUI.ModernLabel(Text,body,FontSize,0,0):Dock(LEFT)
 
     local NW = vgui.Create("DNumberWang", body)
     NW:Dock(RIGHT)

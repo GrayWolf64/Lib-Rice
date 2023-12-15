@@ -18,18 +18,18 @@ function PANEL:Init()
 	self:SetLockY( 0.5 )
 
     function self.Knob.Paint( self, w, h )
-        RL.Draw.Circle(0+w/2,0+h/2,h/2,64,self:GetParent().c_Color)
-        RL.Draw.Circle(0+w/2,0+h/2,h/2-RL.hudScaleY(2),64,Color(200,200,200,255))
+        RiceLib.Draw.Circle(0+w/2,0+h/2,h/2,64,self:GetParent().c_Color)
+        RiceLib.Draw.Circle(0+w/2,0+h/2,h/2-RiceLib.hudScaleY(2),64,Color(200,200,200,255))
     end
     function self:Paint(w,h)
         draw.RoundedBox(5,0,h/4,w,h/2,self.c_BackGroundColor)
         draw.RoundedBox(5,0,h/4,w*self:GetSlideX(),h/2,self.c_Color)
 
         if self:IsEditing() then
-            local size = RL.hudScaleX(#tostring(self:GetValue())*10)+RL.hudScaleX(10)
+            local size = RiceLib.hudScaleX(#tostring(self:GetValue())*10)+RiceLib.hudScaleX(10)
 
-            draw.RoundedBox(5,w*self:GetSlideX()-size/2,RL.hudScaleY(-25),size,20,self.c_TextBackGroundColor)
-            draw.SimpleText(self:GetValue(),"OPPOSans_20",w*self:GetSlideX(),RL.hudScaleY(-5),Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_BOTTOM)
+            draw.RoundedBox(5,w*self:GetSlideX()-size/2,RiceLib.hudScaleY(-25),size,20,self.c_TextBackGroundColor)
+            draw.SimpleText(self:GetValue(),"OPPOSans_20",w*self:GetSlideX(),RiceLib.hudScaleY(-5),Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_BOTTOM)
         end
     end
 

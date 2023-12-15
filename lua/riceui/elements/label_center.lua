@@ -5,7 +5,7 @@ Element.Editor = {
 }
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 100,
@@ -18,12 +18,12 @@ function Element.Create(data, parent)
     })
 
     local panel = vgui.Create("DPanel", parent)
-    panel:SetPos(RL.hudScale(data.x, data.y))
-    panel:SetSize(RL.hudScale(data.w, data.h))
+    panel:SetPos(RiceLib.hudScale(data.x, data.y))
+    panel:SetSize(RiceLib.hudScale(data.w, data.h))
     panel.NoGTheme = true
 
     if data.AutoSize then
-        panel:SetTall(RL.VGUI.TextHeight(data.Font, data.Text))
+        panel:SetTall(RiceLib.VGUI.TextHeight(data.Font, data.Text))
     end
 
     function panel:SetText(text)

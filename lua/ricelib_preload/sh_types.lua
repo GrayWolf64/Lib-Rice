@@ -1,8 +1,8 @@
 RL = RL or {}
 
-RL.Vector = {}
+RiceLib.Vector = {}
 
-function RL.Vector.RoundVector(vec, dec)
+function RiceLib.Vector.RoundVector(vec, dec)
     dec = dec or 2
     local x, y, z = vec:Unpack()
 

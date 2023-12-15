@@ -4,15 +4,15 @@
 if SERVER then resource.AddWorkshop"2829757059" end
 
 --- RiceLib global table
--- @table RL
+-- @table RiceLib
 -- @field VGUI
 -- @field IO
 -- @field Files
-RL           = RL or {}
-RL.VGUI      = RL.VGUI or {}
-RL.VGUI.Anim = RL.VGUI.Anim or {}
-RL.IO        = RL.IO or {}
-RL.Files     = RL.Files or {}
+RiceLib           = RiceLib or {}
+RiceLib.VGUI      = RiceLib.VGUI or {}
+RiceLib.VGUI.Anim = RiceLib.VGUI.Anim or {}
+RiceLib.IO        = RiceLib.IO or {}
+RiceLib.Files     = RiceLib.Files or {}
 
 --- Makes a log function
 -- @local
@@ -32,9 +32,9 @@ local function mkMessageFunc(msgColor)
 end
 
 local message    = mkMessageFunc(Color(0, 255, 0))
-RL.Message_Warn  = mkMessageFunc(Color(255, 150, 0))
-RL.Message_Error = mkMessageFunc(Color(255, 75, 75))
-RL.Message       = message
+RiceLib.Message_Warn  = mkMessageFunc(Color(255, 150, 0))
+RiceLib.Message_Error = mkMessageFunc(Color(255, 75, 75))
+RiceLib.Message       = message
 
 --- Checks if a string is properly ended with '/'
 -- @local
@@ -79,7 +79,7 @@ local function AddFile(fileName, dir, quiet, name)
 end
 
 --- Adds(include) all the files in a dir
--- @function RL.IncludeDir
+-- @function RiceLib.IncludeDir
 -- @param dir Directory where files exist
 -- @param quiet Boolean for determining whether or not to output log msgs
 -- @param noSub Boolean for determining whether or not to also include `dir`'s sub dir's files / dirs(recursive)
@@ -104,13 +104,13 @@ local function includeDir(dir, quiet, noSub, name)
     end
 end
 
-RL.IncludeDir   = includeDir
-RL.IncludeDirAs = function(dir, name, noSub) includeDir(dir, false, noSub, name) end
-RL.AddFileAs    = function(fileName, dir, name) AddFile(fileName, dir, false, name) end
+RiceLib.IncludeDir   = includeDir
+RiceLib.IncludeDirAs = function(dir, name, noSub) includeDir(dir, false, noSub, name) end
+RiceLib.AddFileAs    = function(fileName, dir, name) AddFile(fileName, dir, false, name) end
 
 if SERVER then
     --- Adds `.lua` files to be sent to client
-    -- @function RL.AddCSFiles
+    -- @function RiceLib.AddCSFiles
     -- @param dir Directory where files lie
     -- @param Log as who? Default value is `RL`
     -- @param noSub Boolean for determining whether or not to also add `dir`'s sub dir's files / dirs(recursive)
@@ -133,11 +133,11 @@ if SERVER then
         end
     end
 
-    RL.AddCSFiles = addCSFiles
+    RiceLib.AddCSFiles = addCSFiles
 end
 
 --- Gets all file names found in dir under path
--- @function RL.Files.GetAll
+-- @function RiceLib.Files.GetAll
 -- @param dir Directory where files may lie
 -- @param path Game path
 local function getAll(dir, path)
@@ -146,7 +146,7 @@ local function getAll(dir, path)
 end
 
 --- Gets all dirs found in dir under path
--- @function RL.Files.GetDir
+-- @function RiceLib.Files.GetDir
 -- @param dir Directory where sub dirs may lie
 -- @param path Game path
 local function getDir(dir, path)
@@ -154,22 +154,22 @@ local function getDir(dir, path)
     return dirs
 end
 
-RL.Files.Iterator = function(dir, path, iterator)
+RiceLib.Files.Iterator = function(dir, path, iterator)
     dir = checkSlash(dir)
     for _, v in ipairs(getAll(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
-RL.Files.Iterator_Dir = function(dir, path, iterator)
+RiceLib.Files.Iterator_Dir = function(dir, path, iterator)
     dir = checkSlash(dir)
     for _, v in ipairs(getDir(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
-RL.Files.GetAll = getAll
-RL.Files.GetDir = getDir
+RiceLib.Files.GetAll = getAll
+RiceLib.Files.GetDir = getDir
 
 if SERVER then
     util.AddNetworkString("ricelib_clientready")
@@ -190,13 +190,13 @@ end
 
 print"================ RL ================"
 
-RL.IncludeDir"ricelib_preload"
-RL.IncludeDir"ricelib"
+RiceLib.IncludeDir"ricelib_preload"
+RiceLib.IncludeDir"ricelib"
 
 if CLIENT then
-    RL.IncludeDirAs("ricelib_vgui", "RiceLib VGUI")
-    RL.IncludeDir("riceui", true, true)
+    RiceLib.IncludeDirAs("ricelib_vgui", "RiceLib VGUI")
+    RiceLib.IncludeDir("riceui", true, true)
 else
-    RL.AddCSFiles("ricelib_vgui", "RiceLib VGUI")
-    RL.AddCSFiles("riceui")
+    RiceLib.AddCSFiles("ricelib_vgui", "RiceLib VGUI")
+    RiceLib.AddCSFiles("riceui")
 end

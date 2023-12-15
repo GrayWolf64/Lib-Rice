@@ -1,6 +1,6 @@
-RL.Render = RL.Render or {}
+RiceLib.Render = RiceLib.Render or {}
 
-function RL.Render.Start3D2D(self, dist, scale, pos, u, f, r, func)
+function RiceLib.Render.Start3D2D(self, dist, scale, pos, u, f, r, func)
     local dist = dist or 500
     local pos = pos or Vector(0, 0, 0)
     if LocalPlayer():EyePos():DistToSqr(self:GetPos()) >= dist * dist then return end
@@ -13,7 +13,7 @@ function RL.Render.Start3D2D(self, dist, scale, pos, u, f, r, func)
     cam.End3D2D()
 end
 
-function RL.Render.StartHoloDisplay(self, dist, scale, pos, func)
+function RiceLib.Render.StartHoloDisplay(self, dist, scale, pos, func)
     local dist = dist or 500
     local pos = pos or Vector(0, 0, 0)
     if LocalPlayer():EyePos():DistToSqr(self:GetPos()) >= dist * dist then return end
@@ -26,7 +26,7 @@ function RL.Render.StartHoloDisplay(self, dist, scale, pos, func)
     cam.End3D2D()
 end
 
-function RL.Render.StartStencil()
+function RiceLib.Render.StartStencil()
     render.SetStencilWriteMask(0xFF)
     render.SetStencilTestMask(0xFF)
     render.SetStencilReferenceValue(0)

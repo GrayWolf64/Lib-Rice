@@ -5,7 +5,7 @@ Element.Editor = {
 }
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 200,
@@ -127,7 +127,7 @@ function Element.Create(data, parent)
             end
         end
 
-        local h = RL.hudScaleY(10)
+        local h = RiceLib.hudScaleY(10)
 
         for _, v in ipairs(self.Menu:GetChildren()) do
             h = h + v:GetTall()

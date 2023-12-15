@@ -1,6 +1,6 @@
 local Element = {}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         L_Width=100,
         L_Min=100,
         R_Min=100,

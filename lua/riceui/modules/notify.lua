@@ -1,7 +1,7 @@
 RiceUI.Notify = RiceUI.Notify or {}
 
 function RiceUI.Notify.Message(arg)
-    RL.table.Inherit(arg, {
+    RiceLib.table.Inherit(arg, {
         Title = "Message",
         Text = "Message",
         Icon = "icon16/textfield.png",

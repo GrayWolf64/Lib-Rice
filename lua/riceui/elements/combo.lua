@@ -1,7 +1,7 @@
 local Element = {}
 
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
@@ -10,8 +10,8 @@ function Element.Create(data,parent)
     })
 
     local panel = vgui.Create("DComboBox",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
+    panel:SetPos(RiceLib.hudScale(data.x,data.y))
+    panel:SetSize(RiceLib.hudScale(data.w,data.h))
     panel:SetValue(data.Value)
     panel:SetFont(data.Font)
 

@@ -1,15 +1,15 @@
-RL.Config = RL.Config or {}
+RiceLib.Config = RiceLib.Config or {}
 
 file.CreateDir"ricelib/settings"
 
 -- file based config
-function RL.Config.LoadConfig(Config, Name, default)
+function RiceLib.Config.LoadConfig(Config, Name, default)
     local root = "ricelib/settings/" .. Config
     local dir = root .. "/" .. Name .. ".json"
 
     if file.Exists(root, "DATA") and file.Exists(dir, "DATA") then
-        local data = RL.table.Inherit(util.JSONToTable(file.Read(dir)), default)
-        RL.Config.SaveConfig(Config, Name, data)
+        local data = RiceLib.table.Inherit(util.JSONToTable(file.Read(dir)), default)
+        RiceLib.Config.SaveConfig(Config, Name, data)
 
         return data
     else
@@ -20,40 +20,40 @@ function RL.Config.LoadConfig(Config, Name, default)
     end
 end
 
-function RL.Config.SaveConfig(Config, Name, tbl)
+function RiceLib.Config.SaveConfig(Config, Name, tbl)
     dir = "ricelib/settings/" .. Config .. "/" .. Name .. ".json"
     file.Write(dir, util.TableToJSON(tbl, true))
 end
 
 -- key based config
-RL.Config.All = RL.Config.LoadConfig("ricelib", "config_manager", {})
+RiceLib.Config.All = RiceLib.Config.LoadConfig("ricelib", "config_manager", {})
 
-function RL.Config.Set(NameSpace, Key, Value)
-    RL.Config.All[NameSpace] = RL.Config.All[NameSpace] or {}
-    RL.Config.All[NameSpace][Key] = Value
-    RL.Config.SaveConfig("ricelib", "config_manager", RL.Config.All)
+function RiceLib.Config.Set(NameSpace, Key, Value)
+    RiceLib.Config.All[NameSpace] = RiceLib.Config.All[NameSpace] or {}
+    RiceLib.Config.All[NameSpace][Key] = Value
+    RiceLib.Config.SaveConfig("ricelib", "config_manager", RiceLib.Config.All)
 end
 
-function RL.Config.Get(NameSpace, Key)
+function RiceLib.Config.Get(NameSpace, Key)
     if NameSpace == nil or Key == nil then return end
 
-    RL.Config.All[NameSpace] = RL.Config.All[NameSpace] or {}
+    RiceLib.Config.All[NameSpace] = RiceLib.Config.All[NameSpace] or {}
 
-    return RL.Config.All[NameSpace][Key]
+    return RiceLib.Config.All[NameSpace][Key]
 end
 
 if SERVER then
     util.AddNetworkString("RL_Config_Command")
-    RL.Net.RegisterCommandReceiver("RL_Config_Command", {})
+    RiceLib.Net.RegisterCommandReceiver("RL_Config_Command", {})
 else
-    RL.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
+    RiceLib.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
 
-    RL.Config.ConfigMenu = RL.Config.ConfigMenu or {}
+    RiceLib.Config.ConfigMenu = RiceLib.Config.ConfigMenu or {}
 
-    function RL.Config.GetForNavgationView()
+    function RiceLib.Config.GetForNavgationView()
         tbl = {}
 
-        for category, data in pairs(RL.Config.ConfigMenu) do
+        for category, data in pairs(RiceLib.Config.ConfigMenu) do
             if data[1] == "Page" then
                 table.insert(tbl, {"Page", category, data[2]})
 
@@ -91,10 +91,10 @@ else
                         Dock = RIGHT,
                         w = 65,
 
-                        Value = RL.Config.Get(data.NameSpace, data.Key),
+                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
 
                         OnValueChanged = function(self, val)
-                            RL.Config.Set(data.NameSpace, data.Key, val)
+                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
 
                             if data.OnValueChange ~= nil then data.OnValueChange(val) end
                         end
@@ -121,10 +121,10 @@ else
                         Dock = RIGHT,
                         w = 400,
 
-                        Value = RL.Config.Get(data.NameSpace, data.Key),
+                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
 
                         OnValueChanged = function(self, val)
-                            RL.Config.Set(data.NameSpace, data.Key, val)
+                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
 
                             if data.OnValueChange ~= nil then data.OnValueChange(val) end
                         end
@@ -151,10 +151,10 @@ else
                         Dock = RIGHT,
                         w = 200,
 
-                        Value = RL.Config.Get(data.NameSpace, data.Key),
+                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
 
                         OnValueChanged = function(self, val)
-                            RL.Config.Set(data.NameSpace, data.Key, val)
+                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
 
                             if data.OnValueChange ~= nil then data.OnValueChange(val) end
                         end
@@ -181,10 +181,10 @@ else
                         Dock = RIGHT,
                         w = 200,
 
-                        Value = RL.Config.Get(data.NameSpace, data.Key),
+                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
 
                         OnValueChanged = function(self, val)
-                            RL.Config.Set(data.NameSpace, data.Key, val)
+                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
 
                             if data.OnValueChange ~= nil then data.OnValueChange(val) end
                         end
@@ -194,7 +194,7 @@ else
         end,
     }
 
-    function RL.Config.RegisterConfig(category, name, choice)
+    function RiceLib.Config.RegisterConfig(category, name, choice)
         local returnChoice = choice
 
         if not isfunction(choice) then
@@ -207,11 +207,11 @@ else
             end
         end
 
-        RL.Config.ConfigMenu[category] = RL.Config.ConfigMenu[category] or {}
-        RL.Config.ConfigMenu[category][name] = returnChoice
+        RiceLib.Config.ConfigMenu[category] = RiceLib.Config.ConfigMenu[category] or {}
+        RiceLib.Config.ConfigMenu[category][name] = returnChoice
     end
 
-    function RL.Config.RegisterConfig_SinglePage(name, choice)
+    function RiceLib.Config.RegisterConfig_SinglePage(name, choice)
         local returnChoice = choice
 
         if not isfunction(choice) then
@@ -224,11 +224,11 @@ else
             end
         end
 
-        RL.Config.ConfigMenu[name] = {"Page", returnChoice}
+        RiceLib.Config.ConfigMenu[name] = {"Page", returnChoice}
     end
 
-    function RL.Config.OpenMenu()
-        RL.Config.MenuPanel = RiceUI.SimpleCreate({type = "rl_frame2",
+    function RiceLib.Config.OpenMenu()
+        RiceLib.Config.MenuPanel = RiceUI.SimpleCreate({type = "rl_frame2",
             Center = true,
             Root = true,
 
@@ -239,13 +239,13 @@ else
                     Dock = TOP,
                     h = 655,
 
-                    Choice = RL.Config.GetForNavgationView()
+                    Choice = RiceLib.Config.GetForNavgationView()
                 }
             },
         })
     end
 
-    concommand.Add("rl_config", RL.Config.OpenMenu)
+    concommand.Add("rl_config", RiceLib.Config.OpenMenu)
 
     list.Set("DesktopWindows", "Lib-Rice ControllCenter", {
         title = "控制中心",

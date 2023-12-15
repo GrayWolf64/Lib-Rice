@@ -1,7 +1,7 @@
 local Element = {}
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         Theme = {
             ThemeType = "NoDraw",
         },

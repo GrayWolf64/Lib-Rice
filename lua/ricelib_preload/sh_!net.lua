@@ -7,7 +7,7 @@ local function registerCommandReceiver(netID, commandHandler)
     net.Receive(netID, function(_, player)
         local command = net.ReadString()
         local func = commandHandler[command]
-        if func == nil then RL.Message_Error("Net Command Not Found: " .. command) return end
+        if func == nil then RiceLib.Message_Error("Net Command Not Found: " .. command) return end
 
         func(net.ReadTable(), player)
     end)
@@ -121,7 +121,7 @@ net.Receive("RL_ResponsiveNet", function(len, ply)
     end
 
     if ResponesiveCommmands[nameSpace] == nil then
-        RL.Message_Error(string.format("Responsive Net NameSpace Not Found: %s", nameSpace))
+        RiceLib.Message_Error(string.format("Responsive Net NameSpace Not Found: %s", nameSpace))
 
         return
     end
@@ -129,7 +129,7 @@ net.Receive("RL_ResponsiveNet", function(len, ply)
     local func = ResponesiveCommmands[nameSpace][command]
 
     if func == nil then
-        RL.Message_Error(string.format("Responsive Net Command Not Found: %s - %s", nameSpace, command))
+        RiceLib.Message_Error(string.format("Responsive Net Command Not Found: %s - %s", nameSpace, command))
 
         return
     end
@@ -143,7 +143,7 @@ net.Receive("RL_ResponsiveNet", function(len, ply)
     })
 end)
 
-RL.Net = {
+RiceLib.Net = {
     RegisterCommandReceiver = registerCommandReceiver,
     SendCommand = sendCommand,
     SendEntityCommand = sendEntityCommand,

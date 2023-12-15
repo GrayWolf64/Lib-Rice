@@ -1,6 +1,6 @@
 local Element = {}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 500,
@@ -14,8 +14,8 @@ function Element.Create(data,parent)
     })
 
     local panel = vgui.Create("DButton",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
+    panel:SetPos(RiceLib.hudScale(data.x,data.y))
+    panel:SetSize(RiceLib.hudScale(data.w,data.h))
     panel:SetText("")
     panel:SetCursor("sizeall")
     panel:SetMouseInputEnabled(true)
@@ -58,9 +58,9 @@ function Element.Create(data,parent)
         if not (onChat or (RiceUI.RootName == panel.RootName)) then return end
 
         if code == MOUSE_RIGHT then
-            parent:SetPos(RL.hudScale(self.DefaultX, self.DefaultY))
+            parent:SetPos(RiceLib.hudScale(self.DefaultX, self.DefaultY))
 
-            RL.ClearHUDOffset(self.Profile, self.DefaultX, self.DefaultY)
+            RiceLib.ClearHUDOffset(self.Profile, self.DefaultX, self.DefaultY)
             self:OnClearHUDOffset()
 
             return
@@ -78,7 +78,7 @@ function Element.Create(data,parent)
         self.Dragging = nil
         self:MouseCapture( false )
 
-        RL.UpdateHUDOffset(self.Profile, parent:GetX(), parent:GetY())
+        RiceLib.UpdateHUDOffset(self.Profile, parent:GetX(), parent:GetY())
     end
 
     return panel

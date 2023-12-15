@@ -1,5 +1,5 @@
 function RiceUI.Prefab.Notify(args)
-    RL.table.Inherit(args,{
+    RiceLib.table.Inherit(args,{
         Title = "通知",
         Text = "这是一个通知",
 
@@ -12,7 +12,7 @@ function RiceUI.Prefab.Notify(args)
         },
     })
 
-    local wide = math.max(500,RL.VGUI.TextWide("RiceUI_36", args.Text))
+    local wide = math.max(500,RiceLib.VGUI.TextWide("RiceUI_36", args.Text))
 
     RiceUI.SimpleCreate({type = "rl_panel",
         w = wide,

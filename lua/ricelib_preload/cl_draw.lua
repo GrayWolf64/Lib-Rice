@@ -75,7 +75,7 @@ local function drawRoundedBox(borderSize, x, y, w, h, color, corner)
 end
 
 local function drawRoundedBoxOutlined(borderSize, x, y, w, h, color, corner, thickness)
-	RL.Render.StartStencil()
+	RiceLib.Render.StartStencil()
 
 	drawRoundedBox(borderSize, x + thickness, y + thickness, w - thickness * 2, h - thickness * 2, color_white, Corner)
 
@@ -87,7 +87,7 @@ local function drawRoundedBoxOutlined(borderSize, x, y, w, h, color, corner, thi
 	render.SetStencilEnable(false)
 end
 
-RL.Draw = {
+RiceLib.Draw = {
 	Circle = drawCircle,
 	TexturedCircle = drawTexturedCircle,
 	RoundedBox = drawRoundedBox,

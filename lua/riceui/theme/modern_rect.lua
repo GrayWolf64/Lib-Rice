@@ -205,18 +205,18 @@ function tbl.Entry(pnl,w,h)
 
     if pnl:HasFocus() then
         surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl,pnl,"Text"),255*math.sin(SysTime()*8%360)))
-        surface.DrawRect(10+RL.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
+        surface.DrawRect(10+RiceLib.VGUI.TextWide(pnl:GetFont(),pnl:GetText()),4,1,h-8)
     end
 end
 
 function tbl.Switch(pnl,w,h)
-    RL.Draw.Circle(h/2,h/2,h/2,32,pnl:GetColor())
-    RL.Draw.Circle(w-h/2,h/2,h/2,32,pnl:GetColor())
+    RiceLib.Draw.Circle(h/2,h/2,h/2,32,pnl:GetColor())
+    RiceLib.Draw.Circle(w-h/2,h/2,h/2,32,pnl:GetColor())
 
     surface.SetDrawColor(pnl:GetColor())
     surface.DrawRect(h/2/2+4,0,w-h/2-8,h)
 
-    RL.Draw.Circle(h/2+pnl.togglePos,h/2,h/2-2,32,Color(250,250,250))
+    RiceLib.Draw.Circle(h/2+pnl.togglePos,h/2,h/2-2,32,Color(250,250,250))
 end
 
 function tbl.Slider(pnl,w,h)
@@ -226,8 +226,8 @@ function tbl.Slider(pnl,w,h)
     draw.RoundedBox(32,pos,h/3,w-pos,h/3,RiceUI.GetColor(tbl,pnl,"Disable"))
 
     DisableClipping(true)
-    RL.Draw.Circle(pos,h/2,h/2,32,RiceUI.GetColor(tbl,pnl,"Focus"))
-    RL.Draw.Circle(pos,h/2,h/2-2,32,Color(250,250,250))
+    RiceLib.Draw.Circle(pos,h/2,h/2,32,RiceUI.GetColor(tbl,pnl,"Focus"))
+    RiceLib.Draw.Circle(pos,h/2,h/2-2,32,Color(250,250,250))
 
     if pnl:GetDragging() then
         draw.SimpleText(tostring(pnl:GetValue()),"OPPOSans_"..tostring(h),pos,-h/2,RiceUI.GetColorBase(tbl,pnl,"Text"),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)

@@ -231,10 +231,10 @@ end
 function tbl.DrawInnerBox(self, w, h, Color, Corner)
     local Corner = Corner or self.Theme.Corner or {true, true, true, true}
 
-    local thick = RL.hudScaleY(1)
+    local thick = RiceLib.hudScaleY(1)
 
     if isnumber(self.Theme.Border) then
-        thick = RL.hudScaleY(self.Theme.Border)
+        thick = RiceLib.hudScaleY(self.Theme.Border)
     end
 
     draw.RoundedBoxEx(self.Theme.Curver or tbl.DefaultCurver, thick, thick, w - (thick * 2), h - (thick * 2), Color or RiceUI.GetColor(tbl, self), unpack(Corner))
@@ -266,9 +266,9 @@ function tbl.DrawButton_NT(self, w, h, _, Corner)
     if self:IsHovered() then body_color = self:RiceUI_GetColor("Fill", "Control", "Secondary") end
     if self:IsDown() then body_color = self:RiceUI_GetColor("Fill", "Control", "Tertiary") end
 
-    RL.Render.StartStencil()
+    RiceLib.Render.StartStencil()
 
-    RL.Draw.RoundedBox(8, 1, 1, w - 2, h - 2, color_white, Corner)
+    RiceLib.Draw.RoundedBox(8, 1, 1, w - 2, h - 2, color_white, Corner)
 
     render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
     render.SetStencilFailOperation(STENCIL_KEEP)
@@ -300,16 +300,16 @@ function tbl.DrawTextCursor(self, w, h)
         local len = 0
 
         for i = 1, self:GetCaretPos() do
-            local w, _ = RL.VGUI.TextWide(self:GetFont(), utf8.sub(self:GetText(), i, i))
+            local w, _ = RiceLib.VGUI.TextWide(self:GetFont(), utf8.sub(self:GetText(), i, i))
             len = len + w
         end
 
-        surface.DrawRect(RL.hudScaleX(10) + len, 4, 1, h - 8)
+        surface.DrawRect(RiceLib.hudScaleX(10) + len, 4, 1, h - 8)
     end
 end
 
 function tbl.ShadowText(self, w, h)
-    local offsetx, offsety = RL.hudScale(2, 2)
+    local offsetx, offsety = RiceLib.hudScale(2, 2)
     draw.SimpleText(self.Text, self.Font, offsetx, offsety, Color(0, 0, 0, 50), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     draw.SimpleText(self.Text, self.Font, 0, 0, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 end
@@ -369,18 +369,18 @@ function tbl.RL_Frame(self, w, h)
 end
 
 function tbl.RL_Frame2(self, w, h)
-    RL.Render.StartStencil()
+    RiceLib.Render.StartStencil()
 
-    RL.Draw.RoundedBox(8, 0, 0, w, h, color_white)
+    RiceLib.Draw.RoundedBox(8, 0, 0, w, h, color_white)
 
     render.SetStencilCompareFunction(STENCIL_EQUAL)
     render.SetStencilFailOperation(STENCIL_KEEP)
 
-    RL.VGUI.blurPanel(self, 8)
+    RiceLib.VGUI.blurPanel(self, 8)
 
     render.SetStencilCompareFunction(STENCIL_INVERT)
 
-    local thickness = RL.hudScaleY(2)
+    local thickness = RiceLib.hudScaleY(2)
 
     DisableClipping(true)
     draw.RoundedBoxEx(self.Theme.Curver or tbl.DefaultCurver, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Stroke", "Frame"), true, true, true, true)
@@ -417,7 +417,7 @@ end
 
 function tbl.Spacer(self, w, h)
     surface.SetDrawColor(RiceUI.GetColor(tbl, self, "Outline"))
-    surface.DrawRect(0, h / 2 - RL.hudOffsetY(1), w, RL.hudOffsetY(2))
+    surface.DrawRect(0, h / 2 - RiceLib.hudOffsetY(1), w, RiceLib.hudOffsetY(2))
 end
 
 --[[
@@ -507,7 +507,7 @@ function tbl.Button_TextLeft(self, w, h)
         color = RiceUI.GetColorBase(tbl, self, "Focus")
     end
 
-    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.TransButton(self, w, h)
@@ -525,7 +525,7 @@ function tbl.TransButton_TextLeft(self, w, h)
         color = RiceUI.GetColorBase(tbl, self, "Focus")
     end
 
-    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.TransButton_F(self, w, h)
@@ -565,10 +565,10 @@ function tbl.Navgation_Button(self, w, h)
     tbl.DrawBox(self, w, h, color)
 
     if self.Selected then
-        draw.RoundedBox(8, 0, h / 4, RL.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+        draw.RoundedBox(8, 0, h / 4, RiceLib.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
     end
 
-    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.Navgation_Button_Transparent(self, w, h)
@@ -579,10 +579,10 @@ function tbl.Navgation_Button_Transparent(self, w, h)
     tbl.DrawBox(self, w, h, color)
 
     if self.Selected then
-        draw.RoundedBox(8, 0, h / 4, RL.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+        draw.RoundedBox(8, 0, h / 4, RiceLib.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
     end
 
-    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 function tbl.Navgation_Combo(self, w, h)
@@ -593,10 +593,10 @@ function tbl.Navgation_Combo(self, w, h)
     tbl.DrawBox(self, w, h, color)
 
     if self.Selected then
-        draw.RoundedBox(8, 0, self.Init_H / 4, RL.hudScaleX(4), self.Init_H / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+        draw.RoundedBox(8, 0, self.Init_H / 4, RiceLib.hudScaleX(4), self.Init_H / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
     end
 
-    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, self:RiceUI_GetColor("Text", "Primary"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 --NumberWang
@@ -615,7 +615,7 @@ end
 function tbl.NumberWang_Button(self, w, h)
     surface.SetDrawColor(RiceUI.GetColorBase(tbl, self, "Text"))
     surface.SetMaterial(point)
-    local size = h / 2 + RL.hudScaleY(self.Theme.Scale or 0)
+    local size = h / 2 + RiceLib.hudScaleY(self.Theme.Scale or 0)
     surface.DrawTexturedRectRotated(w / 2, h / 2, size, size, self.Theme.Ang)
 end
 
@@ -654,11 +654,11 @@ end
 
 --Switch
 function tbl.Switch(self, w, h)
-    RL.Draw.Circle(h / 2, h / 2, h / 2, 32, self:GetColor())
-    RL.Draw.Circle(w - h / 2, h / 2, h / 2, 32, self:GetColor())
+    RiceLib.Draw.Circle(h / 2, h / 2, h / 2, 32, self:GetColor())
+    RiceLib.Draw.Circle(w - h / 2, h / 2, h / 2, 32, self:GetColor())
     surface.SetDrawColor(self:GetColor())
     surface.DrawRect(h / 2 / 2 + 4, 0, w - h / 2 - 8, h)
-    RL.Draw.Circle(h / 2 + self.togglePos, h / 2, h / 2 - 2, 32, Color(250, 250, 250))
+    RiceLib.Draw.Circle(h / 2 + self.togglePos, h / 2, h / 2 - 2, 32, Color(250, 250, 250))
 end
 
 --Slider
@@ -667,8 +667,8 @@ function tbl.Slider(self, w, h)
     draw.RoundedBox(32, 0, h / 3, pos, h / 3, RiceUI.GetColorBase(tbl, self, "Focus"))
     draw.RoundedBox(32, pos, h / 3, w - pos, h / 3, RiceUI.GetColor(tbl, self, "Disable"))
     DisableClipping(true)
-    RL.Draw.Circle(pos, h / 2, h / 2, 32, RiceUI.GetColorBase(tbl, self, "Focus"))
-    RL.Draw.Circle(pos, h / 2, h / 2 - 2, 32, Color(250, 250, 250))
+    RiceLib.Draw.Circle(pos, h / 2, h / 2, 32, RiceUI.GetColorBase(tbl, self, "Focus"))
+    RiceLib.Draw.Circle(pos, h / 2, h / 2 - 2, 32, Color(250, 250, 250))
 
     if self:GetDragging() then
         draw.SimpleText(tostring(self:GetValue()), "RiceUI_32", pos, -h / 2, RiceUI.GetColorBase(tbl, self, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -687,7 +687,7 @@ local alpha_grid = Material("gui/alpha_grid.png")
 
 function tbl.ColorButton(self, w, h)
     tbl.DrawButton(self, w, h)
-    local x, y = RL.hudScale(12, 12)
+    local x, y = RiceLib.hudScale(12, 12)
     surface.SetMaterial(alpha_grid)
     surface.SetDrawColor(255, 255, 255, 255)
     surface.DrawTexturedRect(x / 2, y / 2, w - x, h - y)
@@ -736,7 +736,7 @@ function tbl.RL_Combo_Choice(self, w, h)
         color = RiceUI.GetColorBase(tbl, self, "Focus")
     end
 
-    draw.SimpleText(self.Text, self:GetFont(), RL.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 return tbl
