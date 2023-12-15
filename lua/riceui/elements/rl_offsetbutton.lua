@@ -51,14 +51,17 @@ function Element.Create(data,parent)
         end
     end
 
+    function panel:OnClearHUDOffset() end
+
     function panel:OnMousePressed(code)
         local onChat = (panel.EnableOnChat and LocalPlayer():IsTyping())
         if not (onChat or (RiceUI.RootName == panel.RootName)) then return end
 
         if code == MOUSE_RIGHT then
-            parent:SetPos(RL.hudScale(self.DefaultX,self.DefaultY))
+            parent:SetPos(RL.hudScale(self.DefaultX, self.DefaultY))
 
-            RL.ClearHUDOffset(self.Profile,self.DefaultX,self.DefaultY)
+            RL.ClearHUDOffset(self.Profile, self.DefaultX, self.DefaultY)
+            self:OnClearHUDOffset()
 
             return
         end
@@ -75,7 +78,7 @@ function Element.Create(data,parent)
         self.Dragging = nil
         self:MouseCapture( false )
 
-        RL.UpdateHUDOffset(self.Profile,parent:GetX(),parent:GetY())
+        RL.UpdateHUDOffset(self.Profile, parent:GetX(), parent:GetY())
     end
 
     return panel

@@ -46,3 +46,5 @@ RiceUI.DefineMixin("RiceUI_GetColor", function(self, ...)
 
     return color
 end)
+
+RL.IncludeDir("riceui/mixins")
