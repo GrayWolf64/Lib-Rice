@@ -13,7 +13,7 @@ local function reload_themes()
 
             RiceLib.VGUI.RegisterTheme(name, theme)
 
-            RiceLib.Message("Loaded " .. name, "RiceLib VGUI Theme")
+            RiceLib.Info("Loaded " .. name, "RiceLib VGUI Theme")
         end
     end
 end

@@ -18,29 +18,27 @@ RiceLib.Files     = RiceLib.Files or {}
 -- @local
 -- @param msgColor Customize output function's log msg color
 -- @return function log function
-local function mkMessageFunc(msgColor)
+local function mklogfunc(msgColor)
     return function(msg, name)
         if msg:StartsWith"#" then
             msg = language.GetPhrase(msg:sub(2)) or msg
         end
 
-        name = name or "RiceLib"
-        local nameColor = Either(SERVER, Color(64, 158, 255), Color(255, 255, 150))
-
-        MsgC(nameColor, "[" .. name .. "] ", msgColor, msg .. "\n")
+        MsgC(Either(SERVER, Color(64, 158, 255), Color(255, 255, 150)),
+            "[" .. (name or "RiceLib") .. "] ", msgColor, msg .. "\n")
     end
 end
 
-local message    = mkMessageFunc(Color(0, 255, 0))
-RiceLib.Message_Warn  = mkMessageFunc(Color(255, 150, 0))
-RiceLib.Message_Error = mkMessageFunc(Color(255, 75, 75))
-RiceLib.Message       = message
+local message = mklogfunc(Color(0, 255, 0))
+RiceLib.Warn  = mklogfunc(Color(255, 150, 0))
+RiceLib.Error = mklogfunc(Color(255, 75, 75))
+RiceLib.Info  = message
 
 --- Checks if a string is properly ended with '/'
 -- @local
 -- @param str String to check
 -- @return string checked string
-local function checkSlash(str)
+local function check_slash(str)
     if not str:EndsWith"/" then return str .. "/" end
     return str
 end
@@ -53,7 +51,6 @@ end
 -- @param name Log as who? Default value is `RL`
 local function AddFile(fileName, dir, quiet, name)
     local type
-    name = name or "RiceLib"
 
     local mt = {__index = function()
         return function() AddCSLuaFile(dir .. fileName); include(dir .. fileName); type = 4 end
@@ -85,8 +82,7 @@ end
 -- @param noSub Boolean for determining whether or not to also include `dir`'s sub dir's files / dirs(recursive)
 -- @param name Log as who? Default value is `RL`
 local function includeDir(dir, quiet, noSub, name)
-    dir = checkSlash(dir)
-    name = name or "RiceLib"
+    dir = check_slash(dir)
 
     local files, dirs = file.Find(dir .. "*.lua", "LUA")
 
@@ -115,8 +111,7 @@ if SERVER then
     -- @param Log as who? Default value is `RL`
     -- @param noSub Boolean for determining whether or not to also add `dir`'s sub dir's files / dirs(recursive)
     local function addCSFiles(dir, name, noSub)
-        dir = checkSlash(dir)
-        name = name or "RiceLib"
+        dir = check_slash(dir)
 
         local files, dirs = file.Find(dir .. "*", "LUA")
 
@@ -141,7 +136,7 @@ end
 -- @param dir Directory where files may lie
 -- @param path Game path
 local function getAll(dir, path)
-    local files = file.Find(checkSlash(dir) .. "*", path)
+    local files = file.Find(check_slash(dir) .. "*", path)
     return files
 end
 
@@ -150,19 +145,19 @@ end
 -- @param dir Directory where sub dirs may lie
 -- @param path Game path
 local function getDir(dir, path)
-    local _, dirs = file.Find(checkSlash(dir) .. "*", path)
+    local _, dirs = file.Find(check_slash(dir) .. "*", path)
     return dirs
 end
 
 RiceLib.Files.Iterator = function(dir, path, iterator)
-    dir = checkSlash(dir)
+    dir = check_slash(dir)
     for _, v in ipairs(getAll(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
 RiceLib.Files.Iterator_Dir = function(dir, path, iterator)
-    dir = checkSlash(dir)
+    dir = check_slash(dir)
     for _, v in ipairs(getDir(dir, path)) do
         iterator(v, dir, path)
     end
