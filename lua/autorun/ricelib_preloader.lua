@@ -7,12 +7,10 @@ if SERVER then resource.AddWorkshop"2829757059" end
 -- @table RiceLib
 -- @field VGUI
 -- @field IO
--- @field Files
 RiceLib           = RiceLib or {}
 RiceLib.VGUI      = RiceLib.VGUI or {}
 RiceLib.VGUI.Anim = RiceLib.VGUI.Anim or {}
 RiceLib.IO        = RiceLib.IO or {}
-RiceLib.Files     = RiceLib.Files or {}
 
 --- Makes a log function
 -- @local
@@ -49,7 +47,7 @@ end
 -- @param dir Directory where file lies
 -- @param quiet Boolean for determining whether or not to output log msgs
 -- @param name Log as who? Default value is `RL`
-local function AddFile(fileName, dir, quiet, name)
+local function add_file(fileName, dir, quiet, name)
     local type
 
     local mt = {__index = function()
@@ -81,28 +79,28 @@ end
 -- @param quiet Boolean for determining whether or not to output log msgs
 -- @param noSub Boolean for determining whether or not to also include `dir`'s sub dir's files / dirs(recursive)
 -- @param name Log as who? Default value is `RL`
-local function includeDir(dir, quiet, noSub, name)
+local function include_dir(dir, quiet, noSub, name)
     dir = check_slash(dir)
 
     local files, dirs = file.Find(dir .. "*.lua", "LUA")
 
-    for _, v in ipairs(files) do AddFile(v, dir, quiet) end
+    for _, v in ipairs(files) do add_file(v, dir, quiet) end
 
     if not quiet then message("loaded: " .. dir, name) end
 
     if noSub then return end
 
     for _, v in ipairs(dirs) do
-        includeDir(dir .. v, quiet, false, name)
+        include_dir(dir .. v, quiet, false, name)
 
         if quiet then continue end
         message("loaded sub dir: " .. dir .. v, name)
     end
 end
 
-RiceLib.IncludeDir   = includeDir
-RiceLib.IncludeDirAs = function(dir, name, noSub) includeDir(dir, false, noSub, name) end
-RiceLib.AddFileAs    = function(fileName, dir, name) AddFile(fileName, dir, false, name) end
+RiceLib.IncludeDir   = include_dir
+RiceLib.IncludeDirAs = function(dir, name, noSub) include_dir(dir, false, noSub, name) end
+RiceLib.AddFileAs    = function(fileName, dir, name) add_file(fileName, dir, false, name) end
 
 if SERVER then
     --- Adds `.lua` files to be sent to client
@@ -110,7 +108,7 @@ if SERVER then
     -- @param dir Directory where files lie
     -- @param Log as who? Default value is `RL`
     -- @param noSub Boolean for determining whether or not to also add `dir`'s sub dir's files / dirs(recursive)
-    local function addCSFiles(dir, name, noSub)
+    local function add_csluafiles(dir, name, noSub)
         dir = check_slash(dir)
 
         local files, dirs = file.Find(dir .. "*", "LUA")
@@ -123,48 +121,48 @@ if SERVER then
         if noSub then return end
 
         for _, v in ipairs(dirs) do
-            addCSFiles(dir .. v, name)
+            add_csluafiles(dir .. v, name)
             message("cslf sub dir: " .. dir .. v, name)
         end
     end
 
-    RiceLib.AddCSFiles = addCSFiles
+    RiceLib.AddCSFiles = add_csluafiles
 end
 
 --- Gets all file names found in dir under path
--- @function RiceLib.Files.GetAll
+-- @function RiceLib.IO.GetAll
 -- @param dir Directory where files may lie
 -- @param path Game path
-local function getAll(dir, path)
+local function get_all_files(dir, path)
     local files = file.Find(check_slash(dir) .. "*", path)
     return files
 end
 
 --- Gets all dirs found in dir under path
--- @function RiceLib.Files.GetDir
+-- @function RiceLib.IO.GetDir
 -- @param dir Directory where sub dirs may lie
 -- @param path Game path
-local function getDir(dir, path)
+local function get_all_dirs(dir, path)
     local _, dirs = file.Find(check_slash(dir) .. "*", path)
     return dirs
 end
 
-RiceLib.Files.Iterator = function(dir, path, iterator)
+RiceLib.IO.Iterator = function(dir, path, iterator)
     dir = check_slash(dir)
-    for _, v in ipairs(getAll(dir, path)) do
+    for _, v in ipairs(get_all_files(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
-RiceLib.Files.Iterator_Dir = function(dir, path, iterator)
+RiceLib.IO.DirIterator = function(dir, path, iterator)
     dir = check_slash(dir)
-    for _, v in ipairs(getDir(dir, path)) do
+    for _, v in ipairs(get_all_dirs(dir, path)) do
         iterator(v, dir, path)
     end
 end
 
-RiceLib.Files.GetAll = getAll
-RiceLib.Files.GetDir = getDir
+RiceLib.IO.GetAll = get_all_files
+RiceLib.IO.GetDir = get_all_dirs
 
 if SERVER then
     util.AddNetworkString("ricelib_clientready")

@@ -6,3 +6,5 @@
    使用 `RiceLib.Error()` 而不是 `RiceLib.Message_Error()`
    使用 `RiceLib.Info()` 而不是 `RiceLib.Message()`
 2. `sh_playerrecord.lua`相关功能已被删除，已有现存替代
+3. `RiceLib.Files.Iterator_Dir` 已更为 `RiceLib.IO.DirIterator`
+   `RiceLib.Files` 内容已并入 `RiceLib.IO`

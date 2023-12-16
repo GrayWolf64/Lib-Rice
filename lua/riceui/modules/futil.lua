@@ -55,7 +55,7 @@ function RiceUI.ProcessData(data)
 end
 
 -- Web Images are temporarily stored and clear in each session
-RiceLib.Files.Iterator("riceui/web_image", "DATA", function(path)
+RiceLib.IO.Iterator("riceui/web_image", "DATA", function(path)
     file.Delete("riceui/web_image/" .. path)
 end)
 function RiceUI.GetWebImage(url, httpFunc)
