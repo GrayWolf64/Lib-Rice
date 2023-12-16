@@ -16,11 +16,10 @@ function Element.Create(data,parent)
 
     function panel:SetImage(url)
         self.Image = url
-        self.Mat = RiceUI.GetWebImage(self.Image, function(mat)
-            if self == nil then return end
 
-            self.Mat = mat
-        end)
+        local image_name = util.SHA1(url)
+        RiceLib.URLMaterial.Create(image_name, url)
+        self.Mat = RiceLib.URLMaterial.Get(image_name, url)
     end
 
     panel.Paint = function(self,w,h)

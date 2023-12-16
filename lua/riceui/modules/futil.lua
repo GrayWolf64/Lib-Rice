@@ -30,7 +30,7 @@ function RiceUI.Smooth(controller,val)
 end
 
 function RiceUI.MergeData(panel, data)
-    panel.RiceUI_Data = data
+    panel.riceui_data = data
 
     table.Merge(panel:GetTable(), data)
 end
@@ -52,26 +52,6 @@ function RiceUI.ProcessData(data)
     newData.y = nil
 
     return newData
-end
-
--- Web Images are temporarily stored and clear in each session
-RiceLib.IO.Iterator("riceui/web_image", "DATA", function(path)
-    file.Delete("riceui/web_image/" .. path)
-end)
-function RiceUI.GetWebImage(url, httpFunc)
-    if url == nil then return end
-    local dir = "riceui/web_image/"
-
-    if file.Exists(dir .. util.SHA256(url) .. ".png", "DATA") then
-        return Material("data/" .. dir .. util.SHA256(url) .. ".png", "smooth")
-    else
-        http.Fetch(url, function(body)
-            file.Write(dir .. util.SHA256(url) .. ".png", body)
-
-            if not isfunction(httpFunc) then return end
-            httpFunc(Material("data/" .. dir .. util.SHA256(url) .. ".png", "smooth"))
-        end)
-    end
 end
 
 function RiceUI.HoverAlpha(panel, speed)
