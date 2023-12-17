@@ -43,87 +43,64 @@ end
 
 --- Adds a `.lua` file on whatever state
 -- @local
--- @param fileName File name with extension
+-- @param file_name File name with extension
 -- @param dir Directory where file lies
--- @param quiet Boolean for determining whether or not to output log msgs
--- @param name Log as who? Default value is `RL`
-local function add_file(fileName, dir, quiet, name)
-    local type
+-- @param id Log as who? Default value is `RL`
+local function add_file(file_name, dir, id)
+    dir = dir .. file_name
 
-    local mt = {__index = function()
-        return function() AddCSLuaFile(dir .. fileName); include(dir .. fileName); type = 4 end
-    end}
-    local mappedHandlers = setmetatable({
-        sv_ = function() include(dir .. fileName); type = 1 end,
-        sh_ = {
-            [true]  = function() AddCSLuaFile(dir .. fileName) end,
+    local handlers = setmetatable({
+        sv = function() include(dir) end,
+        sh = {
+            [true]  = function() AddCSLuaFile(dir) end,
             [false] = function() return end,
-            final   = function() include(dir .. fileName); type = 2 end},
-        cl_ = {
-            [true]  = function() AddCSLuaFile(dir .. fileName) end,
-            [false] = function() include(dir .. fileName) end,
-            final   = function() type = 3 end}
-    }, mt)
+            final   = function() include(dir) end},
+        cl = {
+            [true]  = function() AddCSLuaFile(dir) end,
+            [false] = function() include(dir) end,
+            final   = function() return end}
+    }, {__index = function()
+        return function() AddCSLuaFile(dir); include(dir) end
+    end})
 
-    local handler = mappedHandlers[fileName:Left(3):lower()]
+    local handler = handlers[file_name:Left(2):lower()]
     if istable(handler) then handler[SERVER](); handler.final() else handler() end
+end
 
-    if quiet then return end
-    local opType = {"include", "sh send or include", "send or include", "send and include"}
-    message(opType[type] .. ": " .. fileName, name)
+local function eachi_file(_dir, _no_sub, _path, _wildcard, _f1, _f1_argmod, _f2, _f2_argmod)
+    local files, dirs = file.Find(_dir .. _wildcard, _path)
+    for _, f in ipairs(files) do _f1(_f1_argmod(f)) end
+    if _no_sub then return end
+    for _, dir in ipairs(dirs) do _f2(_f2_argmod(dir)) end
 end
 
 --- Adds(include) all the files in a dir
 -- @function RiceLib.IncludeDir
 -- @param dir Directory where files exist
--- @param quiet Boolean for determining whether or not to output log msgs
--- @param noSub Boolean for determining whether or not to also include `dir`'s sub dir's files / dirs(recursive)
--- @param name Log as who? Default value is `RL`
-local function include_dir(dir, quiet, noSub, name)
+-- @param no_sub Boolean for determining whether or not to also include `dir`'s sub dir's files / dirs(recursive)
+local function include_dir(dir, no_sub)
     dir = check_slash(dir)
 
-    local files, dirs = file.Find(dir .. "*.lua", "LUA")
-
-    for _, v in ipairs(files) do add_file(v, dir, quiet) end
-
-    if not quiet then message("loaded: " .. dir, name) end
-
-    if noSub then return end
-
-    for _, v in ipairs(dirs) do
-        include_dir(dir .. v, quiet, false, name)
-
-        if quiet then continue end
-        message("loaded sub dir: " .. dir .. v, name)
-    end
+    eachi_file(dir, no_sub, "LUA", "*.lua", 
+    add_file, function(f) return f, dir end,
+    include_dir, function(v) return dir .. v end)
 end
 
+RiceLib.AddFileAs    = add_file
 RiceLib.IncludeDir   = include_dir
-RiceLib.IncludeDirAs = function(dir, name, noSub) include_dir(dir, false, noSub, name) end
-RiceLib.AddFileAs    = function(fileName, dir, name) add_file(fileName, dir, false, name) end
+RiceLib.IncludeDirAs = function(dir, id, no_sub) include_dir(dir, false, no_sub, id) end
 
 if SERVER then
     --- Adds `.lua` files to be sent to client
     -- @function RiceLib.AddCSFiles
     -- @param dir Directory where files lie
-    -- @param Log as who? Default value is `RL`
-    -- @param noSub Boolean for determining whether or not to also add `dir`'s sub dir's files / dirs(recursive)
-    local function add_csluafiles(dir, name, noSub)
+    -- @param no_sub Boolean for determining whether or not to also add `dir`'s sub dir's files / dirs(recursive)
+    local function add_csluafiles(dir, no_sub)
         dir = check_slash(dir)
 
-        local files, dirs = file.Find(dir .. "*", "LUA")
-
-        for _, v in ipairs(files) do
-            AddCSLuaFile(dir .. v)
-            message("cslf: " .. dir .. v, name)
-        end
-
-        if noSub then return end
-
-        for _, v in ipairs(dirs) do
-            add_csluafiles(dir .. v, name)
-            message("cslf sub dir: " .. dir .. v, name)
-        end
+        eachi_file(dir, no_sub, "LUA", "*",
+        AddCSLuaFile, function(f) return dir .. f end,
+        add_csluafiles, function(v) return dir .. v end)
     end
 
     RiceLib.AddCSFiles = add_csluafiles
@@ -138,27 +115,26 @@ local function get_all_files(dir, path)
     return files
 end
 
+local function ieach(_t, _f, ...)
+    for _, v in ipairs(_t) do _f(v, ...) end
+end
+
 --- Gets all dirs found in dir under path
 -- @function RiceLib.IO.GetDir
 -- @param dir Directory where sub dirs may lie
 -- @param path Game path
 local function get_all_dirs(dir, path)
-    local _, dirs = file.Find(check_slash(dir) .. "*", path)
-    return dirs
+    return select(2, file.Find(check_slash(dir) .. "*", path))
 end
 
 RiceLib.IO.Iterator = function(dir, path, iterator)
     dir = check_slash(dir)
-    for _, v in ipairs(get_all_files(dir, path)) do
-        iterator(v, dir, path)
-    end
+    ieach(get_all_files(dir, path), iterator, dir, path)
 end
 
 RiceLib.IO.DirIterator = function(dir, path, iterator)
     dir = check_slash(dir)
-    for _, v in ipairs(get_all_dirs(dir, path)) do
-        iterator(v, dir, path)
-    end
+    ieach(get_all_dirs(dir, path), iterator, dir, path)
 end
 
 RiceLib.IO.GetAll = get_all_files
@@ -177,7 +153,6 @@ else
     end
 
     hook.Add("InitPostEntity", "RiceLibClientReady", ready)
-
     concommand.Add("ricelib_simulate_clientready", ready)
 end
 

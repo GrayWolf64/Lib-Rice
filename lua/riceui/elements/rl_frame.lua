@@ -41,9 +41,7 @@ function Element.Create(data, parent)
     end
 
     function panel:OnMousePressed()
-        local _, screenY = self:LocalToScreen(0, 0)
-
-        if gui.MouseY() < (screenY + self.Title:GetTall() + 5) then
+        if gui.MouseY() < (select(2, self:LocalToScreen(0, 0)) + self.Title:GetTall() + 5) then
             self.Dragging = {gui.MouseX() - self.x, gui.MouseY() - self.y}
 
             self:MouseCapture(true)
