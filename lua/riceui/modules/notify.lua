@@ -88,11 +88,11 @@ function RiceUI.Notify.Message(arg)
                 end
             }
         }
-    }, RiceUI.Notify.Base.Elements.ScrollPanel)
+    }, RiceUI.Notify.Base.riceui_elements.ScrollPanel)
 end
 
 function RiceUI.Notify.Panel(data)
-    return RiceUI.SimpleCreate(data, RiceUI.Notify.Base.Elements.ScrollPanel)
+    return RiceUI.SimpleCreate(data, RiceUI.Notify.Base.riceui_elements.ScrollPanel)
 end
 
 function RiceUI.Notify.Init()
@@ -117,7 +117,7 @@ end
 hook.Add("InitPostEntity", "RiceUI_InitNotify", RiceUI.Notify.Init)
 
 concommand.Add("riceui_notify_clear", function()
-    RiceUI.Notify.Base.Elements.ScrollPanel:Clear()
+    RiceUI.Notify.Base.riceui_elements.ScrollPanel:Clear()
 end)
 
 concommand.Add("riceui_notify_reload", function()

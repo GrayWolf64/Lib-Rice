@@ -113,7 +113,7 @@ function apply_theme(self, theme)
 end
 
 local function reload_themes()
-    RiceLib.IO.LoadFiles(themes, "riceui/theme")
+    RiceLib.Util.LoadFiles(themes, "riceui/theme")
 end
 
 concommand.Add("riceui_theme", function()
@@ -150,13 +150,13 @@ end
 local function reload_themes_nt()
     local dir, path = "riceui/theme/"
 
-    for _, theme_name in pairs(RiceLib.IO.GetDir(dir, "LUA")) do
+    for _, theme_name in pairs(RiceLib.FS.GetDir(dir, "LUA")) do
         themes_nt[theme_name] = {}
         themes_nt[theme_name].Styles = {}
 
         path = dir .. theme_name
 
-        for _, file_name in pairs(RiceLib.IO.GetAll(path, "LUA")) do
+        for _, file_name in pairs(RiceLib.FS.GetAll(path, "LUA")) do
             include(path .. "/" .. file_name)
         end
     end

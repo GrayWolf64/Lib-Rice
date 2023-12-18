@@ -490,7 +490,7 @@ function tbl.OnLoaded()
                 if id ~= "btn_Anim_Expand" then return end
                 local frame = data:GetParent()
 
-                RiceUI.Animation.ExpandFromPos(frame.Elements.Anim_Expand, {
+                RiceUI.Animation.ExpandFromPos(frame.riceui_elements.Anim_Expand, {
                     StartX = gui.MouseX() - frame:GetX(),
                     StartY = gui.MouseY() - frame:GetY(),
                     EndX = 0,
@@ -501,13 +501,13 @@ function tbl.OnLoaded()
                         RiceUI.SimpleCreate({type = "rl_button",
                             Center = true,
                             DoClick = function()
-                                RiceUI.Animation.Shrink(frame.Elements.Anim_Expand, {
+                                RiceUI.Animation.Shrink(frame.riceui_elements.Anim_Expand, {
                                     callback = function()
-                                        frame.Elements.Anim_Expand:Clear()
+                                        frame.riceui_elements.Anim_Expand:Clear()
                                     end
                                 })
                             end
-                        }, frame.Elements.Anim_Expand)
+                        }, frame.riceui_elements.Anim_Expand)
                     end
                 })
             end

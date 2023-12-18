@@ -168,7 +168,7 @@ RiceUI.Examples = {
                 if id ~= "btn_Anim_Expand" then return end
                 local frame = data:GetParent()
 
-                RiceUI.Animation.ExpandFromPos(frame.Elements.Anim_Expand, {
+                RiceUI.Animation.ExpandFromPos(frame.riceui_elements.Anim_Expand, {
                     StartX = gui.MouseX() - frame:GetX(),
                     StartY = gui.MouseY() - frame:GetY(),
                     EndX = 0,
@@ -179,13 +179,13 @@ RiceUI.Examples = {
                         RiceUI.SimpleCreate({type = "rl_button",
                             Center = true,
                             DoClick = function()
-                                RiceUI.Animation.Shrink(frame.Elements.Anim_Expand, {
+                                RiceUI.Animation.Shrink(frame.riceui_elements.Anim_Expand, {
                                     callback = function()
-                                        frame.Elements.Anim_Expand:Clear()
+                                        frame.riceui_elements.Anim_Expand:Clear()
                                     end
                                 })
                             end
-                        }, frame.Elements.Anim_Expand)
+                        }, frame.riceui_elements.Anim_Expand)
                     end
                 })
             end
@@ -220,7 +220,7 @@ RiceUI.Examples = {
                 cam.Start3D(Vector(0,0,60), Angle(90,90,0), 70,x, y, w, h, 5)
                     cam.Start3D2D(Vector(-25,20,0),Angle(-cx1 / w * 180, 0, -cy1 / w * 180),0.1)
 
-                    self.Elements.panel:PaintAt(0,0)
+                    self.riceui_elements.panel:PaintAt(0,0)
 
                     cam.End3D2D()
                 cam.End3D()

@@ -129,7 +129,7 @@ function RiceUI.Prefab.RequestInputs(args)
                             local frame = self:RiceUI_GetRoot()
                             local values = {}
 
-                            for id, panel in pairs(frame.Elements) do
+                            for id, panel in pairs(frame.riceui_elements) do
                                 values[id] = panel:GetValue()
                             end
 
@@ -241,7 +241,7 @@ function RiceUI.Prefab.RequestInput(args)
                         Theme = {ThemeType = "Button_Accent"},
 
                         DoClick = function(self)
-                            args.OnConfirm(self:RiceUI_GetRoot(), self:RiceUI_GetRoot().Elements.Entry:GetValue())
+                            args.OnConfirm(self:RiceUI_GetRoot(), self:RiceUI_GetRoot().riceui_elements.Entry:GetValue())
                         end
                     },
 
@@ -297,7 +297,7 @@ function RiceUI.Prefab.RequestKey(args)
         KeyCode = 0,
 
         OnKeyCodePressed = function(self, code)
-            self.Elements.Key.Text = input.GetKeyName(code)
+            self.riceui_elements.Key.Text = input.GetKeyName(code)
             self.KeyCode = code
         end,
 

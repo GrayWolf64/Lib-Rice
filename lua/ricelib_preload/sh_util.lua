@@ -40,11 +40,11 @@ local function load_files(target, dir)
     end
 end
 
-function RiceLib.IO.LoadFiles(tbl, dir)
+function RiceLib.Util.LoadFiles(tbl, dir)
     load_files(tbl, dir)
 end
 
-function RiceLib.IO.LoadFilesRaw(loader, dir)
+function RiceLib.Util.LoadFilesRaw(loader, dir)
     load_files(loader, dir)
 end
 
