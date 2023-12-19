@@ -1,5 +1,5 @@
 --- Loads `RiceLib` ahead of time
--- @script ricelib_preloader
+-- @script ricelib_init
 -- @author RiceMCUT, GrayWolf
 if SERVER then resource.AddWorkshop"2829757059" end
 
@@ -17,9 +17,7 @@ RiceLib.VGUI.Anim = RiceLib.VGUI.Anim or {}
 -- @return function log function
 local function mklogfunc(color_msg)
     return function(msg, name)
-        if msg:StartsWith"#" then
-            msg = language.GetPhrase(msg:sub(2)) or msg
-        end
+        if msg:StartsWith"#" then msg = language.GetPhrase(msg:sub(2)) or msg end
 
         MsgC(Either(SERVER, Color(64, 158, 255), Color(255, 255, 150)),
             "[" .. (name or "RiceLib") .. "] ", color_msg, msg .. "\n")
@@ -48,18 +46,18 @@ local function add_file(file_name, dir)
     dir = dir .. file_name
 
     local handlers = setmetatable({
-        sv = function() include(dir) end,
-        sh = {
+        sv_ = function() include(dir) end,
+        sh_ = {
             [true]  = function() AddCSLuaFile(dir) end, [false] = function() return end,
             final   = function() include(dir) end},
-        cl = {
+        cl_ = {
             [true]  = function() AddCSLuaFile(dir) end, [false] = function() include(dir) end,
             final   = function() return end}
     }, {__index = function()
         return function() AddCSLuaFile(dir); include(dir) end
     end})
 
-    local handler = handlers[file_name:Left(2):lower()]
+    local handler = handlers[file_name:Left(3)]
     if istable(handler) then handler[SERVER](); handler.final() else handler() end
 end
 
@@ -143,21 +141,10 @@ end
 RiceLib.FS.GetAll  = get_all_files
 RiceLib.FS.GetDir  = get_all_dirs
 
-if SERVER then
-    util.AddNetworkString("ricelib_clientready")
-
-    net.Receive("ricelib_clientready", function(_, ply)
-        hook.Run("RiceLibClientReady", ply)
-    end)
-else
-    local function ready()
-        net.Start("ricelib_clientready")
-        net.SendToServer()
-    end
-
-    hook.Add("InitPostEntity", "RiceLibClientReady", ready)
-    concommand.Add("ricelib_simulate_clientready", ready)
-end
+-- Hook: RiceLibClientReady, which has a `ply` param
+-- Not recommended. Please seek for other alternatives
+if SERVER then util.AddNetworkString("ricelib_clientready")net.Receive("ricelib_clientready",function(_,b)hook.Run("RiceLibClientReady",b)end)
+else local function c()net.Start("ricelib_clientready")net.SendToServer()end;hook.Add("InitPostEntity","RiceLibClientReady",c)concommand.Add("ricelib_simulate_clientready",function(b)if not b:IsAdmin()then return end;c()end)end
 
 RiceLib.AddFileAs  = add_file
 RiceLib.IncludeDir = include_dir
