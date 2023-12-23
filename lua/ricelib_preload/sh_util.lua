@@ -51,3 +51,13 @@ end
 function RiceLib.RunFromTable(tbl, name, ...)
     return tbl[name](...)
 end
+
+function RiceLib.Util.RoundVector(vec, dec)
+    dec = dec or 2
+
+    vec.x = math.Round(vec.x, dec)
+    vec.y = math.Round(vec.y, dec)
+    vec.z = math.Round(vec.z, dec)
+
+    return vec
+end

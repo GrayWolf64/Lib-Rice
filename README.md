@@ -32,3 +32,4 @@
 
    `RL_Slider` 元素已被删除
 5. `RiceUI.Smooth_CreateController` 已更为 `RiceUI.SmoothController`
+6. `RiceLib.Vector.RoundVector` 已更为 `RiceLib.Util.RoundVector`
