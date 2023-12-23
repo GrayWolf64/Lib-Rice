@@ -85,7 +85,7 @@ end
 local function include_dir(dir, no_sub)
     dir = check_slash(dir)
 
-    eachi_file(dir, no_sub, "LUA", "*.lua", 
+    eachi_file(dir, no_sub, "LUA", "*",
     add_file, function(f) return f, dir end,
     include_dir, function(v) return dir .. v end)
 end
@@ -156,8 +156,8 @@ RiceLib.IncludeDir"ricelib"
 
 if CLIENT then
     -- RiceLib.IncludeDirAs("ricelib_vgui", "RiceLib VGUI")
-    RiceLib.IncludeDir("ricelib_vgui", false)
-    RiceLib.IncludeDir("riceui", false)
+    RiceLib.IncludeDir("ricelib_vgui")
+    RiceLib.IncludeDir("riceui")
 else
     --- Adds `.lua` files to be sent to client
     -- @lfunction add_cslua
@@ -174,6 +174,6 @@ else
     RiceLib.AddCSFiles = add_cslua
 
     -- RiceLib.AddCSFiles("ricelib_vgui", "RiceLib VGUI")
-    RiceLib.AddCSFiles("ricelib_vgui", false)
-    RiceLib.AddCSFiles("riceui", false)
+    RiceLib.AddCSFiles("ricelib_vgui")
+    RiceLib.AddCSFiles("riceui")
 end
