@@ -1,8 +1,8 @@
-function RiceLib.VGUI.ScrollPanel(Panel, X, Y, W, H)
-    local X, Y, W, H = X or 0, Y or 0, W or 0, H or 0
-    local panel = vgui.Create("DScrollPanel", Panel)
-    panel:SetPos(RiceLib.hudScale(X or 0, Y or 0))
-    panel:SetSize(RiceLib.hudScale(W or 0, H or 0))
+function RiceLib.VGUI.ScrollPanel(panel, x, y, w, h)
+    local x, y, w, h = x or 0, y or 0, w or 0, h or 0
+    local panel = vgui.Create("DScrollPanel", panel)
+    panel:SetPos(RiceLib.hudScale(x or 0, y or 0))
+    panel:SetSize(RiceLib.hudScale(w or 0, h or 0))
     local bar = panel.VBar
     bar:SetHideButtons(true)
     bar.a_length = 0.5 -- animation length.
