@@ -31,3 +31,4 @@
    `RiceLib.VGUI.ModernLabel` 已更为本地函数
 
    `RL_Slider` 元素已被删除
+5. `RiceUI.Smooth_CreateController` 已更为 `RiceUI.SmoothController`

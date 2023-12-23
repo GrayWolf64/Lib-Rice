@@ -1,4 +1,4 @@
-function RiceUI.Smooth_CreateController(controller,time)
+function RiceUI.SmoothController(controller,time)
     controller.valStart, controller.oldVal, controller.newVal = 0, -1, -1
     controller.time = controller.time or 0.25
 end
@@ -69,15 +69,7 @@ function RiceUI.HoverAlpha(panel, speed)
 end
 
 function RiceUI.HoverAlphaEase(panel, speed)
-    if not panel.HoverAlpha then
-        panel.HoverAlpha = 0
-    end
-
-    if panel:IsHovered() then
-        panel.HoverAlpha = math.min(panel.HoverAlpha + speed * (RealFrameTime() * 100), 255)
-    else
-        panel.HoverAlpha = math.max(panel.HoverAlpha - speed * (RealFrameTime() * 100), 0)
-    end
+    RiceUI.HoverAlpha(panel, speed)
 
     return math.ease.InOutCubic(panel.HoverAlpha / 255) * 255
 end

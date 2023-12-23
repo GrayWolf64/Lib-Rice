@@ -14,7 +14,7 @@ function Element.Create(data, parent)
     panel:SetSize(RiceLib.hudScale(data.w, data.h))
     panel.GThemeType = "Panel"
     panel:SetFraction(0)
-    RiceUI.Smooth_CreateController(panel, data.Time)
+    RiceUI.SmoothController(panel, data.Time)
 
     panel.Paint = function(self, w, h)
         surface.SetDrawColor(0, 0, 0, 100)
