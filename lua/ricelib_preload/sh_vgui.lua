@@ -60,7 +60,7 @@ if CLIENT then
     end
 
     local function Notify(text, fontSize, x, y, lifeTime)
-        local notify = vgui.Create("DNotify", Panel)
+        local notify = vgui.Create("DNotify", panel)
         notify:SetPos(x, y)
         notify:SetLife(lifeTime)
         notify:SetSize(ScrW(), ScrH())
@@ -68,7 +68,24 @@ if CLIENT then
 
         panel.Paint = function(self) blurPanel(self) end
 
-        local label = RiceLib.VGUI.ModernLabel(text, panel, fontSize, 5, 0, color_white)
+        local function modern_label(text, panel, font_size, x, y, color)
+            if isnumber(font_size) then
+                font_size = tostring(font_size)
+            end
+
+            if string.StartWith(text,"#") then text = language.GetPhrase(string.sub(text,2)) or text end
+
+            local lb = vgui.Create("DLabel",panel)
+            lb:SetText(text)
+            lb:SetPos(RL_hudScale(x,y))
+            lb:SetFont("OPSans_"..font_size)
+            lb:SetColor(color or Color(30,30,30))
+            lb:SizeToContents()
+
+            return lb
+        end
+
+        local label = modern_label(text, panel, fontSize, 5, 0, color_white)
         label:SizeToContents()
         panel:SetSize(label:GetWide() + 10, label:GetTall())
         notify:AddItem(panel)

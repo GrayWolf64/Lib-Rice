@@ -15,3 +15,19 @@
    `RiceLib.IO.LoadFilesRaw` 已更为 `RiceLib.Util.LoadFilesRaw`
 
    `RiceLib.IO` 已更为 `RiceLib.FS`
+4. `RiceLib.VGUI.HDiv`，
+   `RiceLib.VGUI.VDiv`，
+   `RiceLib.VGUI.Layout`，
+   `RiceLib.VGUI.DockLayout`，
+   `RiceLib.VGUI.ModernLabelEditable`，
+   `RiceLib.VGUI.ModernButton`，
+   `RiceLib.VGUI.ModernImageButton`，
+   `RiceLib.VGUI.ModernTextEntry`，
+   `RiceLib.VGUI.ModernCheckBox`，
+   `RiceLib.VGUI.ModernComboBox`，
+   `RiceLib.VGUI.ModernNumberWang`
+   等函数已被删除
+
+   `RiceLib.VGUI.ModernLabel` 已更为本地函数
+
+   `RL_Slider` 元素已被删除
