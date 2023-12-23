@@ -30,7 +30,7 @@ function RiceUI.SimpleCreate(data, parent, root)
         root.riceui_elements[data.ID] = panel
     end
 
-    table.insert(instances, panel)
+    instances[#instances + 1] = panel
 
     return panel
 end
@@ -39,8 +39,7 @@ function RiceUI.Create(tab, parent, root)
     local _insts = {}
 
     for _, data in ipairs(tab) do
-        local panel = RiceUI.SimpleCreate(data, parent, root)
-        table.insert(_insts, panel)
+        _insts[#_insts + 1] = RiceUI.SimpleCreate(data, parent, root)
     end
 
     return _insts

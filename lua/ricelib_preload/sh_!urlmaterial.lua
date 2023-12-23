@@ -22,7 +22,8 @@ if SERVER then
         net.Start"ricelib_send_materials"
 
         local oldContent = util.JSONToTable(file.Read(manifest, "DATA"))
-        table.insert(oldContent, {name = name, url = url})
+        oldContent[#oldContent + 1] = {name = name, url = url}
+
         file.Write(manifest, util.TableToJSON(oldContent))
 
         net.WriteString(file.Read(manifest, "DATA"))

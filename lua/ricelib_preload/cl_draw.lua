@@ -1,7 +1,6 @@
 local rad          = math.rad
 local sin          = math.sin
 local cos          = math.cos
-local table_insert = table.insert
 local draw_rect    = surface.DrawRect
 
 local function draw_circle(x, y, r, seg, color, do_texture)
@@ -17,10 +16,10 @@ local function draw_circle(x, y, r, seg, color, do_texture)
 	local cir = {{x = x, y = y, u = 0.5, v = 0.5}}
 
 	for i = 0, seg do
-		table_insert(cir, mkvertex(rad((i / seg) * -360)))
+		cir[#cir + 1] = mkvertex(rad((i / seg) * -360))
 	end
 
-	table_insert(cir, mkvertex(rad(0)))
+	cir[#cir + 1] = mkvertex(0)
 
 	if not do_texture then draw.NoTexture() end
 	if color then surface.SetDrawColor(color:Unpack()) end
