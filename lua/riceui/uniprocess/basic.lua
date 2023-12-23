@@ -133,7 +133,6 @@ RiceUI.DefineUniProcess("Value", {
 })
 
 RiceUI.DefineUniProcess("OffsetProfile", function(pnl, data)
-    if RiceLib.VGUI.HUDOffset[data] == nil then return end
     pnl:SetPos(RiceLib.hudOffset(100, 100, data))
 end)
 

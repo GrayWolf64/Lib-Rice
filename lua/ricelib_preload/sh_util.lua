@@ -33,7 +33,7 @@ local function load_files(target, dir)
         AddCSLuaFile(dir .. "/" .. f)
 
         if isfunction(target) then
-            loader(path_name, include_ret)
+            target(path_name, include_ret)
         elseif istable(target) then
             target[path_name] = include_ret
         end

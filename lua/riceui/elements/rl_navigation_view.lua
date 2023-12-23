@@ -72,7 +72,7 @@ function Element.Create(data, parent)
 
                     choice[2](panel)
                 end,
-            }, parent)
+            }, parent, bar)
         end
     end
 
