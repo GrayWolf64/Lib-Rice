@@ -44,15 +44,18 @@ end
 -- @param dir Directory where file lies
 local function add_file(file_name, dir)
     dir = dir .. file_name
+    local do_nothing = function() return end
 
     local handlers = setmetatable({
-        sv_ = function() include(dir) end,
+        sv_ = {
+            [true]  = function() include(dir) end, [false] = do_nothing,
+            final = do_nothing},
         sh_ = {
-            [true]  = function() AddCSLuaFile(dir) end, [false] = function() return end,
+            [true]  = function() AddCSLuaFile(dir) end, [false] = do_nothing,
             final   = function() include(dir) end},
         cl_ = {
             [true]  = function() AddCSLuaFile(dir) end, [false] = function() include(dir) end,
-            final   = function() return end}
+            final   = do_nothing}
     }, {__index = function()
         return function() AddCSLuaFile(dir); include(dir) end
     end})
