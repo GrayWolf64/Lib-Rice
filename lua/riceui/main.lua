@@ -1,13 +1,10 @@
 RiceUI          = RiceUI or {}
 RiceUI.RootName = "main"
 
-file.CreateDir"riceui"
-file.CreateDir"riceui/web_image"
+local elements = elements or {}
+local instances = instances or {}
 
-local elements = {}
-local UI_Elements = {}
-
-RL.IO.LoadFiles(elements, "riceui/elements")
+RiceLib.Util.LoadFiles(elements, "riceui/elements")
 
 --- Create UI Elements
 -- @section CreateElement
@@ -29,28 +26,23 @@ function RiceUI.SimpleCreate(data, parent, root)
     if data.ID then
         if not IsValid(parent) then return panel end
 
-        -- Remove this soon
-        parent.Elements = parent.Elements or {}
-        parent.Elements[data.ID] = panel
-
-        root.RiceUI_Elements = root.RiceUI_Elements or {}
-        root.RiceUI_Elements[data.ID] = panel
+        root.riceui_elements = root.riceui_elements or {}
+        root.riceui_elements[data.ID] = panel
     end
 
-    table.insert(UI_Elements, panel)
+    instances[#instances + 1] = panel
 
     return panel
 end
 
 function RiceUI.Create(tab, parent, root)
-    local elements = {}
+    local _insts = {}
 
     for _, data in ipairs(tab) do
-        local panel = RiceUI.SimpleCreate(data, parent, root)
-        table.insert(elements, panel)
+        _insts[#_insts + 1] = RiceUI.SimpleCreate(data, parent, root)
     end
 
-    return elements
+    return _insts
 end
 
 --- Handle generic parameters
@@ -58,9 +50,9 @@ end
 local uniProcess = uniProcess or {}
 
 function RiceUI.DoProcess(panel)
-    if not panel.RiceUI_Data then return end
+    if not panel.riceui_data then return end
 
-    for name,data in pairs(panel.RiceUI_Data) do
+    for name, data in pairs(panel.riceui_data) do
         if uniProcess[name] == nil then continue end
 
         local processor
@@ -79,26 +71,26 @@ function RiceUI.DefineUniProcess(name,data)
     uniProcess[name] = data
 end
 
-RL.IncludeDir("riceui/uniprocess", true)
+RiceLib.IncludeDir("riceui/uniprocess", true)
 
 RiceUI.Prefab = {}
-RL.IncludeDir("riceui/prefabs", true)
-RL.IncludeDir("riceui/modules", true, true)
+RiceLib.IncludeDir("riceui/prefabs", true)
+RiceLib.IncludeDir("riceui/modules", true)
 
 concommand.Add("riceui_reload", function()
-    RL.IO.LoadFiles(elements, "riceui/elements")
-    RL.IO.LoadFiles(uniProcess, "riceui/uniprocess")
+    RiceLib.Util.LoadFiles(elements, "riceui/elements")
+    RiceLib.Util.LoadFiles(uniProcess, "riceui/uniprocess")
     RiceUI.ReloadThemes()
 end)
 
 concommand.Add("riceui_panic", function()
-    for _, panel in ipairs(UI_Elements) do
+    for _, panel in ipairs(instances) do
         if IsValid(panel) then
             panel:Remove()
         end
     end
 
-    UI_Elements = {}
+    instances = {}
 end)
 
 concommand.Add("riceui_elements", function()
@@ -106,7 +98,7 @@ concommand.Add("riceui_elements", function()
 end)
 
 concommand.Add("riceui_all", function()
-    PrintTable(UI_Elements)
+    PrintTable(instances)
 end)
 
 concommand.Add("riceui_prefabs", function()

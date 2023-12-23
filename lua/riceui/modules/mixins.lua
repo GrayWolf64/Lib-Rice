@@ -17,15 +17,15 @@ function RiceUI.DefineMixin(name, data)
 end
 
 RiceUI.DefineMixin("RiceUI_GetRoot", function(self)
-    return RL.VGUI.GetRoot(self)
+    return RiceLib.VGUI.GetRoot(self)
 end)
 
 RiceUI.DefineMixin("GetElementValue", function(self, element)
-    return self.RiceUI_Elements[element]:GetValue()
+    return self.riceui_elements[element]:GetValue()
 end)
 
 RiceUI.DefineMixin("GetElement", function(self, element)
-    return self.RiceUI_Elements[element]
+    return self.riceui_elements[element]
 end)
 
 RiceUI.DefineMixin("RiceUI_GetColor", function(self, ...)
@@ -47,4 +47,4 @@ RiceUI.DefineMixin("RiceUI_GetColor", function(self, ...)
     return color
 end)
 
-RL.IncludeDir("riceui/mixins")
+RiceLib.IncludeDir("riceui/mixins")

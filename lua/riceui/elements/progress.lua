@@ -1,7 +1,7 @@
 local Element = {}
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 300,
@@ -10,11 +10,11 @@ function Element.Create(data, parent)
     })
 
     local panel = vgui.Create("DProgress", parent)
-    panel:SetPos(RL.hudScale(data.x, data.y))
-    panel:SetSize(RL.hudScale(data.w, data.h))
+    panel:SetPos(RiceLib.hudScale(data.x, data.y))
+    panel:SetSize(RiceLib.hudScale(data.w, data.h))
     panel.GThemeType = "Panel"
     panel:SetFraction(0)
-    RiceUI.Smooth_CreateController(panel, data.Time)
+    RiceUI.SmoothController(panel, data.Time)
 
     panel.Paint = function(self, w, h)
         surface.SetDrawColor(0, 0, 0, 100)

@@ -1,7 +1,7 @@
 local Element = {}
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 500,
@@ -23,8 +23,8 @@ function Element.Create(data, parent)
     })
 
     local panel = vgui.Create("EditablePanel", parent)
-    panel:SetPos(RL.hudScale(data.x, data.y))
-    panel:SetSize(RL.hudScale(data.w, data.h))
+    panel:SetPos(RiceLib.hudScale(data.x, data.y))
+    panel:SetSize(RiceLib.hudScale(data.w, data.h))
     panel:SetText("")
     panel.ProcessID = "RL_Frame"
     panel.IsBase = true
@@ -41,9 +41,7 @@ function Element.Create(data, parent)
     end
 
     function panel:OnMousePressed()
-        local _, screenY = self:LocalToScreen(0, 0)
-
-        if gui.MouseY() < (screenY + self.Title:GetTall() + 5) then
+        if gui.MouseY() < (select(2, self:LocalToScreen(0, 0)) + self.Title:GetTall() + 5) then
             self.Dragging = {gui.MouseX() - self.x, gui.MouseY() - self.y}
 
             self:MouseCapture(true)

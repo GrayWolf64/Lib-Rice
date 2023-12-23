@@ -75,13 +75,13 @@ local function clear_hud_offset(profile)
     file.Write(settings_file, util.TableToJSON(data_previous, true))
 end
 
-RL.hudScale = hud_scale
-RL.hudScaleX = hud_scale_x
-RL.hudScaleY = hud_scale_y
+RiceLib.hudScale = hud_scale
+RiceLib.hudScaleX = hud_scale_x
+RiceLib.hudScaleY = hud_scale_y
 
-RL.hudOffset = hud_offset
-RL.hudOffsetX = hud_offset_x
-RL.hudOffsetY = hud_offset_y
+RiceLib.hudOffset = hud_offset
+RiceLib.hudOffsetX = hud_offset_x
+RiceLib.hudOffsetY = hud_offset_y
 
-RL.UpdateHUDOffset = update_hud_offset
-RL.ClearHUDOffset = clear_hud_offset
+RiceLib.UpdateHUDOffset = update_hud_offset
+RiceLib.ClearHUDOffset = clear_hud_offset

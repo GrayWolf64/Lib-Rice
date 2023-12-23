@@ -1,6 +1,6 @@
 local Element = {}
 function Element.Create(data,parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 300,
@@ -16,7 +16,7 @@ function Element.Create(data,parent)
 
     local panel = vgui.Create("DPanel")
     panel:SetPos(data.x, data.y)
-    panel:SetSize(RL.hudScale(data.w, data.h))
+    panel:SetSize(RiceLib.hudScale(data.w, data.h))
     panel.ProcessID = "RL_PopMenu"
 
     function panel:ChildCreated()

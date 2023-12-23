@@ -1,4 +1,4 @@
-function RiceUI.Smooth_CreateController(controller,time)
+function RiceUI.SmoothController(controller,time)
     controller.valStart, controller.oldVal, controller.newVal = 0, -1, -1
     controller.time = controller.time or 0.25
 end
@@ -30,7 +30,7 @@ function RiceUI.Smooth(controller,val)
 end
 
 function RiceUI.MergeData(panel, data)
-    panel.RiceUI_Data = data
+    panel.riceui_data = data
 
     table.Merge(panel:GetTable(), data)
 end
@@ -54,26 +54,6 @@ function RiceUI.ProcessData(data)
     return newData
 end
 
--- Web Images are temporarily stored and clear in each session
-RL.Files.Iterator("riceui/web_image", "DATA", function(path)
-    file.Delete("riceui/web_image/" .. path)
-end)
-function RiceUI.GetWebImage(url, httpFunc)
-    if url == nil then return end
-    local dir = "riceui/web_image/"
-
-    if file.Exists(dir .. util.SHA256(url) .. ".png", "DATA") then
-        return Material("data/" .. dir .. util.SHA256(url) .. ".png", "smooth")
-    else
-        http.Fetch(url, function(body)
-            file.Write(dir .. util.SHA256(url) .. ".png", body)
-
-            if not isfunction(httpFunc) then return end
-            httpFunc(Material("data/" .. dir .. util.SHA256(url) .. ".png", "smooth"))
-        end)
-    end
-end
-
 function RiceUI.HoverAlpha(panel, speed)
     if not panel.HoverAlpha then
         panel.HoverAlpha = 0
@@ -89,15 +69,7 @@ function RiceUI.HoverAlpha(panel, speed)
 end
 
 function RiceUI.HoverAlphaEase(panel, speed)
-    if not panel.HoverAlpha then
-        panel.HoverAlpha = 0
-    end
-
-    if panel:IsHovered() then
-        panel.HoverAlpha = math.min(panel.HoverAlpha + speed * (RealFrameTime() * 100), 255)
-    else
-        panel.HoverAlpha = math.max(panel.HoverAlpha - speed * (RealFrameTime() * 100), 0)
-    end
+    RiceUI.HoverAlpha(panel, speed)
 
     return math.ease.InOutCubic(panel.HoverAlpha / 255) * 255
 end

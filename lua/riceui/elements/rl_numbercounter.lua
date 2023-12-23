@@ -5,7 +5,7 @@ Element.Editor = {
 }
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 120,

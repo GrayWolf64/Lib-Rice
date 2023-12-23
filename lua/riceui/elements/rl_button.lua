@@ -1,7 +1,7 @@
 local Element = {}
 Element.Editor = {Category = "interact"}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 100,
@@ -12,8 +12,8 @@ function Element.Create(data,parent)
     })
 
     local panel = vgui.Create("DButton",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
+    panel:SetPos(RiceLib.hudScale(data.x,data.y))
+    panel:SetSize(RiceLib.hudScale(data.w,data.h))
     panel:SetFont(data.Font)
     panel:SetText("")
     panel.GThemeType = "Button"

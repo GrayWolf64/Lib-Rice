@@ -1,6 +1,6 @@
 local gradient = Material"gui/gradient"
-local hudScale = RL.hudScale
-local hudScaleY = RL.hudScaleY
+local hudScale = RiceLib.hudScale
+local hudScaleY = RiceLib.hudScaleY
 
 local function doOneSide(bDraw, startX, startY, endX, endY, x, y, w, h, ang)
     if not bDraw then return end

@@ -1,7 +1,7 @@
 local Element = {}
 Element.Editor = {Category="interact"}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         size = 20,
         x = 10,
         y = 10,
@@ -9,8 +9,8 @@ function Element.Create(data,parent)
     })
 
     local panel = vgui.Create("DButton",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    local s = RL.hudScaleY(data.size)
+    panel:SetPos(RiceLib.hudScale(data.x,data.y))
+    local s = RiceLib.hudScaleY(data.size)
     panel:SetSize(s,s)
     panel:SetText("")
     panel.GThemeType = "CheckBox"

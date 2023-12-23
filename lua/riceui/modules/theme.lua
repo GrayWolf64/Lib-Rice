@@ -53,7 +53,7 @@ local function thement_apply_theme(self, theme)
 
     self.Theme = self.Theme or {}
 
-    RL.table.Inherit(self.Theme, theme, {
+    RiceLib.table.Inherit(self.Theme, theme, {
         ThemeName = 1,
         Color = 1
     }, parama_blacklist)
@@ -91,11 +91,11 @@ function apply_theme(self, theme)
         self.ThemeMeta = get_theme(theme.ThemeName)
         self.Colors = get_theme(theme.ThemeName).Colors
 
-        RL.table.Inherit(self.Theme, {
+        RiceLib.table.Inherit(self.Theme, {
             ThemeType = self.Theme.TypeOverride or self.ProcessID
         }, parama_blacklist)
 
-        RL.table.Inherit(self.Theme, theme, {
+        RiceLib.table.Inherit(self.Theme, theme, {
             ThemeName = 1,
             Color = (not self.Theme.ColorOverride) or 1,
             TextColor = 1
@@ -113,7 +113,7 @@ function apply_theme(self, theme)
 end
 
 local function reload_themes()
-    RL.IO.LoadFiles(themes, "riceui/theme")
+    RiceLib.Util.LoadFiles(themes, "riceui/theme")
 end
 
 concommand.Add("riceui_theme", function()
@@ -150,13 +150,13 @@ end
 local function reload_themes_nt()
     local dir, path = "riceui/theme/"
 
-    for _, theme_name in pairs(RL.Files.GetDir(dir, "LUA")) do
+    for _, theme_name in pairs(RiceLib.FS.GetDir(dir, "LUA")) do
         themes_nt[theme_name] = {}
         themes_nt[theme_name].Styles = {}
 
         path = dir .. theme_name
 
-        for _, file_name in pairs(RL.Files.GetAll(path, "LUA")) do
+        for _, file_name in pairs(RiceLib.FS.GetAll(path, "LUA")) do
             include(path .. "/" .. file_name)
         end
     end

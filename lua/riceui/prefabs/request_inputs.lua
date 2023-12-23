@@ -1,6 +1,6 @@
 local inputs = {
     Label = function(panel, data)
-        RiceUI.SimpleCreate(RL.table.Inherit(data, {type = "label",
+        RiceUI.SimpleCreate(RiceLib.table.Inherit(data, {type = "label",
             Dock = TOP,
             Margin = {16, 0, 16, 16},
             h = 32,
@@ -8,7 +8,7 @@ local inputs = {
     end,
 
     Entry = function(panel, data)
-        RiceUI.SimpleCreate(RL.table.Inherit(data, {type = "entry",
+        RiceUI.SimpleCreate(RiceLib.table.Inherit(data, {type = "entry",
             Dock = TOP,
             Margin = {16, 0, 16, 16},
             h = 32,
@@ -16,7 +16,7 @@ local inputs = {
     end,
 
     NumberWang = function(panel, data)
-        RiceUI.SimpleCreate(RL.table.Inherit(data ,{type = "rl_numberwang",
+        RiceUI.SimpleCreate(RiceLib.table.Inherit(data ,{type = "rl_numberwang",
             Dock = TOP,
             Margin = {16, 0, 16, 16},
             h = 32,
@@ -24,7 +24,7 @@ local inputs = {
     end,
 
     Combo = function(panel, data)
-        RiceUI.SimpleCreate(RL.table.Inherit(data ,{type = "rl_combo",
+        RiceUI.SimpleCreate(RiceLib.table.Inherit(data ,{type = "rl_combo",
             Dock = TOP,
             Margin = {16, 0, 16, 16},
             h = 32,
@@ -43,7 +43,7 @@ local inputs = {
 }
 
 function RiceUI.Prefab.RequestInputs(args)
-    RL.table.Inherit(args,{
+    RiceLib.table.Inherit(args,{
         Title = "请求输入",
 
         Inputs = {
@@ -121,7 +121,7 @@ function RiceUI.Prefab.RequestInputs(args)
                         Dock = LEFT,
                         Margin = {16, 16, 0, 16},
 
-                        w = RL.hudScaleX(232),
+                        w = RiceLib.hudScaleX(232),
 
                         Theme = {ThemeType = "Button_Accent"},
 
@@ -129,7 +129,7 @@ function RiceUI.Prefab.RequestInputs(args)
                             local frame = self:RiceUI_GetRoot()
                             local values = {}
 
-                            for id, panel in pairs(frame.Elements) do
+                            for id, panel in pairs(frame.riceui_elements) do
                                 values[id] = panel:GetValue()
                             end
 
@@ -144,7 +144,7 @@ function RiceUI.Prefab.RequestInputs(args)
                         Dock = RIGHT,
                         Margin = {0, 16, 16, 16},
 
-                        w = RL.hudScaleX(232),
+                        w = RiceLib.hudScaleX(232),
 
                         Theme = {ThemeType = "Button_NT"},
 
@@ -168,7 +168,7 @@ function RiceUI.Prefab.RequestInputs(args)
 end
 
 function RiceUI.Prefab.RequestInput(args)
-    RL.table.Inherit(args,{
+    RiceLib.table.Inherit(args,{
         Title = "请求输入",
         Placeholder = "Request Input",
 
@@ -184,7 +184,7 @@ function RiceUI.Prefab.RequestInput(args)
         },
     })
 
-    local wide = math.max(500,RL.VGUI.TextWide("RiceUI_36", args.Title))
+    local wide = math.max(500,RiceLib.VGUI.TextWide("RiceUI_36", args.Title))
 
     RiceUI.SimpleCreate({type = "epanel",
         w = wide,
@@ -236,12 +236,12 @@ function RiceUI.Prefab.RequestInput(args)
                         Dock = LEFT,
                         Margin = {16, 16, 0, 16},
 
-                        w = wide / 2 - RL.hudScaleX(25),
+                        w = wide / 2 - RiceLib.hudScaleX(25),
 
                         Theme = {ThemeType = "Button_Accent"},
 
                         DoClick = function(self)
-                            args.OnConfirm(self:RiceUI_GetRoot(), self:RiceUI_GetRoot().Elements.Entry:GetValue())
+                            args.OnConfirm(self:RiceUI_GetRoot(), self:RiceUI_GetRoot().riceui_elements.Entry:GetValue())
                         end
                     },
 
@@ -252,7 +252,7 @@ function RiceUI.Prefab.RequestInput(args)
                         Dock = RIGHT,
                         Margin = {0, 16, 16, 16},
 
-                        w = wide / 2 - RL.hudScaleX(25),
+                        w = wide / 2 - RiceLib.hudScaleX(25),
 
                         Theme = {ThemeType = "Button_NT"},
 
@@ -267,7 +267,7 @@ function RiceUI.Prefab.RequestInput(args)
 end
 
 function RiceUI.Prefab.RequestKey(args)
-    RL.table.Inherit(args,{
+    RiceLib.table.Inherit(args,{
         Title = "请求按键输入",
 
         OnConfirm = function(self) self:Remove() end,
@@ -282,7 +282,7 @@ function RiceUI.Prefab.RequestKey(args)
         },
     })
 
-    local wide = math.max(500,RL.VGUI.TextWide("RiceUI_36", args.Title))
+    local wide = math.max(500,RiceLib.VGUI.TextWide("RiceUI_36", args.Title))
 
     RiceUI.SimpleCreate({type = "epanel",
         w = wide,
@@ -297,7 +297,7 @@ function RiceUI.Prefab.RequestKey(args)
         KeyCode = 0,
 
         OnKeyCodePressed = function(self, code)
-            self.Elements.Key.Text = input.GetKeyName(code)
+            self.riceui_elements.Key.Text = input.GetKeyName(code)
             self.KeyCode = code
         end,
 
@@ -340,7 +340,7 @@ function RiceUI.Prefab.RequestKey(args)
                         Dock = LEFT,
                         Margin = {16, 16, 0, 16},
 
-                        w = wide / 2 - RL.hudScaleX(25),
+                        w = wide / 2 - RiceLib.hudScaleX(25),
 
                         Theme = {ThemeType = "Button_Accent"},
 
@@ -356,7 +356,7 @@ function RiceUI.Prefab.RequestKey(args)
                         Dock = RIGHT,
                         Margin = {0, 16, 16, 16},
 
-                        w = wide / 2 - RL.hudScaleX(25),
+                        w = wide / 2 - RiceLib.hudScaleX(25),
 
                         Theme = {ThemeType = "Button_NT"},
 
@@ -371,7 +371,7 @@ function RiceUI.Prefab.RequestKey(args)
 end
 
 function RiceUI.Prefab.Confirm(args)
-    RL.table.Inherit(args,{
+    RiceLib.table.Inherit(args,{
         Title = "确认",
         Text = "确定进行此操作吗？",
 
@@ -387,7 +387,7 @@ function RiceUI.Prefab.Confirm(args)
         },
     })
 
-    local wide = math.max(500,RL.VGUI.TextWide("RiceUI_36", args.Text))
+    local wide = math.max(500,RiceLib.VGUI.TextWide("RiceUI_36", args.Text))
 
     RiceUI.SimpleCreate({type = "rl_panel",
         w = wide,
@@ -439,7 +439,7 @@ function RiceUI.Prefab.Confirm(args)
                         Dock = LEFT,
                         Margin = {20,20,0,20},
 
-                        w = wide / 2 - RL.hudScaleX(25),
+                        w = wide / 2 - RiceLib.hudScaleX(25),
 
                         Theme = {ThemeType = "Button_Accent"},
 
@@ -455,7 +455,7 @@ function RiceUI.Prefab.Confirm(args)
                         Dock = RIGHT,
                         Margin = {0,20,20,20},
 
-                        w = wide / 2 - RL.hudScaleX(25),
+                        w = wide / 2 - RiceLib.hudScaleX(25),
 
                         Theme = {ThemeType = "Button_NT"},
 

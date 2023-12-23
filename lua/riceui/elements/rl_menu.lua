@@ -1,6 +1,6 @@
 local Element = {}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         w = 300,
         Font = "OPSans_30",
         Theme = {ThemeName = "modern", ThemeType = "Panel", Color = "white", TextColor = "white", Shadow = true},
@@ -15,7 +15,7 @@ function Element.Create(data,parent)
     })
 
     local panel = vgui.Create("DPanel",parent)
-    panel:SetSize(RL.hudScaleX(data.w),0)
+    panel:SetSize(RiceLib.hudScaleX(data.w),0)
     panel:SetPos(gui.MouseX(),gui.MouseY())
     panel.ProcessID = "RL_Menu"
     panel.DrawBorder = true
@@ -32,7 +32,7 @@ function Element.Create(data,parent)
                 local pnl = RiceUI.SimpleCreate({type = "rl_panel",
                     Theme = {ThemeType = "Spacer"},
                     Dock = TOP,
-                    h = RL.hudScaleY(10),
+                    h = RiceLib.hudScaleY(10),
                 },self)
 
                 RiceUI.ApplyTheme(pnl,self.Theme)
@@ -67,16 +67,16 @@ function Element.Create(data,parent)
             local far = 0
 
             for _,choice in ipairs(self.Choice) do
-                local wide = RL.VGUI.TextWide(self.Font,choice[1])
+                local wide = RiceLib.VGUI.TextWide(self.Font,choice[1])
                 if wide < far then continue end
 
                 far = wide
             end
 
-            self:SetWide(far + RL.hudOffsetX(30))
+            self:SetWide(far + RiceLib.hudOffsetX(30))
         end
 
-        local h = RL.hudScaleY(10)
+        local h = RiceLib.hudScaleY(10)
         for _, v in ipairs(self:GetChildren()) do
             h = h + v:GetTall()
         end

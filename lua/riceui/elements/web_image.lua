@@ -1,7 +1,7 @@
 local Element = {}
 Element.Editor = {Category = "display"}
 function Element.Create(data,parent)
-    RL.table.Inherit(data,{
+    RiceLib.table.Inherit(data,{
         x = 10,
         y = 10,
         w = 50,
@@ -10,17 +10,16 @@ function Element.Create(data,parent)
     })
 
     local panel = vgui.Create("DButton",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
+    panel:SetPos(RiceLib.hudScale(data.x,data.y))
+    panel:SetSize(RiceLib.hudScale(data.w,data.h))
     panel:SetText("")
 
     function panel:SetImage(url)
         self.Image = url
-        self.Mat = RiceUI.GetWebImage(self.Image, function(mat)
-            if self == nil then return end
 
-            self.Mat = mat
-        end)
+        local image_name = util.SHA1(url)
+        RiceLib.URLMaterial.Create(image_name, url)
+        self.Mat = RiceLib.URLMaterial.Get(image_name, url)
     end
 
     panel.Paint = function(self,w,h)

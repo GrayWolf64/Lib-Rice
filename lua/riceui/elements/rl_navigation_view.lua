@@ -1,7 +1,7 @@
 local Element = {}
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         Theme = {
             ThemeType = "NoDraw",
         },
@@ -18,13 +18,13 @@ function Element.Create(data, parent)
         h = data.h,
 
         OnCreated = function(self)
-            local navPanel = self.Elements.NavigationPanel
+            local navPanel = self.riceui_elements.NavigationPanel
 
             navPanel:SetWide(self:RiceUI_GetRoot():GetWide() - self.NavigationBarSize)
         end,
 
         ClearNavigationPanel = function(self)
-            self.Elements.NavigationPanel:Clear()
+            self.riceui_elements.NavigationPanel:Clear()
         end,
 
         NavigationBarSize = data.NavigationBarSize,
@@ -32,7 +32,7 @@ function Element.Create(data, parent)
         children = {
             {type = "scrollpanel", ID = "NavigationBar", Dock = LEFT, w = data.NavigationBarSize,
                 ClearSelection = function(self)
-                    for _,pnl in pairs(self.Elements) do
+                    for _,pnl in pairs(self.riceui_elements) do
                         if pnl.ClearSelection == nil then continue end
 
                         pnl:ClearSelection()
@@ -146,7 +146,7 @@ function Element.Create(data, parent)
 
     function panel:CreateNavigation()
         for _, data in ipairs(data.Choice) do
-            local pnl = choiceType[data[1]](data, self.Elements.NavigationBar, self.Elements.NavigationPanel)
+            local pnl = choiceType[data[1]](data, self.riceui_elements.NavigationBar, self.riceui_elements.NavigationPanel)
 
             RiceUI.ApplyTheme(pnl, self.Theme)
         end

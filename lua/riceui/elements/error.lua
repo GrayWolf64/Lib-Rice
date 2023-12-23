@@ -8,8 +8,8 @@ function Element.Create(data,parent)
     })
 
     local panel = vgui.Create("DPanel",parent)
-    panel:SetPos(RL.hudScale(data.x,data.y))
-    panel:SetSize(RL.hudScale(data.w,data.h))
+    panel:SetPos(RiceLib.hudScale(data.x,data.y))
+    panel:SetSize(RiceLib.hudScale(data.w,data.h))
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 

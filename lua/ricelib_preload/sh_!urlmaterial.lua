@@ -1,4 +1,4 @@
-RL.URLMaterial = {}
+RiceLib.URLMaterial = {}
 local mat_dir  = "ricelib/materials/"
 local manifest = mat_dir .. "manifest.json"
 file.CreateDir(mat_dir)
@@ -18,11 +18,12 @@ if SERVER then
         net.Send(Entity(data.index + 1))
     end)
 
-    RL.URLMaterial.Create = function(name, url)
+    RiceLib.URLMaterial.Create = function(name, url)
         net.Start"ricelib_send_materials"
 
         local oldContent = util.JSONToTable(file.Read(manifest, "DATA"))
-        table.insert(oldContent, {name = name, url = url})
+        oldContent[#oldContent + 1] = {name = name, url = url}
+
         file.Write(manifest, util.TableToJSON(oldContent))
 
         net.WriteString(file.Read(manifest, "DATA"))
@@ -46,14 +47,14 @@ else
         end
     end)
 
-    RL.URLMaterial.Reload = function()
+    RiceLib.URLMaterial.Reload = function()
         for _, v in pairs(util.JSONToTable(file.Read(manifest, "DATA"))) do
             http.Fetch(v.url, function(body) file.Write(mat_dir .. v.name .. ".png", body) end)
         end
     end
 
     local mat_cache = mat_cache or {}
-    RL.URLMaterial.Get = function(name, url)
+    RiceLib.URLMaterial.Get = function(name, url)
         local imageFile = mat_dir .. name .. ".png"
         if file.Exists(imageFile, "DATA") then
             if mat_cache[name] then return mat_cache[name] end
@@ -67,5 +68,5 @@ else
         if not file.Exists(imageFile, "DATA") then return Material"models/error/green" end
     end
 
-    RL.URLMaterial.Create = downloadImage
+    RiceLib.URLMaterial.Create = downloadImage
 end

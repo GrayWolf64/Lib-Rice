@@ -1,7 +1,7 @@
 local Element = {}
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 300,
@@ -18,13 +18,13 @@ function Element.Create(data, parent)
     })
 
     local panel = vgui.Create("DButton", parent)
-    panel:SetSize(RL.hudScale(data.w, data.h))
-    panel:SetPos(RL.hudScale(data.x, data.y))
+    panel:SetSize(RiceLib.hudScale(data.w, data.h))
+    panel:SetPos(RiceLib.hudScale(data.x, data.y))
     panel:SetText("")
-    panel:DockPadding(RL.hudScaleX(5), RL.hudScaleY(data.h), RL.hudScaleX(5), 0)
+    panel:DockPadding(RiceLib.hudScaleX(5), RiceLib.hudScaleY(data.h), RiceLib.hudScaleX(5), 0)
     panel.ProcessID = "RL_Form"
     panel.a_pointang = 0
-    panel.Init_H = RL.hudScaleY(data.h)
+    panel.Init_H = RiceLib.hudScaleY(data.h)
 
     panel.Header = RiceUI.SimpleCreate({
         type = "label",
@@ -78,7 +78,7 @@ function Element.Create(data, parent)
             h = h + v:GetTall()
         end
 
-        h = h + RL.hudScaleY(5)
+        h = h + RiceLib.hudScaleY(5)
         self:SizeTo(-1, h, 0.3, 0, 0.3)
     end
 

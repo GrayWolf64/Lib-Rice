@@ -5,7 +5,7 @@ Element.Editor = {
 }
 
 function Element.Create(data, parent)
-    RL.table.Inherit(data, {
+    RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 500,
@@ -19,20 +19,20 @@ function Element.Create(data, parent)
         },
     })
 
-    local x, y = RL.hudScale(data.x, data.y)
-    local w, h = RL.hudScale(data.w, data.h)
-    local panel = RL.VGUI.ScrollPanel(parent, x, y, w, h)
+    local x, y = RiceLib.hudScale(data.x, data.y)
+    local w, h = RiceLib.hudScale(data.w, data.h)
+    local panel = RiceLib.VGUI.ScrollPanel(parent, x, y, w, h)
     panel.ProcessID = "ScrollPanel"
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
 
     function panel:RefreshVBar()
         local VBar = self:GetVBar()
 
-        VBar.Theme = RL.table.Inherit({
+        VBar.Theme = RiceLib.table.Inherit({
             ThemeType = "ScrollPanel_VBar"
         }, self.Theme)
 
-        VBar.btnGrip.Theme = RL.table.Inherit({
+        VBar.btnGrip.Theme = RiceLib.table.Inherit({
             ThemeType = "ScrollPanel_VBar_Grip"
         }, self.Theme)
 

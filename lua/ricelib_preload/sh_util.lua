@@ -1,4 +1,4 @@
-RL.Util = {}
+RiceLib.Util = {}
 
 local today
 local is_holiday = false
@@ -14,11 +14,11 @@ end
 
 timer.Create("ricelib_util_updateholiday", 60, 0, update_holiday)
 
-function RL.Util.IsHoliday()
+function RiceLib.Util.IsHoliday()
     return is_holiday
 end
 
-function RL.Util.IsWeekend()
+function RiceLib.Util.IsWeekend()
     return os.date"%w" == 0 or os.date"%w" == 6
 end
 
@@ -40,14 +40,24 @@ local function load_files(target, dir)
     end
 end
 
-function RL.IO.LoadFiles(tbl, dir)
+function RiceLib.Util.LoadFiles(tbl, dir)
     load_files(tbl, dir)
 end
 
-function RL.IO.LoadFilesRaw(loader, dir)
+function RiceLib.Util.LoadFilesRaw(loader, dir)
     load_files(loader, dir)
 end
 
-function RL.RunFromTable(tbl, name, ...)
+function RiceLib.RunFromTable(tbl, name, ...)
     return tbl[name](...)
+end
+
+function RiceLib.Util.RoundVector(vec, dec)
+    dec = dec or 2
+
+    vec.x = math.Round(vec.x, dec)
+    vec.y = math.Round(vec.y, dec)
+    vec.z = math.Round(vec.z, dec)
+
+    return vec
 end
