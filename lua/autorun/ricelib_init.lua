@@ -138,6 +138,7 @@ function RiceLib.FS.DirIterator(dir, path, iterator)
     ieach(get_all_dirs(dir, path), iterator, dir, path)
 end
 
+-- @section end
 RiceLib.FS.GetAll  = get_all_files
 RiceLib.FS.GetDir  = get_all_dirs
 
