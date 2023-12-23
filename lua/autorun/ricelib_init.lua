@@ -156,7 +156,6 @@ RiceLib.IncludeDir = include_dir
 print"================ RL ================"
 
 RiceLib.IncludeDir"ricelib_preload"
-RiceLib.IncludeDir"ricelib"
 
 if CLIENT then
     -- RiceLib.IncludeDirAs("ricelib_vgui", "RiceLib VGUI")
@@ -181,3 +180,5 @@ else
     RiceLib.AddCSFiles("ricelib_vgui")
     RiceLib.AddCSFiles("riceui")
 end
+
+RiceLib.IncludeDir"ricelib"
