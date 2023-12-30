@@ -6,8 +6,11 @@ function Element.Create(data, parent)
         y = 10,
         w = 1200,
         h = 700,
+
         Title = "Frame",
+
         OnClose = function() end,
+
         Theme = {
             ThemeName = "modern",
             ThemeType = "RL_Frame2",
@@ -18,7 +21,7 @@ function Element.Create(data, parent)
 
     local panel = RiceUI.SimpleCreate({type = "rl_panel",
         UseNewTheme = true,
-        Theme = Theme,
+        Theme = data.Theme,
 
         x = data.x,
         y = data.y,

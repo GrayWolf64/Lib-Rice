@@ -10,7 +10,10 @@ function Element.Create(data,parent)
     local panel = vgui.Create("DHTML",parent)
     panel:SetPos(RiceLib.hudScale(data.x,data.y))
     panel:SetSize(RiceLib.hudScale(data.w,data.h))
-    panel:SetHTML(data.HTML)
+
+    if data.HTML ~= nil then panel:SetHTML(data.HTML) end
+    if data.URL ~= nil then panel:SetURL(data.URL) end
+
     panel.ProcessID = "HTML"
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))

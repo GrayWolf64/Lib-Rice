@@ -97,7 +97,7 @@ local function sendRespone(args)
 end
 
 local ResponesiveCommmands = {
-    RL = {
+    RiceLib = {
         Ping = function() return "Pong" end
     }
 }
@@ -155,7 +155,7 @@ RiceLib.Net = {
 if CLIENT then
     concommand.Add("LibRice_Net_Ping", function()
         responsive({
-            NameSpace = "RL",
+            NameSpace = "RiceLib",
             Command = "Ping",
             Callback = function(data) print(data) end
         })

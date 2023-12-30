@@ -32,7 +32,7 @@ function Element.Create(data, parent)
         children = {
             {type = "scrollpanel", ID = "NavigationBar", Dock = LEFT, w = data.NavigationBarSize,
                 ClearSelection = function(self)
-                    for _,pnl in pairs(self.riceui_elements) do
+                    for _, pnl in pairs(self.riceui_elements or {}) do
                         if pnl.ClearSelection == nil then continue end
 
                         pnl:ClearSelection()
@@ -101,7 +101,7 @@ function Element.Create(data, parent)
 
                     data[3](panel)
                 end,
-            }, bar)
+            }, bar, bar)
         end,
 
         Category = function(data, bar, panel)
@@ -136,7 +136,7 @@ function Element.Create(data, parent)
 
                     self:DoAnim()
                 end,
-            }, bar)
+            }, bar, bar)
 
             createCategoryButtons(data, form, bar, panel)
 
@@ -146,7 +146,7 @@ function Element.Create(data, parent)
 
     function panel:CreateNavigation()
         for _, data in ipairs(data.Choice) do
-            local pnl = choiceType[data[1]](data, self.riceui_elements.NavigationBar, self.riceui_elements.NavigationPanel)
+            local pnl = choiceType[data[1]](data, self:GetElement("NavigationBar"), self:GetElement("NavigationPanel"))
 
             RiceUI.ApplyTheme(pnl, self.Theme)
         end

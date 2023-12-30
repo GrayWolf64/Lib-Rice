@@ -242,7 +242,7 @@ end
 
 function tbl.DrawOutlineBox(self, w, h, Color, Corner)
     tbl.DrawOutline(self, w, h, Color or RiceUI.GetColor(tbl, self, "Outline"), Corner)
-    tbl.DrawInnerBox(self, w, h, _, Corner)
+    tbl.DrawInnerBox(self, w, h, nil, Corner)
 end
 
 function tbl.DrawBox(self, w, h, Color, Corner)
@@ -619,6 +619,18 @@ function tbl.NumberWang_Button(self, w, h)
     surface.DrawTexturedRectRotated(w / 2, h / 2, size, size, self.Theme.Ang)
 end
 
+--NumberCounter
+function tbl.RL_NumberCounter(self, w, h)
+    local color = RiceUI.GetColor(tbl, self, "Outline")
+
+    if self:HasFocus() then
+        color = RiceUI.GetColorBase(tbl, self, "Focus")
+    end
+
+    tbl.DrawOutlineBox(self, w, h, color)
+    draw.SimpleText(self:GetValue(), self:GetFont(), w / 2, h / 2, RiceUI.GetColorBase(tbl, self, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
 --Entry
 function tbl.Entry(self, w, h)
     tbl.DrawEntry(self, w, h)
@@ -703,7 +715,7 @@ function tbl.RL_Combo(self, w, h)
         Corner = {true, true, false, false}
     end
 
-    tbl.DrawButton(self, w, h, _, Corner)
+    tbl.DrawButton(self, w, h, nil, Corner)
 
     if self.Value then
         draw.SimpleText(self.Value, self:GetFont(), h / 2, h / 2, RiceUI.GetColorBase(tbl, self, "Text"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)

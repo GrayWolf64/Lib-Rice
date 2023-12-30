@@ -35,6 +35,8 @@ function Element.Create(data, parent)
     }, panel)
 
     function panel:ChildCreated()
+        if self.Theme.ThemeName == nil then return end
+
         RiceUI.ApplyTheme(self)
     end
 
