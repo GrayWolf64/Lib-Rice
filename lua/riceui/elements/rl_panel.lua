@@ -50,15 +50,6 @@ function Element.Create(data, parent)
         if panel:GetParent().RiceUI_Event then
             panel:GetParent():RiceUI_Event(name, id, data)
         end
-
-        if not isfunction(self.GetChildren) then return end
-
-        for _, pnl in ipairs(self:GetChildren()) do
-            if pnl.IsBase then continue end
-            if pnl.RiceUI_Event == nil then continue end
-
-            pnl:RiceUI_Event(name, id, data)
-        end
     end
 
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))

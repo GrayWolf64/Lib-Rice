@@ -179,3 +179,43 @@ concommand.Add("riceui_prefabs", function()
         },
     })
 end)
+
+local debug_overlay = false
+concommand.Add("riceui_debugoverlay", function()
+    debug_overlay = not debug_overlay
+
+    if not debug_overlay then
+        hook.Remove("PostRenderVGUI", "RiceUI_Debugoverlay")
+
+        return
+    end
+
+    hook.Add("PostRenderVGUI", "RiceUI_Debugoverlay", function()
+        for _, panel in pairs(instances) do
+            if not IsValid(panel) then continue end
+            if not panel:RiceUI_GetRoot():IsVisible() then continue end
+
+            local x, y = panel:LocalToScreen()
+            local w, h = panel:GetSize()
+
+            local color = Color(255, 0, 0)
+
+            if panel:HasFocus() then color = Color(0, 255, 0) end
+
+            surface.SetDrawColor(color)
+            surface.DrawOutlinedRect(x, y, w, h, 1)
+
+            if not panel:IsHovered() then continue end
+
+            draw.SimpleText(string.format("%s %s", x, y), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+        end
+
+        local x, y = input.GetCursorPos()
+
+        surface.SetDrawColor(0, 0, 255)
+        surface.DrawLine(x, 0, x, ScrH())
+        surface.DrawLine(0, y, ScrW(), y)
+
+        draw.SimpleText(string.format("%s %s", x, y), "RiceUI_24", x + 16, y + 16, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    end)
+end)

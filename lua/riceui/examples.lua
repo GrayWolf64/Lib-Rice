@@ -233,8 +233,13 @@ RiceUI.Examples = {
             Center = true,
             Root = true,
 
-            w = 1000,
-            h = 800,
+            Text = "Playground",
+
+            w = 768,
+            h = 512,
+
+            NoGTheme = true,
+            Theme = {},
 
             children = {
                 {type = "rl_panel",
@@ -247,10 +252,110 @@ RiceUI.Examples = {
                     Paint = function(self,w,h)
                         surface.SetDrawColor(255,255,255)
                         surface.SetMaterial(Material("gui/colors_dark.png"))
-                        RiceLib.Draw.TexturedCircle(w / 2, h / 2, h/2, h)
+                        RiceLib.Draw.TexturedCircle(w / 2, h / 2, h / 2, h)
+                    end
+                },
+
+                {type = "rl_frame",
+                    w = 256,
+                    h = 256,
+
+                    NoGTheme = true,
+                    Theme = {},
+
+                    Text = "Shadow",
+
+                    children = {
+                        {type = "slider",
+                            ID = "Intensity",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                            Value = 1
+                        },
+
+                        {type = "slider",
+                            ID = "Spread",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                            Value = 1
+                        },
+
+                        {type = "slider",
+                            ID = "Blur",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                            Value = 2
+                        },
+
+                        {type = "slider",
+                            ID = "Alpha",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 255,
+                            Value = 255
+                        },
+
+                        {type = "slider",
+                            ID = "Angle",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Min = -180,
+                            Max = 180,
+                            Value = 0,
+                        },
+
+                        {type = "slider",
+                            ID = "Distance",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                        },
+                    },
+
+                    Paint = function(self, w, h)
+                        local x, y = self:LocalToScreen()
+                        local root = self:RiceUI_GetRoot()
+
+                        local instensity = root:GetElement("Intensity"):GetValue()
+                        local spread = root:GetElement("Spread"):GetValue()
+                        local blur = root:GetElement("Blur"):GetValue()
+                        local alpha = root:GetElement("Alpha"):GetValue()
+                        local angle = root:GetElement("Angle"):GetValue()
+                        local distance = root:GetElement("Distance"):GetValue()
+
+                        RiceUI.Render.BeginShadow()
+                        draw.RoundedBox(6, x, y, w, h, color_white)
+                        RiceUI.Render.EndShadow(instensity, spread, blur, alpha, angle, distance, true)
+
+                        draw.RoundedBox(6, 0, 0, w, h, color_white)
                     end
                 }
-            }
+            },
+
+            Paint = function(self, w, h)
+                local x, y = self:LocalToScreen()
+
+                RiceUI.Render.BeginShadow()
+                draw.RoundedBox(6, x, y, w, h, color_white)
+                RiceUI.Render.EndShadow(1, 2, 2, 255, 0, 0, true)
+
+                draw.RoundedBox(6, 0, 0, w, h, color_white)
+            end
         }
     },
 

@@ -629,6 +629,19 @@ function tbl.RL_NumberCounter(self, w, h)
 
     tbl.DrawOutlineBox(self, w, h, color)
     draw.SimpleText(self:GetValue(), self:GetFont(), w / 2, h / 2, RiceUI.GetColorBase(tbl, self, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+    if self:HasFocus() then
+        surface.SetDrawColor(ColorAlpha(RiceUI.GetColorBase(tbl, self, "Text"), 255 * math.abs(math.sin(SysTime() * 6 % 360))))
+        local len = 0
+        local textW = RiceLib.VGUI.TextWide(self:GetFont(), self:GetText())
+
+        for i = 1, self:GetCaretPos() do
+            local w, _ = RiceLib.VGUI.TextWide(self:GetFont(), utf8.sub(self:GetText(), i, i))
+            len = len + w
+        end
+
+        surface.DrawRect(w / 2 + len - textW / 2, 4, 1, h - 8)
+    end
 end
 
 --Entry

@@ -1,5 +1,5 @@
 if SERVER then
-    if RiceLib.Config.Get("LibRice", "PlayerRecord_Disable") then return end
+    if not RiceLib.Config.Get("LibRice", "RiceLib.PlayerRecord.Enable") then return end
 
     sql.Query("CREATE TABLE IF NOT EXISTS LibRice_PlayerRecord ( SteamID TEXT PRIMARY KEY NOT NULL, Name TEXT, LastSpawn TEXT, LastDisconnect TEXT)")
 

@@ -80,8 +80,7 @@ function Element.Create(data, parent)
             h = h + v:GetTall()
         end
 
-        h = h + RiceLib.hudScaleY(5)
-        self:SizeTo(-1, h, 0.3, 0, 0.3)
+        self:SizeTo(-1, h + RiceLib.hudScaleY(5), 0.3, 0, 0.3)
     end
 
     function panel.RiceUI_Event(self, name, id, pnl)
@@ -92,6 +91,22 @@ function Element.Create(data, parent)
 
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
     panel.Text = ""
+
+    timer.Simple(0, function()
+        if panel.DefaultExpand then
+            local h = panel:GetTall()
+
+            for _, v in ipairs(panel:GetChildren()) do
+                if v:GetDock() < 1 then continue end
+                h = h + v:GetTall()
+            end
+
+            panel:SetTall(h + RiceLib.hudScaleY(5))
+
+            panel.Expand = true
+            panel.a_pointang = 180
+        end
+    end)
 
     return panel
 end

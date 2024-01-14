@@ -105,6 +105,7 @@ function apply_theme(self, theme)
         do_theme_process(self)
     end
 
+    if self.Theme.ThemeName == nil then return end
     self.Colors = get_theme(self.Theme.ThemeName).Colors
 
     for _, v in ipairs(self:GetChildren()) do

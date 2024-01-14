@@ -53,11 +53,15 @@ function Element.Create(data, parent)
                     local root = self:GetParent()
 
                     root.Dragging = {gui.MouseX() - root:GetX(), gui.MouseY() - root:GetY()}
+
+                    self:MouseCapture(true)
                 end,
 
                 OnMouseReleased = function(self)
                     local root = self:GetParent()
                     root.Dragging = nil
+                    
+                    self:MouseCapture(false)
                 end,
 
                 children = {

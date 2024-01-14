@@ -129,6 +129,12 @@ RiceUI.DefineUniProcess("Value", {
 
     RL_NumberWang = function(pnl, data)
         pnl:SetValue(data)
+        pnl:SetText(data)
+    end,
+
+    RL_NumberCounter = function(pnl, data)
+        pnl:SetValue(data)
+        pnl:SetText(data)
     end
 })
 
