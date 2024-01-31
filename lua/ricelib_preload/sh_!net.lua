@@ -1,5 +1,5 @@
 if SERVER then
-    util.AddNetworkString("RL_EntityCommand")
+    util.AddNetworkString("RiceLibNetCommand")
     util.AddNetworkString("RL_ResponsiveNet")
 end
 
@@ -31,7 +31,7 @@ local function sendEntityCommand(entity, command, data, player)
     if data == nil then return end
     if data.CheckPlayerValid and player == nil then return end
 
-    net.Start("RL_EntityCommand", data.Unreliable)
+    net.Start("RiceLibNetCommand", data.Unreliable)
     net.WriteEntity(entity)
     net.WriteString(command)
     net.WriteTable(data)
@@ -42,11 +42,11 @@ local function sendEntityCommand(entity, command, data, player)
     net.Broadcast()
 end
 
-net.Receive("RL_EntityCommand", function(_, player)
+net.Receive("RicelibNetCommand", function(_, player)
     local ent = net.ReadEntity()
-    if ent.RL_NetCommand == nil then return end
+    if ent.RiceLibNetCommand == nil then return end
 
-    ent:RL_NetCommand(net.ReadString(), net.ReadTable(), player)
+    ent:RiceLibNetCommand(net.ReadString(), net.ReadTable(), player)
 end)
 
 --- Responesive Networking

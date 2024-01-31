@@ -207,7 +207,19 @@ concommand.Add("riceui_debugoverlay", function()
 
             if not panel:IsHovered() then continue end
 
-            draw.SimpleText(string.format("%s %s", x, y), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(string.format("%s %s %s", x, y, panel.ID or ""), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+
+            surface.SetDrawColor(ColorAlpha(color, 50))
+            surface.DrawRect(x, y, w, h)
+
+            local parent = panel:GetParent()
+            if parent then
+                local x, y = parent:LocalToScreen()
+                local w, h = parent:GetSize()
+
+                surface.SetDrawColor(ColorAlpha(Color(0, 0, 255), 50))
+                surface.DrawRect(x, y, w, h)
+            end
         end
 
         local x, y = input.GetCursorPos()

@@ -69,7 +69,7 @@ local shadowMaterial = CreateMaterial("bshadows", "UnlitGeneric", {
     ["$color2"] = "0 0 0"
 })
 
-beginShadow = function()
+startShadow = function()
     render.PushRenderTarget(renderTarget)
     render.OverrideAlphaWriteEnable(true, true)
     render.Clear(0, 0, 0, 0)
@@ -111,6 +111,6 @@ RiceUI.Render = {
     DrawIndicator = drawIndicator,
     ShadowText = shadowText,
 
-    BeginShadow = beginShadow,
+    StartShadow = startShadow,
     EndShadow = endShadow,
 }

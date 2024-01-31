@@ -1,5 +1,7 @@
 RiceUI = RiceUI or {}
 
+local newStressObj
+
 RiceUI.Examples = {
     Modern = {
         {type = "rl_frame2",
@@ -338,7 +340,7 @@ RiceUI.Examples = {
                         local angle = root:GetElement("Angle"):GetValue()
                         local distance = root:GetElement("Distance"):GetValue()
 
-                        RiceUI.Render.BeginShadow()
+                        RiceUI.Render.StartShadow()
                         draw.RoundedBox(6, x, y, w, h, color_white)
                         RiceUI.Render.EndShadow(instensity, spread, blur, alpha, angle, distance, true)
 
@@ -350,7 +352,7 @@ RiceUI.Examples = {
             Paint = function(self, w, h)
                 local x, y = self:LocalToScreen()
 
-                RiceUI.Render.BeginShadow()
+                RiceUI.Render.StartShadow()
                 draw.RoundedBox(6, x, y, w, h, color_white)
                 RiceUI.Render.EndShadow(1, 2, 2, 255, 0, 0, true)
 
@@ -375,8 +377,35 @@ RiceUI.Examples = {
 
             w = 1000,
             h = 800,
+
+            children = {
+                {type = "rl_scrollpanel",
+                    Dock = LEFT,
+                    w = 256,
+
+                    ScrollAmount = 100,
+
+                    OnCreated = function(self)
+                        for i = 1, 100 do
+                            RiceUI.SimpleCreate({type = "rl_panel",
+                                Dock = TOP,
+                                h = 48,
+
+                                children = {
+                                    {type = "label",
+                                        Dock = LEFT,
+                                        Margin = {8, 0, 0, 0},
+
+                                        Text = "Panel " .. i,
+                                    }
+                                }
+                            }, self)
+                        end
+                    end
+                }
+            }
         }
-    }
+    },
 }
 
 RiceUI.Examples.ModernBlack = table.Copy(RiceUI.Examples.Modern)
@@ -416,7 +445,7 @@ concommand.Add("riceui_examples", function()
         },
 
         children = {
-            {type = "scrollpanel",
+            {type = "rl_scrollpanel",
                 ID = "ScrollPanel",
                 x = 10,
                 y = 40,
@@ -427,7 +456,7 @@ concommand.Add("riceui_examples", function()
                         pnl:AddItem(RiceUI.SimpleCreate({type = "rl_button",
                             Dock = TOP,
                             h = 50,
-                            Margin = {0, 0, 5, 5},
+                            Margin = {0, 0, 0, 5},
                             Text = k,
 
                             Theme = {

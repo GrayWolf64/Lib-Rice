@@ -8,6 +8,7 @@ function Element.Create(data, parent)
         h = 700,
 
         Title = "Frame",
+        Font = "RiceUI_M_24",
 
         OnClose = function() end,
 
@@ -68,7 +69,7 @@ function Element.Create(data, parent)
                     {type = "label",
                         ID = "Title",
                         Text = data.Title,
-                        Font = "RiceUI_M_24",
+                        Font = data.Font,
                         Dock = LEFT,
                         Margin = {16, 0, 0, 0}
                     },
