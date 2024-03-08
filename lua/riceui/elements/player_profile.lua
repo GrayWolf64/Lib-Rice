@@ -11,7 +11,7 @@ function Element.Create(data,parent)
     local panel = vgui.Create("AvatarImage",parent)
     panel:SetPos(RiceLib.hudScale(data.x,data.y))
     panel:SetSize(RiceLib.hudScale(data.w,data.h))
-    panel:SetPlayer(data.ply,data.w)
+    panel:SetPlayer(data.ply or data.Player,data.w)
 
     --local old_Paint = panel.Paint
     function panel:Paint()

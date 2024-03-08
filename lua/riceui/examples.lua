@@ -208,6 +208,9 @@ RiceUI.Examples = {
                     ID = "panel",
                     DrawBorder = true,
 
+                    x = 0,
+                    y = 0,
+
                     children = {
                         {type = "label",Text = "This is a 3D Panel"}
                     }
@@ -216,11 +219,9 @@ RiceUI.Examples = {
 
             PaintOver = function(self,w,h)
                 local x,y = self:LocalToScreen()
-                local cx,cy = self:CursorPos()
-                local cx1,cy1 = w / 2-cx,h / 2-cy
 
-                cam.Start3D(Vector(0,0,60), Angle(90,90,0), 70,x, y, w, h, 5)
-                    cam.Start3D2D(Vector(-25,20,0),Angle(-cx1 / w * 180, 0, -cy1 / w * 180),0.1)
+                cam.Start3D(Vector(0,0,34), Angle(90,90,0), 74.5, x, y, w, h, 5)
+                    cam.Start3D2D(Vector(-w * 0.05 / 2, h * 0.05 / 2, 0), Angle(180, 180, 180), 0.05)
 
                     self.riceui_elements.panel:PaintAt(0,0)
 
@@ -237,8 +238,8 @@ RiceUI.Examples = {
 
             Text = "Playground",
 
-            w = 768,
-            h = 512,
+            w = 1280,
+            h = 960,
 
             NoGTheme = true,
             Theme = {},
@@ -261,6 +262,9 @@ RiceUI.Examples = {
                 {type = "rl_frame",
                     w = 256,
                     h = 256,
+
+                    x = 96,
+                    y = 48,
 
                     NoGTheme = true,
                     Theme = {},
@@ -361,18 +365,55 @@ RiceUI.Examples = {
         }
     },
 
-    ModernNT = {
+    Blur = {
         {type = "rl_frame",
             Center = true,
             Root = true,
 
-            UseNewTheme = true,
-            Theme = {
-                ThemeName = "modern",
-                ThemeType = "RL_Frame2",
+            Text = "Playground",
 
-                Color = "white",
-                TextColor = "white"
+            w = 768,
+            h = 512,
+
+            NoGTheme = true,
+            Theme = {},
+
+            BlurAmount = 0,
+
+            children = {
+                {type = "slider",
+                    Min = 0,
+                    Max = 16,
+                    Value = 0,
+
+                    UseNewTheme = true,
+                    Theme = {
+                        ThemeName = "modern",
+                        ThemeType = "Slider",
+                        Color = "black",
+                        TextColor = "black",
+                    },
+
+                    OnValueChanged = function(self, val)
+                        self:GetParent().BlurAmount = self:GetValue()
+                    end
+                },
+            },
+
+            Paint = function(self, w, h)
+                RiceLib.VGUI.blurPanel(self, self.BlurAmount)
+            end
+        }
+    },
+
+    ModernNT = {
+        {type = "rl_frame2",
+            Center = true,
+            Root = true,
+
+            ThemeNT = {
+                Theme = "Modern",
+                Class = "RL_Frame2"
             },
 
             w = 1000,

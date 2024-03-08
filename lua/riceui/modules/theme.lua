@@ -7,6 +7,8 @@ local themes_nt = themes_nt or {}
 local theme_processes = theme_processes or {}
 local parama_blacklist = parama_blacklist or {}
 
+local apply_theme_nt
+
 function get_theme(name) return themes[name] end
 
 function RiceUI.GetColor(tab, self, name, default)
@@ -39,34 +41,6 @@ function refresh_theme(self)
     self.Paint = get_theme(theme.ThemeName)[theme.ThemeType]
 end
 
-local function thement_refresh_theme(self)
-    local theme = self.Theme
-
-    print(themes_nt[theme.ThemeName][self.ProcessID][theme.Style or "Default"])
-    print(theme.ThemeName, self.ProcessID, theme.Style or "Default")
-
-    self.Paint = themes_nt[theme.ThemeName][self.ProcessID][theme.Style or "Default"]
-end
-
-local function thement_apply_theme(self, theme)
-    if self.ProcessID == nil then return end
-
-    self.Theme = self.Theme or {}
-
-    RiceLib.table.Inherit(self.Theme, theme, {
-        ThemeName = 1,
-        Color = 1
-    }, parama_blacklist)
-
-    self.ThemeColors = themes_nt[self.Theme.Color].Colors
-
-    thement_refresh_theme(self)
-
-    for _, v in pairs(self:GetChildren()) do
-        thement_apply_theme(v, self.Theme)
-    end
-end
-
 function do_theme_process(self)
     local process_set = theme_processes[self.ProcessID]
 
@@ -77,9 +51,8 @@ end
 
 function apply_theme(self, theme)
     if self.NoGTheme then return end
-
-    if (theme ~= nil and theme.NT) or (self.Theme ~= nil and self.Theme.NT) then
-        thement_apply_theme(self, theme)
+    if self.ThemeNT ~= nil and self.ThemeNT.Theme ~= nil then
+        apply_theme_nt(self)
 
         return
     end
@@ -106,7 +79,7 @@ function apply_theme(self, theme)
     end
 
     if self.Theme.ThemeName == nil then return end
-    self.Colors = get_theme(self.Theme.ThemeName).Colors
+    if not self.Colors then self.Colors = get_theme(self.Theme.ThemeName).Colors end
 
     for _, v in ipairs(self:GetChildren()) do
         apply_theme(v, self.Theme)
@@ -117,7 +90,7 @@ local function reload_themes()
     RiceLib.Util.LoadFiles(themes, "riceui/theme")
 end
 
-concommand.Add("riceui_theme", function()
+concommand.Add("riceui_themes", function()
     PrintTable(themes)
 end)
 
@@ -138,34 +111,13 @@ for _, v in pairs(themes) do
     v.OnLoaded()
 end
 
-RiceUI.ThemeNT = RiceUI.ThemeNT or {}
-
-function RiceUI.ThemeNT.DefineColors(theme_name, Colors)
-    themes_nt[theme_name].Colors = Colors
-end
-
-function RiceUI.ThemeNT.DefineStyle(theme_name, ElementID, Styles)
-    themes_nt[theme_name][ElementID] = Styles
-end
-
-local function reload_themes_nt()
-    local dir, path = "riceui/theme/"
-
-    for _, theme_name in pairs(RiceLib.FS.GetDir(dir, "LUA")) do
-        themes_nt[theme_name] = {}
-        themes_nt[theme_name].Styles = {}
-
-        path = dir .. theme_name
-
-        for _, file_name in pairs(RiceLib.FS.GetAll(path, "LUA")) do
-            include(path .. "/" .. file_name)
-        end
-    end
-end
-
-reload_themes_nt()
-
 RiceUI.DefineThemeProcess("Label", function(panel)
+    if panel.IsThemeNT then
+        panel:SetColor(panel:RiceUI_Color("Text", "Primary"))
+
+        return
+    end
+
     panel:SetColor(get_color_base(panel.ThemeMeta, panel, "Text"))
 end)
 
@@ -191,11 +143,135 @@ RiceUI.AddThemeParamaBlacklist("Corner")
 
 RiceUI.GetTheme = get_theme
 RiceUI.GetColorBase = get_color_base
-RiceUI.ThemeNT.RefreshTheme = thement_refresh_theme
 RiceUI.RefreshTheme = refresh_theme
-RiceUI.ThemeNT.ApplyTheme = thement_apply_theme
 RiceUI.ApplyTheme = apply_theme
 RiceUI.DoThemeProcess = do_theme_process
 
-RiceUI.ThemeNT.LoadThemes = reload_themes_nt
 RiceUI.ReloadThemes = reload_themes
+
+-- ThemeNT
+
+function apply_theme_nt(panel, themeData)
+    if panel.NoGTheme then return end
+
+    local theme = panel.ThemeNT or {}
+    theme = RiceLib.table.Inherit(theme, themeData or {}, _, {
+        Class = 1,
+        Style = 1,
+        StyleSheet = 1,
+    })
+
+    themeData = themeData or theme
+
+    local themeTable = themes_nt[theme.Theme]
+    if not themeTable then
+        if theme.Theme ~= nil then
+            RiceLib.Error(string.format("Theme %s does not exists!", theme.Theme) ,"RiceUI ThemeNT")
+        end
+
+        return
+    end
+
+    panel.IsThemeNT = true
+
+    local class = theme.Class or (panel.Theme or {ThemeType = nil}).ThemeType or panel.ProcessID 
+    local paintFunction = themeTable.Classes[class][theme.Style]
+    if paintFunction then
+        panel.RiceUI_ThemeNT_Paint = paintFunction
+        panel.Paint = function(self, w, h)
+            self:RiceUI_ThemeNT_Paint(w, h, theme.StyleSheet or {})
+        end
+    end
+
+    panel.Colors = themeTable.Colors or get_theme(themeTable.Base).Colors
+
+    if theme.IgnoreChildren then return end
+    for _, child in ipairs(panel:GetChildren()) do
+        apply_theme_nt(child, themeData)
+    end
+end
+
+local function parent_class(themeTable, class)
+    local parentTheme, isNT = themeTable.Base, themeTable.BaseNT
+
+    if isNT then
+        return themes_nt[parentTheme].Classes[class]
+    end
+
+    return setmetatable({themes[parentTheme][class] ~= nil, themes[parentTheme][class]}, {
+        __index = function(themeTable)
+            if not themeTable[1] then return end
+
+            return themeTable[2]
+        end
+    })
+end
+
+local function define_theme(theme, themeTable)
+    RiceLib.table.Inherit(themeTable, {
+        Base = "Modern",
+        Classes = {},
+        Colors = {}
+    })
+
+    setmetatable(themeTable.Classes, {
+        __index = function(_, class)
+            if not class then return "" end
+
+            return parent_class(themeTable, class)
+        end
+    })
+
+    themes_nt[theme] = themeTable
+end
+local function register_class(theme, class, data)
+    if not data or not data.Default then
+        RiceLib.Error(string.format("Theme %s Class %s is missing Default style!", theme, class), "RiceUI ThemeNT")
+
+        return
+    end
+
+    if not themes_nt[theme] then
+        RiceLib.Error(string.format("Theme %s is not defined!", theme), "RiceUI ThemeNT")
+
+        return
+    end
+
+    themes_nt[theme].Classes[class] = setmetatable(data, {
+        __index = function(themeTable, style)
+            if style ~= nil then
+                RiceLib.Warn(string.format("Theme %s Class %s is missing Style %s, using Default", theme, class, style), "RiceUI ThemeNT")
+            end
+
+            return themeTable.Default
+        end
+    })
+end
+
+local function reload_themes_nt()
+    RiceLib.FS.DirIterator("riceui/theme", "LUA", function(dir)
+        local path = "riceui/theme/" .. dir
+
+        if not file.Exists(path .. "/main.lua", "LUA") then
+            RiceLib.Error(string.format("Theme at %s is missing main file!", path), "RiceUI ThemeNT")
+
+            return
+        end
+
+        include(path .. "/main.lua")
+
+        RiceLib.IncludeDir(path .. "classes")
+    end)
+end
+
+RiceUI.ThemeNT = {
+    DefineTheme = define_theme,
+    ApplyTheme = apply_theme_nt,
+    RegisterClass = register_class,
+}
+
+reload_themes_nt()
+
+concommand.Add("riceui_themes_nt", function()
+    PrintTable(themes_nt)
+end)

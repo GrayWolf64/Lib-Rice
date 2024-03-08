@@ -17,32 +17,25 @@ local function read_hud_offsets()
     return read_settings().hud_offsets
 end
 
-local function read_scale_profiles()
-    return read_settings().scale_profiles
-end
-
 function RL_hudScale(x, y) return x * ratio_w, y * ratio_h end
 function RL_hudScaleX(x) return x * ratio_w end
 function RL_hudScaleY(y) return y * ratio_h end
 
-local function hud_scale(x, y, profile)
-    local scale = read_scale_profiles()[profile]
-    if scale then return x * ratio_w * scale, y * ratio_h * scale end
+-- scale profiles are not for HUD coordinates, and reading file is performance heavy
+local function hud_scale(x, y)
     return x * ratio_w, y * ratio_h
 end
 
-local function hud_scale_single(xory, profile, ratio)
-    local scale = read_scale_profiles()[profile]
-    if scale then return xory * ratio * scale end
+local function hud_scale_single(xory, ratio)
     return xory * ratio
 end
 
 local function hud_scale_x(x, profile)
-    return hud_scale_single(x, profile, ratio_w)
+    return hud_scale_single(x, ratio_w)
 end
 
 local function hud_scale_y(y, profile)
-    return hud_scale_single(y, profile, ratio_h)
+    return hud_scale_single(y, ratio_h)
 end
 
 local function hud_offset(x, y, profile)
@@ -85,3 +78,17 @@ RiceLib.hudOffsetY = hud_offset_y
 
 RiceLib.UpdateHUDOffset = update_hud_offset
 RiceLib.ClearHUDOffset = clear_hud_offset
+
+RiceLib.UI = {
+    Scale = hud_scale,
+    ScaleX = hud_scale_x,
+    ScaleY = hud_scale_y,
+
+    Offset = hud_offset,
+    OffsetX = hud_offset_x,
+    OffsetY = hud_offset_y,
+
+    UpdateOffset = update_hud_offset,
+    ClearOffset = clear_hud_offset,
+    ValidOffset = function(profile) return read_hud_offsets()[profile] ~= nil end
+}

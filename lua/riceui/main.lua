@@ -186,9 +186,27 @@ concommand.Add("riceui_debugoverlay", function()
 
     if not debug_overlay then
         hook.Remove("PostRenderVGUI", "RiceUI_Debugoverlay")
+        hook.Remove("Think", "RiceUI_Debugoverlay_CaptureMouse")
 
         return
     end
+
+    local wireframe_x, wireframe_y = 0, 0
+    local pressed = false
+    hook.Add("Think", "RiceUI_Debugoverlay_CaptureMouse", function(cmd, x, y)
+        if input.IsMouseDown(MOUSE_LEFT) then
+            if not pressed then
+                wireframe_x, wireframe_y = input.GetCursorPos()
+
+                pressed = true
+            end
+
+            return
+        end
+
+        pressed = false
+        wireframe_x, wireframe_y = 0, 0
+    end)
 
     hook.Add("PostRenderVGUI", "RiceUI_Debugoverlay", function()
         for _, panel in pairs(instances) do
@@ -229,5 +247,15 @@ concommand.Add("riceui_debugoverlay", function()
         surface.DrawLine(0, y, ScrW(), y)
 
         draw.SimpleText(string.format("%s %s", x, y), "RiceUI_24", x + 16, y + 16, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+
+        if wireframe_x > 0 then
+            local w = -(wireframe_x - x)
+            local h = -(wireframe_y - y)
+
+            surface.SetDrawColor(0, 0, 255)
+            surface.DrawOutlinedRect(wireframe_x, wireframe_y, w, h, 1)
+
+            draw.SimpleText(string.format("%s %s", w, h), "RiceUI_24", x + 16, y + 32, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        end
     end)
 end)

@@ -189,6 +189,12 @@ tbl.Colors = {
             Frame = ColorAlpha(HSLToColor(0, 0, 0.15), 250),
             Layer = ColorAlpha(color_black, 30),
 
+            NavigationButton = {
+                Default = ColorAlpha(color_white, 0),
+                Hover = ColorAlpha(color_white, 5),
+                Selected = ColorAlpha(color_white, 10)
+            },
+
             Control = {
                 Default = RiceUI.AlphaPercent(color_white, 0.02),
                 Secondary = RiceUI.AlphaPercent(color_white, 0.04),
@@ -695,9 +701,13 @@ function tbl.Slider(self, w, h)
     RiceLib.Draw.Circle(pos, h / 2, h / 2, 32, RiceUI.GetColorBase(tbl, self, "Focus"))
     RiceLib.Draw.Circle(pos, h / 2, h / 2 - 2, 32, Color(250, 250, 250))
 
-    if self:GetDragging() then
-        draw.SimpleText(tostring(self:GetValue()), "RiceUI_32", pos, -h / 2, RiceUI.GetColorBase(tbl, self, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    if self:GetDragging() then self.TextAlpha = 255 end
+
+    if self.TextAlpha > 0 then
+        draw.SimpleText(tostring(self:GetValue()), "RiceUI_32", pos, -h / 2, ColorAlpha(RiceUI.GetColorBase(tbl, self, "Text"), self.TextAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
+
+    self.TextAlpha = math.Clamp(self.TextAlpha - 20 * (RealFrameTime() * 100), 0, 255)
 
     DisableClipping(false)
 end

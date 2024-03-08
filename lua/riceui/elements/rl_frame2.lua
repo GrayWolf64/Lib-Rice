@@ -11,6 +11,12 @@ function Element.Create(data, parent)
         Font = "RiceUI_M_24",
 
         OnClose = function() end,
+        DoClose = function(self)
+            if self.NoClose then return end
+
+            self:RiceUI_Animation("FadeOut")
+            self:OnClose()
+        end,
 
         Theme = {
             ThemeName = "modern",
@@ -50,6 +56,10 @@ function Element.Create(data, parent)
                     ThemeType = "NoDraw"
                 },
 
+                ThemeNT = {
+                    Class = "TabBar"
+                },
+
                 OnMousePressed = function(self)
                     local root = self:GetParent()
 
@@ -87,15 +97,13 @@ function Element.Create(data, parent)
                             ThemeType = "CloseButton"
                         },
 
+                        ThemeNT = {
+                            Class = "Button",
+                            Style = "Close"
+                        },
+
                         DoClick = function(self)
-                            local panel = self:GetParent():GetParent()
-                            if panel.NoClose then return end
-
-                            panel:AlphaTo(0, 0.075, 0, function()
-                                panel:Remove()
-                            end)
-
-                            panel.OnClose()
+                            self:GetParent():GetParent():DoClose()
                         end
                     },
 
@@ -111,6 +119,11 @@ function Element.Create(data, parent)
                         Theme = {
                             ThemeType = "TransButton",
                             Corner = {false, false, false, false}
+                        },
+
+                        ThemeNT = {
+                            Class = "Button",
+                            Style = "Transparent"
                         },
 
                         DoClick = function(self)

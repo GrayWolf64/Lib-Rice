@@ -46,7 +46,6 @@ RiceUI.DefineUniProcess("DrawOnTop", function(panel, data)
 end)
 
 RiceUI.DefineUniProcess("Theme", function(pnl, data)
-    if data.NT then return end
     if not data.ThemeName then return end
 
     pnl.Paint = RiceUI.GetTheme(data.ThemeName)[data.ThemeType]
@@ -139,7 +138,10 @@ RiceUI.DefineUniProcess("Value", {
 })
 
 RiceUI.DefineUniProcess("OffsetProfile", function(pnl, data)
-    pnl:SetPos(RiceLib.hudOffset(100, 100, data))
+    local x, y = RiceLib.hudOffset(100, 100, data)
+    if not RiceLib.UI.ValidOffset(data) then return end
+
+    pnl:SetPos(x, y)
 end)
 
 RiceUI.DefineUniProcess("ConVar", {

@@ -16,6 +16,8 @@ function Element.Create(data, parent)
         Theme = Theme,
 
         h = data.h,
+        NavigationBarSize = data.NavigationBarSize,
+        Pages = {},
 
         OnCreated = function(self)
             local navPanel = self.riceui_elements.NavigationPanel
@@ -26,8 +28,6 @@ function Element.Create(data, parent)
         ClearNavigationPanel = function(self)
             self.riceui_elements.NavigationPanel:Clear()
         end,
-
-        NavigationBarSize = data.NavigationBarSize,
 
         children = {
             {type = "scrollpanel", ID = "NavigationBar", Dock = LEFT, w = data.NavigationBarSize,
@@ -41,10 +41,31 @@ function Element.Create(data, parent)
             },
 
             {type = "rl_panel", ID = "NavigationPanel", Dock = RIGHT,
-                Theme = {ThemeType = "Layer"}
+                Theme = {ThemeType = "Layer"},
+
+                SwitchPage = function(self, pageName)
+                    self:GetParent():SwitchPage(pageName)
+                end,
+
+                SetPage = function(self, pageName, page)
+                    self:GetParent():SetPage(pageName, page)
+                end,
             }
         }
     }, parent)
+
+    function panel:SwitchPage(pageName)
+        for _, page in pairs(self.Pages) do
+            page:SetVisible(false)
+        end
+
+        if not IsValid(self.Pages[pageName]) then return end
+        self.Pages[pageName]:SetVisible(true)
+    end
+
+    function panel:SetPage(pageName, page)
+        self.Pages[pageName] = page
+    end
 
     local function createCategoryButtons(data, parent, bar, panel)
         for _, choice in ipairs(data[3]) do

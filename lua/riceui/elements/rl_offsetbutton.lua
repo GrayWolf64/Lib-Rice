@@ -60,7 +60,7 @@ function Element.Create(data,parent)
         if code == MOUSE_RIGHT then
             parent:SetPos(RiceLib.hudScale(self.DefaultX, self.DefaultY))
 
-            RiceLib.ClearHUDOffset(self.Profile, self.DefaultX, self.DefaultY)
+            RiceLib.ClearHUDOffset(self.Profile)
             self:OnClearHUDOffset()
 
             return

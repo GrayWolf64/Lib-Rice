@@ -4,12 +4,195 @@ Element.Editor = {
     Category = "input"
 }
 
+local classes = {
+    Default = function(data, parent)
+        local panel = RiceUI.SimpleCreate({type = "rl_button",
+            Text = data.Text,
+
+            x = data.x,
+            y = data.y,
+            w = data.w,
+            h = data.h,
+
+            Theme = data.Theme
+        }, parent)
+
+        panel.GThemeType = "Combo"
+        panel.ProcessID = "RL_Combo"
+        panel.a_pointang = 0
+        panel.d_Choice = {}
+        panel.Openning = false
+
+        function panel:DoClick()
+            if self.OnAnim then return end
+            self:DoAnim()
+
+            if self.IsOpen then
+                self:CloseMenu()
+
+                return
+            end
+
+            self.Menu = RiceUI.SimpleCreate({type = "rl_panel",
+                Clipping = false,
+
+                w = self:GetWide(),
+                h = 0,
+
+                Padding = {0, 5, 0, 0},
+
+                Theme = table.Merge(table.Copy(self.Theme), {
+                    ThemeType = "Panel",
+
+                    Curver = 0,
+                    Blur = 3
+                }),
+
+                children = {}
+            }, self:GetParent())
+
+            local x, y = self:GetPos()
+            self.Menu:SetPos(x, y + self:GetTall())
+
+            for _, choice_data in ipairs(self.d_Choice) do
+                local choice = RiceUI.SimpleCreate({type = "rl_button",
+                    ID = choice_data[1],
+                    Text = choice_data[1],
+                    Font = self.Font,
+
+                    Dock = TOP,
+                    Margin = {5, 0, 5, 0},
+                    h = self:GetTall(),
+
+                    Theme = table.Merge(table.Copy(self.Theme), {
+                        ThemeType = "RL_Combo_Choice"
+                    }),
+
+                    DoClick = function()
+                        self.OnAnim = true
+                        self.Value = choice_data[1]
+                        self:OnSelected(choice_data[1], choice_data)
+                        self:CloseMenu()
+                        self:DoAnim()
+                    end
+                }, self.Menu)
+
+                if choice_data[1] == self.Value then
+                    choice.Selected = true
+                end
+            end
+
+            local h = RiceLib.hudScaleY(10)
+
+            for _, v in ipairs(self.Menu:GetChildren()) do
+                h = h + v:GetTall()
+            end
+
+            self.Menu:SizeTo(-1, h, 0.3, 0, 0.3)
+            self:NeedScaling(h)
+        end
+
+        return panel
+    end,
+
+    Scrollable = function(data, parent)
+        local panel = RiceUI.SimpleCreate({type = "rl_button",
+            Text = data.Text,
+
+            x = data.x,
+            y = data.y,
+            w = data.w,
+            h = data.h,
+
+            Theme = data.Theme
+        }, parent)
+
+        panel.GThemeType = "Combo"
+        panel.ProcessID = "RL_Combo"
+        panel.a_pointang = 0
+        panel.d_Choice = {}
+        panel.Openning = false
+
+        function panel:DoClick()
+            if self.OnAnim then return end
+            self:DoAnim()
+
+            if self.IsOpen then
+                self:CloseMenu()
+
+                return
+            end
+
+            self.Menu = RiceUI.SimpleCreate({type = "rl_panel",
+                Clipping = false,
+
+                w = self:GetWide(),
+                h = 0,
+
+                Padding = {0, 5, 0, 0},
+
+                UseNewTheme = true,
+                Theme = table.Merge(table.Copy(self.Theme), {
+                    ThemeType = "Panel",
+
+                    Curver = 0,
+                    Blur = 3
+                }),
+
+                children = {
+                    {type = "scrollpanel",
+                        ID = "ScrollPanel",
+
+                        Dock = FILL
+                    }
+                }
+            }, self:GetParent(), self)
+
+            local x, y = self:GetPos()
+            self.Menu:SetPos(x, y + self:GetTall())
+
+            for _, choice_data in ipairs(self.d_Choice) do
+                local choice = RiceUI.SimpleCreate({type = "rl_button",
+                    ID = choice_data[1],
+                    Text = choice_data[1],
+                    Font = self.Font,
+
+                    Dock = TOP,
+                    Margin = {5, 0, 5, 0},
+                    h = self:GetTall(),
+
+                    Theme = table.Merge(table.Copy(self.Theme), {
+                        ThemeType = "RL_Combo_Choice"
+                    }),
+
+                    DoClick = function()
+                        self.OnAnim = true
+                        self.Value = choice_data[1]
+                        self:OnSelected(choice_data[1], choice_data)
+                        self:CloseMenu()
+                        self:DoAnim()
+                    end
+                }, self:GetElement("ScrollPanel"))
+
+                if choice_data[1] == self.Value then
+                    choice.Selected = true
+                end
+            end
+
+            self.Menu:SizeTo(-1, RiceLib.hudScaleY(self.scrollPanelHeight), 0.3, 0, 0.3)
+        end
+
+        return panel
+    end
+}
+
 function Element.Create(data, parent)
     RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
         w = 200,
         h = 30,
+        scrollPanelHeight = 256,
 
         Font = "OPSans_20",
         Text = "选择器",
@@ -23,23 +206,7 @@ function Element.Create(data, parent)
         },
     })
 
-    local panel = RiceUI.SimpleCreate({
-        type = "rl_button",
-        Text = data.Text,
-
-        x = data.x,
-        y = data.y,
-        w = data.w,
-        h = data.h,
-
-        Theme = data.Theme
-    }, parent)
-
-    panel.GThemeType = "Combo"
-    panel.ProcessID = "RL_Combo"
-    panel.a_pointang = 0
-    panel.d_Choice = {}
-    panel.Openning = false
+    local panel = classes[data.Class or "Default"](data, parent)
 
     function panel:DoAnim()
         self.OnAnim = true 
@@ -72,89 +239,14 @@ function Element.Create(data, parent)
         self:NeedScaling(0)
     end
 
-    function panel:DoClick()
-        if self.OnAnim then return end
-        self:DoAnim()
+    function panel:AddChoice(value, data, callback) table.insert(self.d_Choice, {value, data, callback}) end
+    function panel:ClearChoice() self.d_Choice = {} end
 
-        if self.IsOpen then
-            self:CloseMenu()
+    function panel:OnSelected() end
 
-            return
-        end
-
-        self.Menu = RiceUI.SimpleCreate({type = "rl_panel",
-            Clipping = false,
-
-            w = self:GetWide(),
-            h = 0,
-
-            Padding = {0, 5, 0, 0},
-
-            Theme = table.Merge(table.Copy(self.Theme), {
-                ThemeType = "Panel",
-                Corner = {false,false,true,true}
-            })
-        }, self:GetParent())
-
-        local x, y = self:GetPos()
-        self.Menu:SetPos(x, y + self:GetTall())
-
-        for _, choice_data in ipairs(self.d_Choice) do
-            local choice = RiceUI.SimpleCreate({type = "rl_button",
-                ID = choice_data[1],
-                Text = choice_data[1],
-                Font = self.Font,
-
-                Dock = TOP,
-                Margin = {5, 0, 5, 0},
-                h = self:GetTall(),
-
-                Theme = table.Merge(table.Copy(self.Theme), {
-                    ThemeType = "RL_Combo_Choice"
-                }),
-
-                DoClick = function()
-                    self.OnAnim = true
-                    self.Value = choice_data[1]
-                    self:OnSelected(choice_data[1], choice_data)
-                    self:CloseMenu()
-                    self:DoAnim()
-                end
-            }, self.Menu)
-
-            if choice_data[1] == self.Value then
-                choice.Selected = true
-            end
-        end
-
-        local h = RiceLib.hudScaleY(10)
-
-        for _, v in ipairs(self.Menu:GetChildren()) do
-            h = h + v:GetTall()
-        end
-
-        self.Menu:SizeTo(-1, h, 0.3, 0, 0.3)
-        self:NeedScaling(h)
-    end
-
-    function panel:SetValue(value)
-        self.Value = value
-    end
-
-    function panel:AddChoice(value, data, select)
-        table.insert(panel.d_Choice, {value, data, select})
-    end
-
-    function panel:OnSelected()
-    end
-
-    function panel:GetSelected()
-        return self.Value
-    end
-
-    function panel:GetValue()
-        return self.Value
-    end
+    function panel:SetValue(value) self.Value = value end
+    function panel:GetSelected() return self.Value end
+    function panel:GetValue() return self.Value end
 
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
 

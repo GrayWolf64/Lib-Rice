@@ -112,7 +112,7 @@ net.Receive("RL_ResponsiveNet", function(len, ply)
         local callback = ResponesiveReceivers[sessionKey]
 
         if callback ~= nil then
-            callback(data)
+            callback(data, ply)
 
             ResponesiveReceivers[sessionKey] = nil
         end

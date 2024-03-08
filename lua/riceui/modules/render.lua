@@ -112,5 +112,5 @@ RiceUI.Render = {
     ShadowText = shadowText,
 
     StartShadow = startShadow,
-    EndShadow = endShadow,
+    EndShadow = endShadow
 }
