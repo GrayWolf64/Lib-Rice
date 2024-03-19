@@ -50,6 +50,14 @@ function Element.Create(data, parent)
                 SetPage = function(self, pageName, page)
                     self:GetParent():SetPage(pageName, page)
                 end,
+
+                GetPage = function(self, pageName)
+                    self:GetParent():GetPage(pageName)
+                end,
+
+                IsPageValid = function(self, pageName)
+                    return self:GetParent():IsPageValid(pageName)
+                end,
             }
         }
     }, parent)
@@ -61,10 +69,19 @@ function Element.Create(data, parent)
 
         if not IsValid(self.Pages[pageName]) then return end
         self.Pages[pageName]:SetVisible(true)
+        self.CurrentPage = pageName
     end
 
     function panel:SetPage(pageName, page)
         self.Pages[pageName] = page
+    end
+
+    function panel:GetPage()
+        return self.CurrentPage
+    end
+
+    function panel:IsPageValid(pageName)
+        return IsValid(self.Pages[pageName])
     end
 
     local function createCategoryButtons(data, parent, bar, panel)

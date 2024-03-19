@@ -286,7 +286,7 @@ function tbl.Slider(pnl, w, h)
     surface.DrawRect(pos - h / 4, 0, h / 2, h)
 
     if pnl:GetDragging() then
-        RiceUI.Render.ShadowText(tostring(pnl:GetValue()), "OPPOSans_" .. tostring(h), pos, -h / 2, RiceUI.GetColorBase(tbl, pnl, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        RiceUI.Render.ShadowText(tostring(pnl:GetValue()), "RiceUI_36", pos, -h / 2, RiceUI.GetColorBase(tbl, pnl, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     DisableClipping(false)

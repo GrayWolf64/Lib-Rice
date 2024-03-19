@@ -27,16 +27,18 @@ local function startHoloDisplay(self, dist, scale, pos, func)
 end
 
 local function startStencil()
+    render.ClearStencil()
+
     render.SetStencilWriteMask(0xFF)
     render.SetStencilTestMask(0xFF)
     render.SetStencilReferenceValue(0)
     render.SetStencilPassOperation(STENCIL_KEEP)
     render.SetStencilZFailOperation(STENCIL_KEEP)
-    render.ClearStencil()
-    render.SetStencilEnable(true)
     render.SetStencilReferenceValue(1)
     render.SetStencilCompareFunction(STENCIL_NEVER)
     render.SetStencilFailOperation(STENCIL_REPLACE)
+
+    render.SetStencilEnable(true)
 end
 
 local blur_passes = 6

@@ -232,6 +232,8 @@ function Element.Create(data, parent)
     end
 
     function panel:CloseMenu()
+        if not IsValid(self.Menu) then return end
+
         self.Menu:SizeTo(-1, 0, 0.3, 0, 0.2, function(anim, pnl)
             pnl:Remove()
         end)
@@ -240,7 +242,12 @@ function Element.Create(data, parent)
     end
 
     function panel:AddChoice(value, data, callback) table.insert(self.d_Choice, {value, data, callback}) end
-    function panel:ClearChoice() self.d_Choice = {} end
+    function panel:ClearChoice(clearValue)
+        self:CloseMenu()
+        self.d_Choice = {}
+
+        if clearValue then self.Value = nil end
+    end
 
     function panel:OnSelected() end
 
