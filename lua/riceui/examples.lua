@@ -1,7 +1,5 @@
 RiceUI = RiceUI or {}
 
-local newStressObj
-
 RiceUI.Examples = {
     Modern = {
         {type = "rl_frame2",
