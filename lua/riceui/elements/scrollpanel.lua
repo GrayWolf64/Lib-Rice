@@ -41,6 +41,15 @@ function Element.Create(data, parent)
     end
 
     function panel:ChildCreated()
+        if self.UseNewTheme then
+            local canvas = self:GetCanvas()
+            local cTheme = table.Copy(self.Theme)
+            cTheme.ThemeType = "NoDraw"
+            canvas.Theme = cTheme
+
+            RiceUI.ApplyTheme(canvas)
+        end
+
         self:RefreshVBar()
     end
 

@@ -53,11 +53,36 @@ tbl.ShadowAlpha = {
 
 tbl.Colors = {
     white = {
-        CloseButton = Color(255, 75, 75)
+        CloseButton = Color(255, 75, 75),
+
+        Text = {
+            Primary = HSLToColor(0, 0, 0.15),
+            Secondary = HSLToColor(0, 0, 0.39),
+            Tertiary = HSLToColor(0, 0, 0.55),
+            Disable = HSLToColor(0, 0, 0.63),
+            OnAccent = {
+                Primary = color_white,
+                Secondary = RiceUI.AlphaPercent(color_white, 0.7),
+                Disable = color_white
+            }
+        },
     },
 
     black = {
-        CloseButton = Color(255, 75, 75)
+        CloseButton = Color(255, 75, 75),
+
+        Text = {
+            Primary = color_white,
+            Secondary = HSLToColor(0, 0, 0.81),
+            Tertiary = HSLToColor(0, 0, 0.62),
+            Disable = HSLToColor(0, 0, 0.47),
+
+            OnAccent = {
+                Primary = HSLToColor(0, 0, 0),
+                Secondary = RiceUI.AlphaPercent(HSLToColor(0, 0, 0), 0.5),
+                Disable = RiceUI.AlphaPercent(HSLToColor(0, 0, 0), 0.53)
+            }
+        },
     }
 }
 
@@ -261,7 +286,7 @@ function tbl.Slider(pnl, w, h)
     surface.DrawRect(pos - h / 4, 0, h / 2, h)
 
     if pnl:GetDragging() then
-        RiceUI.Render.ShadowText(tostring(pnl:GetValue()), "OPPOSans_" .. tostring(h), pos, -h / 2, RiceUI.GetColorBase(tbl, pnl, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        RiceUI.Render.ShadowText(tostring(pnl:GetValue()), "RiceUI_36", pos, -h / 2, RiceUI.GetColorBase(tbl, pnl, "Text"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     DisableClipping(false)

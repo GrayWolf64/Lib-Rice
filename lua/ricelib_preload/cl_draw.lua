@@ -33,7 +33,7 @@ end
 
 local function do_corner(do_draw, x_circle, y_circle, x_rect, y_rect, size_border)
 	if do_draw then
-		draw_circle(x_circle, y_circle, size_border, size_border)
+		draw_circle(x_circle, y_circle, size_border, size_border * 2)
 	else
 		draw_rect(x_rect, y_rect, size_border, size_border)
 	end

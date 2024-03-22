@@ -18,6 +18,7 @@ function Element.Create(data, parent)
     panel:SetSize(RiceLib.hudScale(data.w, data.h))
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
     panel:SetImage(data.Image)
+    if data.RawImage then panel:SetMaterial(data.RawImage) end
 
     return panel
 end

@@ -1,4 +1,6 @@
 local function expandFromPos(panel, data)
+    if not IsValid(panel) then return end
+
     RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -15,6 +17,8 @@ local function expandFromPos(panel, data)
 end
 
 local function expandFromCursor(panel, data)
+    if not IsValid(panel) then return end
+
     RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -41,6 +45,8 @@ local function expandFromCursor(panel, data)
 end
 
 local function shrinkToPos(panel, data)
+    if not IsValid(panel) then return end
+
     RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -53,6 +59,8 @@ local function shrinkToPos(panel, data)
 end
 
 local function shrink(panel, data)
+    if not IsValid(panel) then return end
+
     RiceLib.table.Inherit(data, {
         time = 0.35,
         delay = 0,
@@ -65,6 +73,8 @@ local function shrink(panel, data)
 end
 
 local function fadeIn(panel, dur, delay, ease)
+    if not IsValid(panel) then return end
+
     delay = delay or 0
     ease = ease or 0.3
     panel:SetVisible(true)
@@ -76,6 +86,8 @@ local function fadeIn(panel, dur, delay, ease)
 end
 
 local function fadeOut(panel, dur, delay, ease)
+    if not IsValid(panel) then return end
+
     delay = delay or 0
     ease = ease or 0.3
 
@@ -89,6 +101,8 @@ local function fadeOut(panel, dur, delay, ease)
 end
 
 local function fadeInOut(panel, data)
+    if not IsValid(panel) then return end
+
     local dur, delay, ease, func = data.dur, data.delay, data.ease, data.func
     delay = delay or 0
     ease = ease or 0.3

@@ -206,6 +206,9 @@ RiceUI.Examples = {
                     ID = "panel",
                     DrawBorder = true,
 
+                    x = 0,
+                    y = 0,
+
                     children = {
                         {type = "label",Text = "This is a 3D Panel"}
                     }
@@ -214,11 +217,9 @@ RiceUI.Examples = {
 
             PaintOver = function(self,w,h)
                 local x,y = self:LocalToScreen()
-                local cx,cy = self:CursorPos()
-                local cx1,cy1 = w / 2-cx,h / 2-cy
 
-                cam.Start3D(Vector(0,0,60), Angle(90,90,0), 70,x, y, w, h, 5)
-                    cam.Start3D2D(Vector(-25,20,0),Angle(-cx1 / w * 180, 0, -cy1 / w * 180),0.1)
+                cam.Start3D(Vector(0,0,34), Angle(90,90,0), 74.5, x, y, w, h, 5)
+                    cam.Start3D2D(Vector(-w * 0.05 / 2, h * 0.05 / 2, 0), Angle(180, 180, 180), 0.05)
 
                     self.riceui_elements.panel:PaintAt(0,0)
 
@@ -233,8 +234,13 @@ RiceUI.Examples = {
             Center = true,
             Root = true,
 
-            w = 1000,
-            h = 800,
+            Text = "Playground",
+
+            w = 1280,
+            h = 960,
+
+            NoGTheme = true,
+            Theme = {},
 
             children = {
                 {type = "rl_panel",
@@ -247,31 +253,198 @@ RiceUI.Examples = {
                     Paint = function(self,w,h)
                         surface.SetDrawColor(255,255,255)
                         surface.SetMaterial(Material("gui/colors_dark.png"))
-                        RiceLib.Draw.TexturedCircle(w / 2, h / 2, h/2, h)
+                        RiceLib.Draw.TexturedCircle(w / 2, h / 2, h / 2, h)
+                    end
+                },
+
+                {type = "rl_frame",
+                    w = 256,
+                    h = 256,
+
+                    x = 96,
+                    y = 48,
+
+                    NoGTheme = true,
+                    Theme = {},
+
+                    Text = "Shadow",
+
+                    children = {
+                        {type = "slider",
+                            ID = "Intensity",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                            Value = 1
+                        },
+
+                        {type = "slider",
+                            ID = "Spread",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                            Value = 1
+                        },
+
+                        {type = "slider",
+                            ID = "Blur",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                            Value = 2
+                        },
+
+                        {type = "slider",
+                            ID = "Alpha",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 255,
+                            Value = 255
+                        },
+
+                        {type = "slider",
+                            ID = "Angle",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Min = -180,
+                            Max = 180,
+                            Value = 0,
+                        },
+
+                        {type = "slider",
+                            ID = "Distance",
+
+                            Dock = TOP,
+                            Margin = {16, 8, 16, 0},
+
+                            Max = 100,
+                        },
+                    },
+
+                    Paint = function(self, w, h)
+                        local x, y = self:LocalToScreen()
+                        local root = self:RiceUI_GetRoot()
+
+                        local instensity = root:GetElement("Intensity"):GetValue()
+                        local spread = root:GetElement("Spread"):GetValue()
+                        local blur = root:GetElement("Blur"):GetValue()
+                        local alpha = root:GetElement("Alpha"):GetValue()
+                        local angle = root:GetElement("Angle"):GetValue()
+                        local distance = root:GetElement("Distance"):GetValue()
+
+                        RiceUI.Render.StartShadow()
+                        draw.RoundedBox(6, x, y, w, h, color_white)
+                        RiceUI.Render.EndShadow(instensity, spread, blur, alpha, angle, distance, true)
+
+                        draw.RoundedBox(6, 0, 0, w, h, color_white)
+                    end
+                }
+            },
+
+            Paint = function(self, w, h)
+                local x, y = self:LocalToScreen()
+
+                RiceUI.Render.StartShadow()
+                draw.RoundedBox(6, x, y, w, h, color_white)
+                RiceUI.Render.EndShadow(1, 2, 2, 255, 0, 0, true)
+
+                draw.RoundedBox(6, 0, 0, w, h, color_white)
+            end
+        }
+    },
+
+    Blur = {
+        {type = "rl_frame",
+            Center = true,
+            Root = true,
+
+            Text = "Playground",
+
+            w = 768,
+            h = 512,
+
+            NoGTheme = true,
+            Theme = {},
+
+            BlurAmount = 0,
+
+            children = {
+                {type = "slider",
+                    Min = 0,
+                    Max = 16,
+                    Value = 0,
+
+                    UseNewTheme = true,
+                    Theme = {
+                        ThemeName = "modern",
+                        ThemeType = "Slider",
+                        Color = "black",
+                        TextColor = "black",
+                    },
+
+                    OnValueChanged = function(self, val)
+                        self:GetParent().BlurAmount = self:GetValue()
+                    end
+                },
+            },
+
+            Paint = function(self, w, h)
+                RiceLib.VGUI.blurPanel(self, self.BlurAmount)
+            end
+        }
+    },
+
+    ModernNT = {
+        {type = "rl_frame2",
+            Center = true,
+            Root = true,
+
+            ThemeNT = {
+                Theme = "Modern",
+                Class = "RL_Frame2"
+            },
+
+            w = 1000,
+            h = 800,
+
+            children = {
+                {type = "rl_scrollpanel",
+                    Dock = LEFT,
+                    w = 256,
+
+                    ScrollAmount = 100,
+
+                    OnCreated = function(self)
+                        for i = 1, 100 do
+                            RiceUI.SimpleCreate({type = "rl_panel",
+                                Dock = TOP,
+                                h = 48,
+
+                                children = {
+                                    {type = "label",
+                                        Dock = LEFT,
+                                        Margin = {8, 0, 0, 0},
+
+                                        Text = "Panel " .. i,
+                                    }
+                                }
+                            }, self)
+                        end
                     end
                 }
             }
         }
     },
-
-    ModernNT = {
-        {type = "rl_frame",
-            Center = true,
-            Root = true,
-
-            UseNewTheme = true,
-            Theme = {
-                ThemeName = "modern",
-                ThemeType = "RL_Frame2",
-
-                Color = "white",
-                TextColor = "white"
-            },
-
-            w = 1000,
-            h = 800,
-        }
-    }
 }
 
 RiceUI.Examples.ModernBlack = table.Copy(RiceUI.Examples.Modern)
@@ -311,7 +484,7 @@ concommand.Add("riceui_examples", function()
         },
 
         children = {
-            {type = "scrollpanel",
+            {type = "rl_scrollpanel",
                 ID = "ScrollPanel",
                 x = 10,
                 y = 40,
@@ -322,7 +495,7 @@ concommand.Add("riceui_examples", function()
                         pnl:AddItem(RiceUI.SimpleCreate({type = "rl_button",
                             Dock = TOP,
                             h = 50,
-                            Margin = {0, 0, 5, 5},
+                            Margin = {0, 0, 0, 5},
                             Text = k,
 
                             Theme = {

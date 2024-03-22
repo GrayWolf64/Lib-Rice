@@ -34,8 +34,15 @@ RiceUI.DefineMixin("RiceUI_GetColor", function(self, ...)
 
     if self.Colors == nil then return end
 
+    local colorTheme = "white"
+    if self.ThemeNT then
+        colorTheme = self.ThemeNT.Color or "white"
+    else
+        colorTheme = self.Theme.Color or "white"
+    end
+
     local color_default = Color(150, 0, 255)
-    local color = self.Colors[self.Theme.Color or "white"]
+    local color = self.Colors[colorTheme]
     if color == nil then return color_default end
 
     for _, path in ipairs(args) do

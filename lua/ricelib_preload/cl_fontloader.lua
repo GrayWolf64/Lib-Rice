@@ -32,7 +32,7 @@ local function pRegisterFont(fontName, codeName, dataEx, ratio, sizeMul, maxIter
         local data = mkFontData(fontName, i * sizeMul * ratio, weight)
         table.Merge(data, dataEx or {})
 
-        surface.CreateFont(codeName .. "_".. i * sizeMul, data)
+        surface.CreateFont(codeName .. "_" .. i * sizeMul, data)
     end
 end
 
@@ -67,7 +67,8 @@ end
 function RiceLib.VGUI.RegisterFont_New(data)
     local codeName, fontName = data.CodeName, data.FontName or "OPlusSans 3.0"
 
-    for i = 1, 100 do
+    -- Start from size 16 like why anyone need font smaller then that
+    for i = 8, 100 do
         local base = mkFontData(fontName, i * 2 * ratio_w, weight)
         local FontData = RiceLib.table.Inherit(base, data)
 

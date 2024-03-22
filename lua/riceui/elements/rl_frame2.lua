@@ -6,8 +6,18 @@ function Element.Create(data, parent)
         y = 10,
         w = 1200,
         h = 700,
+
         Title = "Frame",
+        Font = "RiceUI_M_24",
+
         OnClose = function() end,
+        DoClose = function(self)
+            if self.NoClose then return end
+
+            self:RiceUI_Animation("FadeOut")
+            self:OnClose()
+        end,
+
         Theme = {
             ThemeName = "modern",
             ThemeType = "RL_Frame2",
@@ -18,7 +28,7 @@ function Element.Create(data, parent)
 
     local panel = RiceUI.SimpleCreate({type = "rl_panel",
         UseNewTheme = true,
-        Theme = Theme,
+        Theme = data.Theme,
 
         x = data.x,
         y = data.y,
@@ -46,22 +56,30 @@ function Element.Create(data, parent)
                     ThemeType = "NoDraw"
                 },
 
+                ThemeNT = {
+                    Class = "TabBar"
+                },
+
                 OnMousePressed = function(self)
                     local root = self:GetParent()
 
                     root.Dragging = {gui.MouseX() - root:GetX(), gui.MouseY() - root:GetY()}
+
+                    self:MouseCapture(true)
                 end,
 
                 OnMouseReleased = function(self)
                     local root = self:GetParent()
                     root.Dragging = nil
+                    
+                    self:MouseCapture(false)
                 end,
 
                 children = {
                     {type = "label",
                         ID = "Title",
                         Text = data.Title,
-                        Font = "RiceUI_M_24",
+                        Font = data.Font,
                         Dock = LEFT,
                         Margin = {16, 0, 0, 0}
                     },
@@ -79,15 +97,13 @@ function Element.Create(data, parent)
                             ThemeType = "CloseButton"
                         },
 
+                        ThemeNT = {
+                            Class = "Button",
+                            Style = "Close"
+                        },
+
                         DoClick = function(self)
-                            local panel = self:GetParent():GetParent()
-                            if panel.NoClose then return end
-
-                            panel:AlphaTo(0, 0.075, 0, function()
-                                panel:Remove()
-                            end)
-
-                            panel.OnClose()
+                            self:GetParent():GetParent():DoClose()
                         end
                     },
 
@@ -103,6 +119,11 @@ function Element.Create(data, parent)
                         Theme = {
                             ThemeType = "TransButton",
                             Corner = {false, false, false, false}
+                        },
+
+                        ThemeNT = {
+                            Class = "Button",
+                            Style = "Transparent"
                         },
 
                         DoClick = function(self)

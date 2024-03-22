@@ -8,7 +8,7 @@ function Element.Create(data, parent)
     RiceLib.table.Inherit(data, {
         x = 10,
         y = 10,
-        w = 100,
+        w = 64,
         h = 50,
 
         Color = Color(64, 158, 255),

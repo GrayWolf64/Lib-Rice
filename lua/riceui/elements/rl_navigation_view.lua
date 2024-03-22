@@ -16,6 +16,8 @@ function Element.Create(data, parent)
         Theme = Theme,
 
         h = data.h,
+        NavigationBarSize = data.NavigationBarSize,
+        Pages = {},
 
         OnCreated = function(self)
             local navPanel = self.riceui_elements.NavigationPanel
@@ -27,12 +29,10 @@ function Element.Create(data, parent)
             self.riceui_elements.NavigationPanel:Clear()
         end,
 
-        NavigationBarSize = data.NavigationBarSize,
-
         children = {
             {type = "scrollpanel", ID = "NavigationBar", Dock = LEFT, w = data.NavigationBarSize,
                 ClearSelection = function(self)
-                    for _,pnl in pairs(self.riceui_elements) do
+                    for _, pnl in pairs(self.riceui_elements or {}) do
                         if pnl.ClearSelection == nil then continue end
 
                         pnl:ClearSelection()
@@ -41,10 +41,48 @@ function Element.Create(data, parent)
             },
 
             {type = "rl_panel", ID = "NavigationPanel", Dock = RIGHT,
-                Theme = {ThemeType = "Layer"}
+                Theme = {ThemeType = "Layer"},
+
+                SwitchPage = function(self, pageName)
+                    self:GetParent():SwitchPage(pageName)
+                end,
+
+                SetPage = function(self, pageName, page)
+                    self:GetParent():SetPage(pageName, page)
+                end,
+
+                GetPage = function(self, pageName)
+                    self:GetParent():GetPage(pageName)
+                end,
+
+                IsPageValid = function(self, pageName)
+                    return self:GetParent():IsPageValid(pageName)
+                end,
             }
         }
     }, parent)
+
+    function panel:SwitchPage(pageName)
+        for _, page in pairs(self.Pages) do
+            page:SetVisible(false)
+        end
+
+        if not IsValid(self.Pages[pageName]) then return end
+        self.Pages[pageName]:SetVisible(true)
+        self.CurrentPage = pageName
+    end
+
+    function panel:SetPage(pageName, page)
+        self.Pages[pageName] = page
+    end
+
+    function panel:GetPage()
+        return self.CurrentPage
+    end
+
+    function panel:IsPageValid(pageName)
+        return IsValid(self.Pages[pageName])
+    end
 
     local function createCategoryButtons(data, parent, bar, panel)
         for _, choice in ipairs(data[3]) do
@@ -72,7 +110,7 @@ function Element.Create(data, parent)
 
                     choice[2](panel)
                 end,
-            }, parent)
+            }, parent, bar)
         end
     end
 
@@ -101,7 +139,7 @@ function Element.Create(data, parent)
 
                     data[3](panel)
                 end,
-            }, bar)
+            }, bar, bar)
         end,
 
         Category = function(data, bar, panel)
@@ -136,7 +174,7 @@ function Element.Create(data, parent)
 
                     self:DoAnim()
                 end,
-            }, bar)
+            }, bar, bar)
 
             createCategoryButtons(data, form, bar, panel)
 
@@ -146,7 +184,7 @@ function Element.Create(data, parent)
 
     function panel:CreateNavigation()
         for _, data in ipairs(data.Choice) do
-            local pnl = choiceType[data[1]](data, self.riceui_elements.NavigationBar, self.riceui_elements.NavigationPanel)
+            local pnl = choiceType[data[1]](data, self:GetElement("NavigationBar"), self:GetElement("NavigationPanel"))
 
             RiceUI.ApplyTheme(pnl, self.Theme)
         end

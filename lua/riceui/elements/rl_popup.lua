@@ -4,6 +4,8 @@ function Element.Create(data,parent)
         w = 300,
         h = 300,
         Theme = {ThemeName = "modern", ThemeType = "Panel", Color = "white", TextColor = "white", Shadow = true},
+
+        RemoveOnLoseFocus = true
     })
 
     local panel = vgui.Create("DPanel")
@@ -11,11 +13,17 @@ function Element.Create(data,parent)
     panel.ProcessID = "RL_Popup"
 
     function panel:OnFocusChanged(gained)
+        if not IsValid(self.Parent) then self:DoRemove() return end
+        if not self.RemoveOnLoseFocus then return end
         if not gained then
-            self:SizeTo(-1, 0, 0.3, 0, 0.3, function()
-                self:Remove()
-            end)
+            self:DoRemove()
         end
+    end
+
+    function panel:DoRemove()
+        self:SizeTo(-1, 0, 0.3, 0, 0.3, function()
+            self:Remove()
+        end)
     end
 
     function panel:Layout()

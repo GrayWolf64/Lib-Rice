@@ -17,6 +17,7 @@ function Element.Create(data,parent)
     panel:SetSize(RiceLib.hudScale(data.w,data.h))
     panel:SetSlideX(0)
     panel.ProcessID = "Slider"
+    panel.TextAlpha = 0
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
@@ -26,10 +27,12 @@ function Element.Create(data,parent)
     function panel:GetMin() return panel.Min end
 
     function panel:GetValue()
-        return math.Round(math.Remap(panel:GetSlideX(),0,1,panel.Min,panel.Max),panel.Decimals)
+        return math.Round(math.Remap(panel:GetSlideX(), 0, 1 ,panel.Min, panel.Max), panel.Decimals)
     end
 
     function panel:OnMouseWheeled(dlt)
+        self.TextAlpha = 255
+
         self:SetSlideX(math.Clamp(self:GetSlideX() + dlt / 100,0,1))
     end
 

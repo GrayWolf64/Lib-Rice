@@ -153,7 +153,7 @@ else local function c()net.Start("ricelib_clientready")net.SendToServer()end;hoo
 RiceLib.AddFileAs  = add_file
 RiceLib.IncludeDir = include_dir
 
-print"================ RL ================"
+print"================ RiceLib ================"
 
 RiceLib.IncludeDir"ricelib_preload"
 

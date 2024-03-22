@@ -49,9 +49,68 @@ local function shadowText(text, font, x, y, color, alignX, alignY, shadowAlpha)
     draw.SimpleText(text, font, x, y, color, alignX, alignY)
 end
 
+--[[
+    https://gitlab.com/sleeppyy/xenin-framework/-/blob/master/laux/xeninui/libs/shadows.laux?ref_type=heads
+
+	Created by Patrick Ratzow (sleeppyy).
+
+	Credits goes to Metamist for his previously closed source library Wyvern,
+		CupCakeR for various improvements, the animated texture VGUI panel, and misc.
+]]
+local scrW, scrH = ScrW(), ScrH()
+local resStr = scrW .. "" .. scrH
+
+local renderTarget = GetRenderTarget("bshadows_original_" .. resStr, scrW, scrH)
+local shadowMaterial = CreateMaterial("bshadows", "UnlitGeneric", {
+    ["$translucent"] = 1,
+    ["$vertexalpha"] = 1,
+    ["alpha"] = 1,
+    ["$color"] = "0 0 0",
+    ["$color2"] = "0 0 0"
+})
+
+startShadow = function()
+    render.PushRenderTarget(renderTarget)
+    render.OverrideAlphaWriteEnable(true, true)
+    render.Clear(0, 0, 0, 0)
+    render.OverrideAlphaWriteEnable(false, false)
+
+    cam.Start2D()
+end
+
+endShadow = function(intensity, spread, blur, opacity, direction, distance)
+    opacity = opacity or 255
+    direction = direction or 0
+    distance = distance or 0
+    _shadowOnly = _shadowOnly or false
+
+    if blur > 0 then
+        render.OverrideAlphaWriteEnable(true, true)
+        render.BlurRenderTarget(renderTarget, spread, spread, blur)
+        render.OverrideAlphaWriteEnable(false, false)
+    end
+
+    render.PopRenderTarget()
+
+    shadowMaterial:SetFloat("$alpha", opacity / 255)
+    shadowMaterial:SetTexture("$basetexture", renderTarget)
+    render.SetMaterial(shadowMaterial)
+
+    local xOffset = math.sin(math.rad(direction)) * distance
+    local yOffset = math.cos(math.rad(direction)) * distance
+    for i = 1, math.ceil(intensity) do
+        render.DrawScreenQuadEx(xOffset, yOffset, scrW, scrH)
+    end
+
+    cam.End2D()
+end
+
 RiceUI.Render = {
     DrawShadowEx = drawShadowEx,
     DrawShadow = drawShadow,
     DrawIndicator = drawIndicator,
-    ShadowText = shadowText
+    ShadowText = shadowText,
+
+    StartShadow = startShadow,
+    EndShadow = endShadow
 }
