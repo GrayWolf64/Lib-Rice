@@ -3,16 +3,16 @@ local sin          = math.sin
 local cos          = math.cos
 local draw_rect    = surface.DrawRect
 
-local function draw_circle(x, y, r, seg, color, do_texture)
-	local function mkvertex(ang)
-		return {
-			x = x + sin(ang) * r,
-			y = y + cos(ang) * r,
-			u = sin(ang) / 2 + 0.5,
-			v = cos(ang) / 2 + 0.5
-		}
-	end
+local function mkvertex(ang)
+	return {
+		x = x + sin(ang) * r,
+		y = y + cos(ang) * r,
+		u = sin(ang) / 2 + 0.5,
+		v = cos(ang) / 2 + 0.5
+	}
+end
 
+local function draw_circle(x, y, r, seg, color, do_texture)
 	local cir = {{x = x, y = y, u = 0.5, v = 0.5}}
 
 	for i = 0, seg do
@@ -44,9 +44,9 @@ local function draw_rounded_box(size_border, x, y, w, h, color, corner)
 	local top_left, top_right, bottom_left, bottom_right = unpack(corner)
 	local color = color or color_white
 
-	surface.SetDrawColor(color)
-
 	size_border = size_border or 8
+
+	surface.SetDrawColor(color)
 
 	if size_border <= 0 then draw_rect(x, y, w, h) return end
 
