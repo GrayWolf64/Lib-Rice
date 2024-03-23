@@ -36,17 +36,17 @@ local function drawIndicator(w, h)
     surface.DrawOutlinedRect(0, 0, w, h, hudScaleY(2))
 end
 
-local function shadowText(text, font, x, y, color, alignX, alignY, shadowAlpha)
-    local offsetX, offsetY = hudScale(2, 2)
-    local shadowColor = color_black
-    shadowColor.a = shadowAlpha or 50
+local function shadowText(text, font, x, y, color, align_x, align_y, shadow_alpha)
+    local offset_x, offset_y = hudScale(2, 2)
+    local shadow_color = color_black
+    shadow_color.a = shadow_alpha or 50
 
     color = color or color_white
-    alignX = alignX or TEXT_ALIGN_LEFT
-    alignY = alignY or TEXT_ALIGN_TOP
+    align_x = align_x or TEXT_ALIGN_LEFT
+    align_y = align_y or TEXT_ALIGN_TOP
 
-    draw.SimpleText(text, font, x + offsetX, y + offsetY, shadowColor, alignX, alignY)
-    draw.SimpleText(text, font, x, y, color, alignX, alignY)
+    draw.SimpleText(text, font, x + offset_x, y + offset_y, shadow_color, align_x, align_y)
+    draw.SimpleText(text, font, x, y, color, align_x, align_y)
 end
 
 --[[
@@ -64,9 +64,9 @@ local renderTarget = GetRenderTarget("bshadows_original_" .. resStr, scrW, scrH)
 local shadowMaterial = CreateMaterial("bshadows", "UnlitGeneric", {
     ["$translucent"] = 1,
     ["$vertexalpha"] = 1,
-    ["alpha"] = 1,
-    ["$color"] = "0 0 0",
-    ["$color2"] = "0 0 0"
+    ["$alpha"]       = 1,
+    ["$color"]       = "0 0 0",
+    ["$color2"]      = "0 0 0"
 })
 
 local function startShadow()
