@@ -1,42 +1,42 @@
-RiceUI.DefineUniProcess("center", function(pnl)
-    pnl:Center()
+RiceUI.DefineUniProcess("center", function(panel)
+    panel:Center()
 end)
 
-RiceUI.DefineUniProcess("dock", function(pnl, data)
-    pnl:Dock(data)
+RiceUI.DefineUniProcess("dock", function(panel, data)
+    panel:Dock(data)
 end)
 
-RiceUI.DefineUniProcess("Margin", function(pnl, data)
-    pnl:DockMargin(data[1], data[2] or 0, data[3] or 0, data[4] or 0)
+RiceUI.DefineUniProcess("Margin", function(panel, data)
+    panel:DockMargin(data[1], data[2] or 0, data[3] or 0, data[4] or 0)
 end)
 
-RiceUI.DefineUniProcess("Padding", function(pnl, data)
-    pnl:DockPadding(data[1], data[2] or 0, data[3] or 0, data[4] or 0)
+RiceUI.DefineUniProcess("Padding", function(panel, data)
+    panel:DockPadding(data[1], data[2] or 0, data[3] or 0, data[4] or 0)
 end)
 
-RiceUI.DefineUniProcess("Root", function(pnl)
-    pnl:MakePopup()
+RiceUI.DefineUniProcess("Root", function(panel)
+    panel:MakePopup()
 end)
 
-RiceUI.DefineUniProcess("Clipping", function(pnl, data)
-    pnl:NoClipping(data)
+RiceUI.DefineUniProcess("Clipping", function(panel, data)
+    panel:NoClipping(data)
 end)
 
-RiceUI.DefineUniProcess("Alpha", function(pnl, data)
-    pnl:SetAlpha(data)
+RiceUI.DefineUniProcess("Alpha", function(panel, data)
+    panel:SetAlpha(data)
 end)
 
-RiceUI.DefineUniProcess("Paint", function(pnl, data)
-    pnl.Paint = data
+RiceUI.DefineUniProcess("Paint", function(panel, data)
+    panel.Paint = data
 end)
 
-RiceUI.DefineUniProcess("PaintManually", function(pnl, data) pnl:SetPaintedManually(data) end)
+RiceUI.DefineUniProcess("PaintManually", function(panel, data) panel:SetPaintedManually(data) end)
 
-RiceUI.DefineUniProcess("OnTop", function(pnl, data)
+RiceUI.DefineUniProcess("OnTop", function(panel, data)
     if not data then return end
-    pnl:SetDrawOnTop(true)
-    pnl:MakePopup()
-    pnl:DoModal()
+    panel:SetDrawOnTop(true)
+    panel:MakePopup()
+    panel:DoModal()
 end)
 
 RiceUI.DefineUniProcess("DrawOnTop", function(panel, data)
@@ -45,103 +45,99 @@ RiceUI.DefineUniProcess("DrawOnTop", function(panel, data)
     panel:SetDrawOnTop(true)
 end)
 
-RiceUI.DefineUniProcess("Theme", function(pnl, data)
+RiceUI.DefineUniProcess("Theme", function(panel, data)
     if not data.ThemeName then return end
 
-    pnl.Paint = RiceUI.GetTheme(data.ThemeName)[data.ThemeType]
+    panel.Paint = RiceUI.GetTheme(data.ThemeName)[data.ThemeType]
 end)
 
 RiceUI.DefineUniProcess("Column", {
-    ListView = function(pnl, data)
+    ListView = function(panel, data)
         for i, v in ipairs(data) do
-            pnl:AddColumn(v)
+            panel:AddColumn(v)
         end
     end
 })
 
 RiceUI.DefineUniProcess("Line", {
-    ListView = function(pnl, data)
+    ListView = function(panel, data)
         for i, v in ipairs(data) do
-            pnl:AddLine(unpack(v))
+            panel:AddLine(unpack(v))
         end
     end
 })
 
 RiceUI.DefineUniProcess("Choice", {
-    Combo = function(pnl, data)
+    Combo = function(panel, data)
         for i, v in ipairs(data) do
-            pnl:AddChoice(unpack(v))
+            panel:AddChoice(unpack(v))
         end
     end,
 
-    RL_Combo = function(pnl, data)
+    RL_Combo = function(panel, data)
         for i, v in ipairs(data) do
-            pnl:AddChoice(unpack(v))
+            panel:AddChoice(unpack(v))
         end
     end
 })
 
 RiceUI.DefineUniProcess("Numeric", {
-    Entry = function(pnl, data)
-        pnl:SetNumeric(data)
+    Entry = function(panel, data)
+        panel:SetNumeric(data)
     end
 })
 
 RiceUI.DefineUniProcess("Font", {
-    Label = function(pnl, data)
-        pnl:SetFont(data)
+    Label = function(panel, fontName)
+        panel:SetFont(RiceUI.Font.Get(fontName))
+        if not panel.NoResize then panel:SizeToContents() end
     end,
 
-    Button = function(pnl, data)
-        pnl:SetFont(data)
-    end,
-
-    RL_Combo = function(pnl, data)
-        pnl:SetFont(data)
-    end,
+    Button = function(panel, fontName) panel:SetFont(RiceUI.Font.Get(fontName)) end,
+    RL_Combo = function(panel, fontName) panel:SetFont(RiceUI.Font.Get(fontName)) end,
 })
 
-RiceUI.DefineUniProcess("Anim", function(pnl, data)
+RiceUI.DefineUniProcess("Anim", function(panel, data)
     for _, AnimData in ipairs(data) do
         if AnimData.type == "alpha" then
-            pnl:AlphaTo(AnimData.alpha, AnimData.time, AnimData.delay or 0, AnimData.CallBack or function() end)
+            panel:AlphaTo(AnimData.alpha, AnimData.time, AnimData.delay or 0, AnimData.CallBack or function() end)
         end
 
         if AnimData.type == "move" then
-            pnl:MoveTo(AnimData.x or 0, AnimData.y or 0, AnimData.time, AnimData.delay or 0, AnimData.ease or 0.3, AnimData.CallBack or function() end)
+            panel:MoveTo(AnimData.x or 0, AnimData.y or 0, AnimData.time, AnimData.delay or 0, AnimData.ease or 0.3, AnimData.CallBack or function() end)
         end
 
         if AnimData.type == "resize" then
-            pnl:SizeTo(AnimData.w or 0, AnimData.h or 0, AnimData.time, AnimData.delay or 0, AnimData.ease or 0.3, AnimData.CallBack or function() end)
+            panel:SizeTo(AnimData.w or 0, AnimData.h or 0, AnimData.time, AnimData.delay or 0, AnimData.ease or 0.3, AnimData.CallBack or function() end)
         end
     end
 end)
 
 RiceUI.DefineUniProcess("Value", {
-    Slider = function(pnl, data)
-        pnl:SetSlideX(math.Remap(data, pnl.Min, pnl.Max, 0, 1))
+    Slider = function(panel, data)
+        panel:SetSlideX(math.Remap(data, panel.Min, panel.Max, 0, 1))
     end,
 
-    ColorMixer = function(pnl, data)
-        pnl:SetColor(data)
+    ColorMixer = function(panel, data)
+        panel:SetColor(data)
     end,
 
-    RL_NumberWang = function(pnl, data)
-        pnl:SetValue(data)
-        pnl:SetText(data)
+    RL_NumberWang = function(panel, data)
+        panel:SetValue(data)
+        panel:SetText(data)
     end,
 
-    RL_NumberCounter = function(pnl, data)
-        pnl:SetValue(data)
-        pnl:SetText(data)
+    RL_NumberCounter = function(panel, data)
+        panel:SetValue(data)
+        panel:SetText(data)
     end
 })
 
-RiceUI.DefineUniProcess("OffsetProfile", function(pnl, data)
+RiceUI.DefineUniProcess("OffsetProfile", function(panel, data)
     local x, y = RiceLib.hudOffset(100, 100, data)
     if not RiceLib.UI.ValidOffset(data) then return end
 
-    pnl:SetPos(x, y)
+    panel:SetPos(x, y)
 end)
 
 RiceUI.DefineUniProcess("ConVar", {

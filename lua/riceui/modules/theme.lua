@@ -149,6 +149,7 @@ RiceUI.DoThemeProcess = do_theme_process
 
 RiceUI.ReloadThemes = reload_themes
 
+-- MARK: ThemeNT
 -- ThemeNT
 
 function apply_theme_nt(panel, themeData)
@@ -173,6 +174,7 @@ function apply_theme_nt(panel, themeData)
     end
 
     panel.IsThemeNT = true
+    panel.ThemeNT_Color = themeData.Color
 
     local class = theme.Class or (panel.Theme or {ThemeType = nil}).ThemeType or panel.ProcessID 
     local paintFunction = themeTable.Classes[class][theme.Style]

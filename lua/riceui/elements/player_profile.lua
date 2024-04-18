@@ -45,6 +45,40 @@ local classes = {
 
         return panel
     end,
+
+    Custom = function(data, parent)
+        local panel = RiceUI.SimpleCreate({type = "rl_panel",
+            NoGTheme = true,
+            Theme = {},
+
+            w = data.w,
+            h = data.h,
+
+            PrePaint = function() end,
+            PostPaint = function() end,
+
+            Paint = function(self, w, h)
+                self:PrePaint(w, h)
+
+                self.Picture:SetSize(w, h)
+                self.Picture:PaintManual()
+
+                self:PostPaint(w, h)
+            end,
+        }, parent, parent)
+
+        function panel:OnRemove()
+            self.Picture:Remove()
+        end
+
+        local picture = vgui.Create("AvatarImage", panel)
+        picture:SetPaintedManually(true)
+        picture:SetPlayer(data.ply or data.Player, data.w)
+
+        panel.Picture = picture
+
+        return panel
+    end,
 }
 
 function Element.Create(data, parent)

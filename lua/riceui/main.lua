@@ -7,6 +7,7 @@ local widgets = {}
 local instances = {}
 
 RiceLib.Util.LoadFiles(elements, "riceui/elements")
+RiceLib.IncludeDir("riceui/modules", true)
 
 --- Load Widgets, which are groups of elements
 -- @section Widgets
@@ -16,11 +17,11 @@ local function createWidget(data, parent, root)
     local func = widgets[name]
 
     if not func then return elements.error.Create(data, parent) end
-    func(data, parent, root)
+    return func(data, parent, root)
 end
-RiceLib.IncludeDir("riceui/widgets")
-
 RiceUI.CreateWidget = createWidget
+
+RiceLib.IncludeDir("riceui/widgets")
 
 
 --- Create UI Elements
@@ -95,7 +96,6 @@ RiceLib.IncludeDir("riceui/uniprocess", true)
 -- Prefab will soon be replace by widgets
 RiceUI.Prefab = {}
 RiceLib.IncludeDir("riceui/prefabs", true)
-RiceLib.IncludeDir("riceui/modules", true)
 
 
 concommand.Add("riceui_reload", function()

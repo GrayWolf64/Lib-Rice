@@ -64,16 +64,4 @@ function RiceLib.VGUI.RegisterFontFixedAdv(fontName, codeName, dataEx)
     pRegisterFont(fontName, codeName, dataEx, 1, 5, 60)
 end
 
-function RiceLib.VGUI.RegisterFont_New(data)
-    local codeName, fontName = data.CodeName, data.FontName or "OPlusSans 3.0"
-
-    -- Start from size 16 like why anyone need font smaller then that
-    for i = 8, 100 do
-        local base = mkFontData(fontName, i * 2 * ratio_w, weight)
-        local FontData = RiceLib.table.Inherit(base, data)
-
-        if data.Debug then print(i * 2 * ratio_w, FontData.size) end
-
-        surface.CreateFont(codeName .. "_" .. i * 2, FontData)
-    end
-end
+-- !!! RiceLib.VGUI.RegisterFont_New has moved to RiceUI font module !!!

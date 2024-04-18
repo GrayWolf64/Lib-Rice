@@ -35,8 +35,8 @@ RiceUI.DefineMixin("RiceUI_GetColor", function(self, ...)
     if self.Colors == nil then return end
 
     local colorTheme = "white"
-    if self.ThemeNT then
-        colorTheme = self.ThemeNT.Color or "white"
+    if self.IsThemeNT then
+        colorTheme = self.ThemeNT_Color or "white"
     else
         colorTheme = self.Theme.Color or "white"
     end

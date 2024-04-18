@@ -14,7 +14,6 @@ function Element.Create(data,parent)
     local panel = vgui.Create("DButton",parent)
     panel:SetPos(RiceLib.hudScale(data.x,data.y))
     panel:SetSize(RiceLib.hudScale(data.w,data.h))
-    panel:SetFont(data.Font)
     panel:SetText("")
     panel.GThemeType = "Button"
     panel.ProcessID = "Button"
