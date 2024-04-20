@@ -30,6 +30,10 @@ function Element.Create(data,parent)
         return math.Round(math.Remap(panel:GetSlideX(), 0, 1 ,panel.Min, panel.Max), panel.Decimals)
     end
 
+    function panel:SetValue(value)
+        self:SetSlideX(math.Remap(value, self.Min, self.Max, 0, 1))
+    end
+
     function panel:OnMouseWheeled(dlt)
         self.TextAlpha = 255
 

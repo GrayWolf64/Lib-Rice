@@ -1,19 +1,38 @@
 RiceUI          = RiceUI or {}
 RiceUI.RootName = "main"
 
-local elements = elements or {}
-local instances = instances or {}
+
+local elements = {}
+local widgets = {}
+local instances = {}
 
 RiceLib.Util.LoadFiles(elements, "riceui/elements")
+RiceLib.IncludeDir("riceui/modules", true)
+
+--- Load Widgets, which are groups of elements
+-- @section Widgets
+function RiceUI.DefineWidget(name, data) widgets[name] = data end
+local function createWidget(data, parent, root)
+    local name = data.widget
+    local func = widgets[name]
+
+    if not func then return elements.error.Create(data, parent) end
+    return func(data, parent, root)
+end
+RiceUI.CreateWidget = createWidget
+
+RiceLib.IncludeDir("riceui/widgets")
+
 
 --- Create UI Elements
 -- @section CreateElement
 function RiceUI.SimpleCreate(data, parent, root)
+    if data.widget then return createWidget(data, parent, root) end
+
     if not elements[data.type] then elements.error.Create(data, parent) return end
     if data.ShouldCreate and not data.ShouldCreate() then return end
 
     local panel = elements[data.type].Create(data, parent)
-
     root = root or panel
 
     RiceUI.DoProcess(panel)
@@ -45,6 +64,7 @@ function RiceUI.Create(tab, parent, root)
     return _insts
 end
 
+
 --- Handle generic parameters
 -- @section UniProcess
 local uniProcess = uniProcess or {}
@@ -73,9 +93,10 @@ end
 
 RiceLib.IncludeDir("riceui/uniprocess", true)
 
+-- Prefab will soon be replace by widgets
 RiceUI.Prefab = {}
 RiceLib.IncludeDir("riceui/prefabs", true)
-RiceLib.IncludeDir("riceui/modules", true)
+
 
 concommand.Add("riceui_reload", function()
     RiceLib.Util.LoadFiles(elements, "riceui/elements")

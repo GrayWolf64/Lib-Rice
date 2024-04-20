@@ -4,36 +4,53 @@ RiceLib.VGUI.RegisterFontAdv("Source Han Sans SC", "SourceHan")
 RiceLib.VGUI.RegisterFontAdv("OPlusSans 3.0 Medium", "OPPOSans")
 RiceLib.VGUI.RegisterFontFixed("OPlusSans 3.0 Medium", "OPPOSans_F")
 
-RiceLib.VGUI.RegisterFont_New{
+RiceUI.Font.Register{
     CodeName = "RiceUI",
 }
 
-RiceLib.VGUI.RegisterFont_New{
+RiceUI.Font.Register{
     CodeName = "RiceUI_M",
     FontName = "OPlusSans 3.0 Medium"
 }
 
-RiceLib.VGUI.RegisterFont_New{
+RiceUI.Font.Register{
     CodeName = "RiceUI_B",
     FontName = "OPlusSans 3.0 Bold"
 }
 
-RiceLib.VGUI.RegisterFont_New{
-    CodeName = "Source",
-    FontName = "Source Han Sans SC"
+RiceUI.Font.Register{
+    CodeName = "RiceUIFixed",
+    EnableCaching = true
 }
 
-RiceLib.VGUI.RegisterFont_New{
+RiceUI.Font.Register{
+    CodeName = "RiceUIFixed_M",
+    FontName = "OPlusSans 3.0 Medium",
+    EnableCaching = true
+}
+
+RiceUI.Font.Register{
+    CodeName = "RiceUIFixed_B",
+    FontName = "OPlusSans 3.0 Bold",
+    EnableCaching = true
+}
+
+RiceUI.Font.Register{
+    CodeName = "Source",
+    FontName = "Source Han Sans SC",
+}
+
+RiceUI.Font.Register{
     CodeName = "Smiley",
     FontName = "Smiley Sans Oblique"
 }
 
-RiceLib.VGUI.RegisterFont_New{
+RiceUI.Font.Register{
     CodeName = "Digi",
     FontName = "DS-Digital"
 }
 
-RiceLib.VGUI.RegisterFont_New{
+RiceUI.Font.Register{
     CodeName = "VCR",
     FontName = "VCR OSD Mono"
 }

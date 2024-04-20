@@ -78,7 +78,7 @@ startShadow = function()
     cam.Start2D()
 end
 
-endShadow = function(intensity, spread, blur, opacity, direction, distance)
+endShadow = function(intensity, spread, blur, opacity, direction, distance, scissor)
     opacity = opacity or 255
     direction = direction or 0
     distance = distance or 0
@@ -99,7 +99,14 @@ endShadow = function(intensity, spread, blur, opacity, direction, distance)
     local xOffset = math.sin(math.rad(direction)) * distance
     local yOffset = math.cos(math.rad(direction)) * distance
     for i = 1, math.ceil(intensity) do
+        if istable(scissor) then
+            local startX, startY, sizeW, sizeH = unpack(scissor)
+
+            render.SetScissorRect(startX, startY, startX + sizeW, startY + sizeH, true)
+        end
+
         render.DrawScreenQuadEx(xOffset, yOffset, scrW, scrH)
+        render.SetScissorRect(0, 0, 0, 0, false)
     end
 
     cam.End2D()

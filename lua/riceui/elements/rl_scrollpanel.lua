@@ -61,7 +61,15 @@ function Element.Create(data, parent)
                     end
 
                     self:SetSize(base:GetWide(), height)
-                end
+                end,
+
+                GetSize = function(self)
+                    return self:GetParent():GetSize()
+                end,
+
+                LocalToScreen = function(self)
+                    return self:GetParent():LocalToScreen()
+                end,
             }
         },
 
@@ -124,6 +132,18 @@ function Element.Create(data, parent)
             end
 
             return math.Clamp(self:GetScroll() + tScroll, 0, self.Canvas:GetTall()) ~= self:GetScroll()
+        end,
+
+        Clear = function(self)
+            for _, pnl in ipairs(self:GetChildren()) do
+                if pnl.SubID == "Canvas" then continue end
+
+                pnl:Remove()
+            end
+        end,
+
+        GetChildren = function(self)
+            return self.Canvas:GetChildren()
         end
     }, parent, parent)
 

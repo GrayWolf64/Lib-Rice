@@ -1,5 +1,7 @@
 function RiceUI.SmoothController(time)
-    local controller = {}
+    local controller = {
+        time = time
+    }
 
     controller.valStart, controller.oldVal, controller.newVal = 0, -1, -1
     controller.time = controller.time or 0.25
@@ -7,7 +9,7 @@ function RiceUI.SmoothController(time)
     return controller
 end
 
-function RiceUI.Smooth(controller,val)
+function RiceUI.Smooth(controller, val)
     if controller.oldVal == -1 and controller.newVal == -1 then
         controller.oldVal = val
         controller.newVal = val

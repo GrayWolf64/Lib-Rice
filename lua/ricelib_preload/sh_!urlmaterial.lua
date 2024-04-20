@@ -10,21 +10,33 @@ end
 if SERVER then
     util.AddNetworkString"ricelib_send_materials"
 
-    gameevent.Listen("player_connect")
-    hook.Add("player_connect", "RiceLibURLMaterialsDispatch", function(data)
-        if data.bot == 1 then return end
+    hook.Add("RiceLibClientReady", "RiceLibURLMaterialsDispatch", function(ply)
+        if ply:IsBot() then return end
+
         net.Start"ricelib_send_materials"
         net.WriteString(file.Read(manifest, "DATA"))
-        net.Send(Entity(data.index + 1))
+        net.Send(ply)
     end)
 
     RiceLib.URLMaterial.Create = function(name, url)
         net.Start"ricelib_send_materials"
 
         local oldContent = util.JSONToTable(file.Read(manifest, "DATA"))
-        oldContent[#oldContent + 1] = {name = name, url = url}
+        local exists = false
 
-        file.Write(manifest, util.TableToJSON(oldContent))
+        for _, record in ipairs(oldContent) do
+            if record.name == name then
+                exists = true
+
+                break
+            end
+        end
+
+        if not exists then
+            oldContent[#oldContent + 1] = {name = name, url = url}
+
+            file.Write(manifest, util.TableToJSON(oldContent))
+        end
 
         net.WriteString(file.Read(manifest, "DATA"))
         net.Broadcast()

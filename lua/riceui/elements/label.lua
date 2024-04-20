@@ -15,10 +15,8 @@ function Element.Create(data,parent)
     local panel = vgui.Create("DLabel",parent)
     panel:SetPos(RiceLib.hudScale(data.x,data.y))
     panel:SetSize(RiceLib.hudScale(data.w,data.h))
-    panel:SetFont(data.Font)
     panel:SetColor(data.Color)
     panel:SetText(data.Text)
-    if not data.NoResize then panel:SizeToContents() end
     panel.ProcessID = "Label"
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))

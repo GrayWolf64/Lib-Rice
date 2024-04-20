@@ -40,7 +40,7 @@ function Element.Create(data, parent)
                 end
             },
 
-            {type = "rl_panel", ID = "NavigationPanel", Dock = RIGHT,
+            {type = "rl_panel", ID = "NavigationPanel", Dock = FILL,
                 Theme = {ThemeType = "Layer"},
 
                 SwitchPage = function(self, pageName)
