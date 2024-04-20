@@ -69,7 +69,7 @@ local shadowMaterial = CreateMaterial("bshadows", "UnlitGeneric", {
     ["$color2"] = "0 0 0"
 })
 
-local function startShadow()
+startShadow = function()
     render.PushRenderTarget(renderTarget)
     render.OverrideAlphaWriteEnable(true, true)
     render.Clear(0, 0, 0, 0)
@@ -78,10 +78,11 @@ local function startShadow()
     cam.Start2D()
 end
 
-local function endShadow(intensity, spread, blur, opacity, direction, distance)
-    opacity   = opacity or 255
+endShadow = function(intensity, spread, blur, opacity, direction, distance)
+    opacity = opacity or 255
     direction = direction or 0
-    distance  = distance or 0
+    distance = distance or 0
+    _shadowOnly = _shadowOnly or false
 
     if blur > 0 then
         render.OverrideAlphaWriteEnable(true, true)
@@ -95,21 +96,21 @@ local function endShadow(intensity, spread, blur, opacity, direction, distance)
     shadowMaterial:SetTexture("$basetexture", renderTarget)
     render.SetMaterial(shadowMaterial)
 
-    local offset_x = math.sin(math.rad(direction)) * distance
-    local offset_y = math.cos(math.rad(direction)) * distance
-    for _ = 1, math.ceil(intensity) do
-        render.DrawScreenQuadEx(offset_x, offset_y, scrW, scrH)
+    local xOffset = math.sin(math.rad(direction)) * distance
+    local yOffset = math.cos(math.rad(direction)) * distance
+    for i = 1, math.ceil(intensity) do
+        render.DrawScreenQuadEx(xOffset, yOffset, scrW, scrH)
     end
 
     cam.End2D()
 end
 
 RiceUI.Render = {
-    DrawShadowEx  = drawShadowEx,
-    DrawShadow    = drawShadow,
+    DrawShadowEx = drawShadowEx,
+    DrawShadow = drawShadow,
     DrawIndicator = drawIndicator,
-    ShadowText    = shadowText,
+    ShadowText = shadowText,
 
     StartShadow = startShadow,
-    EndShadow   = endShadow
+    EndShadow = endShadow
 }
