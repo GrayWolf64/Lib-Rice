@@ -1,6 +1,5 @@
 local animations = {
     FrameClose = function(panel)
-        local x, y = panel:GetSize()
         local w, h = panel:GetSize()
 
         panel:SetMouseInputEnabled(false)
@@ -34,3 +33,60 @@ RiceUI.DefineMixin("RiceUI_Animation", function(self, type, callback)
 
     animator(self, callback)
 end)
+
+local DEFAULT_EASEFUNCTION = math.ease.OutExpo
+
+local function moveTo(self, args)
+    RiceLib.table.Inherit(args, {
+        Time = RiceUI.Animation.GetTime("Normal"),
+        Delay = 0,
+        EaseFunction = DEFAULT_EASEFUNCTION,
+    })
+
+    local x, y = args.X, args.Y
+
+    x = x or self:GetX()
+    y = y or self:GetY()
+
+    local anim = self:NewAnimation(args.Time, args.Delay, 1, args.Callback)
+    anim.StartPos = Vector(self:GetX(), self:GetY(), 0)
+    anim.Think = function(animData, panel, fraction)
+        local easedFraction = args.EaseFunction(fraction)
+        local pos = LerpVector(easedFraction, animData.StartPos, Vector(x, y, 0))
+
+        panel:SetPos(pos.x, pos.y)
+        if panel:GetDock() > 0 then panel:InvalidateParent() end
+    end
+end
+
+local function sizeTo(self, args)
+    RiceLib.table.Inherit(args, {
+        Time = RiceUI.Animation.GetTime("Normal"),
+        Delay = 0,
+        EaseFunction = DEFAULT_EASEFUNCTION,
+    })
+
+    local w, h = args.W or -1, args.H or - 1
+
+    local anim = self:NewAnimation(args.Time, args.Delay, 1, args.Callback)
+    --anim.StartSize = Vector(self:GetWide(), self:GetTall(), 0)
+    anim.Think = function(animData, panel, fraction)
+        if not anim.StartSize then
+            local startW, startH = panel:GetSize()
+
+            if w < 0 then w = self:GetWide() end
+            if h < 0 then h = self:GetTall() end
+
+            anim.StartSize = Vector( startW, startH, 0 )
+        end
+
+        local easedFraction = args.EaseFunction(fraction)
+        local size = LerpVector(easedFraction, animData.StartSize, Vector(w, h, 0))
+
+        panel:SetSize(size.x, size.y)
+        if panel:GetDock() > 0 then panel:InvalidateParent() end
+    end
+end
+
+RiceUI.DefineMixin("RiceUI_MoveTo", moveTo)
+RiceUI.DefineMixin("RiceUI_SizeTo", sizeTo)

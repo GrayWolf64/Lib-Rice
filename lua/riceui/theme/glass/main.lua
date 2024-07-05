@@ -87,7 +87,7 @@ local function drawBox(self, w, h, style, color)
     if style.Blur then
         RiceLib.Render.StartStencil()
 
-        RiceLib.Draw.RoundedBox(style.Radius, 0, 0, w, h, color_white)
+        RiceLib.Draw.RoundedBox(style.Radius or 0, 0, 0, w, h, color_white)
 
         render.SetStencilCompareFunction(STENCIL_EQUAL)
         render.SetStencilFailOperation(STENCIL_KEEP)
@@ -96,7 +96,7 @@ local function drawBox(self, w, h, style, color)
 
         render.SetStencilEnable(false)
 
-        draw.RoundedBox(style.Radius, 0, 0, w, h, color)
+        draw.RoundedBox(style.Radius or 0, 0, 0, w, h, color)
 
         return
     end
@@ -169,4 +169,11 @@ RiceUI.ThemeNT.RegisterClass("Glass", "Button",{
 
         draw.SimpleText(self.Text, self:GetFont(), w / 2, h / 2, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end,
+})
+
+RiceUI.ThemeNT.RegisterClass("Glass", "NoDraw",{
+    Default = function(self, w, h, style) end,
+    Custom = function(self, w, h, style)
+        style.Draw(self, w, h, style)
+    end
 })

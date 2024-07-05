@@ -15,12 +15,14 @@ end
 
 local function startHoloDisplay(self, dist, scale, pos, func)
     local dist = dist or 500
+    if EyePos():DistToSqr(self:GetPos()) >= dist * dist then return end
+
     local pos = pos or Vector(0, 0, 0)
-    if LocalPlayer():EyePos():DistToSqr(self:GetPos()) >= dist * dist then return end
     local ang = EyeAngles()
     ang = Angle(0, ang.y, 0)
     ang:RotateAroundAxis(ang:Up(), -90)
     ang:RotateAroundAxis(ang:Forward(), 90)
+
     cam.Start3D2D(self:LocalToWorld(pos), ang, scale or 0.1)
     func()
     cam.End3D2D()
@@ -45,6 +47,7 @@ local blur_passes = 6
 local blur_mat = Material"pp/blurscreen"
 
 local function blur(x, y, w, h, amount)
+
     surface.SetMaterial(blur_mat)
     surface.SetDrawColor(color_white:Unpack())
 
@@ -58,6 +61,8 @@ local function blur(x, y, w, h, amount)
     end
 
     render.SetScissorRect(0, 0, 0, 0 , false)
+    draw.NoTexture()
+
 end
 
 RiceLib.Render = {

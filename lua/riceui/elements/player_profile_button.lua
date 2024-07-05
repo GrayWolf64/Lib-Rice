@@ -1,5 +1,7 @@
 local Element = {}
 function Element.Create(data,parent)
+    data.ply = data.ply or data.Player
+
     local panel = vgui.Create("DButton",parent)
     panel:SetText("")
 

@@ -43,16 +43,16 @@ function Element.Create(data, parent)
             {type = "rl_panel", ID = "NavigationPanel", Dock = FILL,
                 Theme = {ThemeType = "Layer"},
 
-                SwitchPage = function(self, pageName)
-                    self:GetParent():SwitchPage(pageName)
+                SwitchNavPage = function(self, pageName)
+                    self:GetParent():SwitchNavPage(pageName)
                 end,
 
-                SetPage = function(self, pageName, page)
-                    self:GetParent():SetPage(pageName, page)
+                SetNavPage = function(self, pageName, page)
+                    self:GetParent():SetNavPage(pageName, page)
                 end,
 
-                GetPage = function(self, pageName)
-                    self:GetParent():GetPage(pageName)
+                GetNavPage = function(self, pageName)
+                    self:GetParent():GetNavPage(pageName)
                 end,
 
                 IsPageValid = function(self, pageName)
@@ -62,7 +62,7 @@ function Element.Create(data, parent)
         }
     }, parent)
 
-    function panel:SwitchPage(pageName)
+    function panel:SwitchNavPage(pageName)
         for _, page in pairs(self.Pages) do
             page:SetVisible(false)
         end
@@ -72,11 +72,11 @@ function Element.Create(data, parent)
         self.CurrentPage = pageName
     end
 
-    function panel:SetPage(pageName, page)
+    function panel:SetNavPage(pageName, page)
         self.Pages[pageName] = page
     end
 
-    function panel:GetPage()
+    function panel:GetNavPage()
         return self.CurrentPage
     end
 

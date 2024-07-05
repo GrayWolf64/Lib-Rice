@@ -44,9 +44,11 @@ if CLIENT then
     end
 
     local function blurBackground(self, amount)
+        DisableClipping(true)
+
         blurPanel(self, amount)
 
-        DisableClipping(DisableClipping(true))
+        DisableClipping(false)
     end
 
     local function FadeIn(panel, time, func)
@@ -101,13 +103,13 @@ if CLIENT then
     end
 
     local function TextWide(font, text)
-        surface.SetFont(font)
+        surface.SetFont(RiceUI.Font.Get(font))
 
         return select(1, surface.GetTextSize(text))
     end
 
     local function TextHeight(font, text)
-        surface.SetFont(font)
+        surface.SetFont(RiceUI.Font.Get(font))
 
         return select(2, surface.GetTextSize(text))
     end

@@ -44,7 +44,7 @@ function Element.Create(data, parent)
             color = self:RiceUI_GetColor("Text", "Primary")
         end
 
-        draw.DrawText(self.Text, self.Font, w / 2, 0, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        draw.DrawText(self.Text, RiceUI.Font.Get(self.Font), w / 2, 0, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
         --RiceUI.Render.DrawIndicator(w, h)
     end

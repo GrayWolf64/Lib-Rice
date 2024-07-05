@@ -15,6 +15,7 @@ function Element.Create(data,parent)
     panel:SetPos(RiceLib.hudScale(data.x,data.y))
     panel:SetSize(RiceLib.hudScale(data.w,data.h))
     panel:SetText("")
+    panel.DoubleClickTimer = 0
     panel.GThemeType = "Button"
     panel.ProcessID = "Button"
 
@@ -32,6 +33,9 @@ function Element.Create(data,parent)
 
     function panel:OnMousePressed(keyCode)
         if keyCode == MOUSE_LEFT then
+            if self.DoubleClickTimer > RealTime() then self:DoDoubleClick() return end
+            self.DoubleClickTimer = RealTime() + 0.2
+
             if self.ClickSound then surface.PlaySound(self.ClickSound) end
 
             self:DoClick()

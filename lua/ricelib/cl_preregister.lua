@@ -20,19 +20,22 @@ RiceUI.Font.Register{
 
 RiceUI.Font.Register{
     CodeName = "RiceUIFixed",
-    EnableCaching = true
+    EnableCaching = true,
+    Fixed = true
 }
 
 RiceUI.Font.Register{
     CodeName = "RiceUIFixed_M",
     FontName = "OPlusSans 3.0 Medium",
-    EnableCaching = true
+    EnableCaching = true,
+    Fixed = true
 }
 
 RiceUI.Font.Register{
     CodeName = "RiceUIFixed_B",
     FontName = "OPlusSans 3.0 Bold",
-    EnableCaching = true
+    EnableCaching = true,
+    Fixed = true
 }
 
 RiceUI.Font.Register{

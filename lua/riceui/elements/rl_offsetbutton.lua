@@ -11,6 +11,7 @@ function Element.Create(data,parent)
         EnableOnChat = true,
         Outline = true,
         NoGTheme = true,
+        NoPaint = false
     })
 
     local panel = vgui.Create("DButton",parent)
@@ -30,8 +31,10 @@ function Element.Create(data,parent)
 
         if self.Dragging then return end
 
-        surface.SetDrawColor(0,255,0,255)
-        surface.DrawOutlinedRect(0,0,w,h,2)
+        if not self.NoPaint then
+            surface.SetDrawColor(0,255,0,255)
+            surface.DrawOutlinedRect(0,0,w,h,2)
+        end
 
         if self.Hint == nil then return end
         if not self:IsHovered() then return end

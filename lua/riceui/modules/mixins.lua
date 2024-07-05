@@ -20,11 +20,19 @@ RiceUI.DefineMixin("RiceUI_GetRoot", function(self)
     return RiceLib.VGUI.GetRoot(self)
 end)
 
+RiceUI.DefineMixin("RiceUI_GetRootPanel", function(self)
+    return self.RiceUI_Root
+end)
+
 RiceUI.DefineMixin("GetElementValue", function(self, element)
+    if not self.riceui_elements then return end
+
     return self.riceui_elements[element]:GetValue()
 end)
 
 RiceUI.DefineMixin("GetElement", function(self, element)
+    if not self.riceui_elements then return end
+
     return self.riceui_elements[element]
 end)
 

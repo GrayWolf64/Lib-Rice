@@ -1,17 +1,118 @@
-RiceUI.Notify = RiceUI.Notify or {}
+local Base = (RiceUI.Notify or {}).Base
 
-function RiceUI.Notify.Message(arg)
+
+local function init()
+    Base = RiceUI.SimpleCreate{
+        type = "rl_panel",
+        NoGTheme = true,
+        Paint = function() end,
+        w = 400,
+        h = 800,
+        x = 1500,
+        y = 20,
+        children = {
+            {
+                type = "scrollpanel",
+                ID = "ScrollPanel",
+                Dock = FILL
+            }
+        }
+    }
+
+    RiceUI.Notify.Base = Base
+end
+
+local function message(arg)
+    if not IsValid(Base) then init() end
+
     RiceLib.table.Inherit(arg, {
         Title = "Message",
         Text = "Message",
         Icon = "icon16/textfield.png",
-        Sound = "garrysmod/content_downloaded.wav",
-        BarColor = Color(0, 0, 0, 0)
+        --Sound = "garrysmod/content_downloaded.wav",
+        BarColor = Color(0, 0, 0, 0),
+        LifeTime = 3
     })
 
-    surface.PlaySound(arg.Sound)
+    if arg.Sound then surface.PlaySound(arg.Sound) end
 
-    return RiceUI.SimpleCreate({
+    return RiceUI.SimpleCreate({type = "rl_panel",
+        Dock = TOP,
+        Margin = {0, 8, 0, 0},
+        h = 0,
+
+        UseNewTheme = true,
+        ThemeNT = {
+            Theme = "Modern",
+            Style = "Acrylic",
+            --Color = "black"
+        },
+
+        OnCreated = function(self)
+            self:RiceUI_SizeTo{
+                H = RiceUI.Scale.Size(128),
+                EaseFunction = math.ease.OutBack,
+
+                Callback = function()
+                    self:RiceUI_SizeTo{
+                        H = 0,
+                        Delay = arg.LifeTime,
+                        EaseFunction = math.ease.InBack,
+
+                        Callback = function()
+                            self:Remove()
+                        end
+                    }
+                end
+            }
+        end,
+
+        children = {
+            {type = "rl_panel",
+                Dock = TOP,
+                h = 48,
+
+                children = {
+                    {type = "image",
+                        Dock = LEFT,
+                        Margin = {8, 8, 8, 8},
+                        w = 32,
+
+                        Image = arg.Icon
+                    },
+
+                    {type = "label",
+                        Dock = FILL,
+
+                        Text = arg.Title,
+                        Color = color_black
+                    }
+                }
+            },
+
+            {type = "rl_panel",
+                Dock = TOP,
+                h = 2,
+
+                ThemeNT = {
+                    StyleSheet = {
+                        Color = arg.BarColor
+                    }
+                }
+            },
+
+            {type = "label",
+                x = 8,
+                y = 54,
+
+                Text = arg.Text,
+                Font = "RiceUI_24",
+                Color = color_black
+            }
+        }
+    }, Base:GetElement("ScrollPanel"))
+
+    --[[return RiceUI.SimpleCreate({
         type = "rl_panel",
         Dock = TOP,
         Margin = {0, 5, 0, 0},
@@ -88,68 +189,50 @@ function RiceUI.Notify.Message(arg)
                 end
             }
         }
-    }, RiceUI.Notify.Base.riceui_elements.ScrollPanel)
+    }, Base:GetElement("ScrollPanel"))]]
 end
 
-function RiceUI.Notify.Panel(data)
-    return RiceUI.SimpleCreate(data, RiceUI.Notify.Base.riceui_elements.ScrollPanel)
-end
-
-function RiceUI.Notify.Init()
-    RiceUI.Notify.Base = RiceUI.SimpleCreate({
-        type = "rl_panel",
-        NoGTheme = true,
-        Paint = function() end,
-        w = 400,
-        h = 800,
-        x = 1500,
-        y = 20,
-        children = {
-            {
-                type = "scrollpanel",
-                ID = "ScrollPanel",
-                Dock = FILL
-            }
-        }
-    })
-end
-
-hook.Add("InitPostEntity", "RiceUI_InitNotify", RiceUI.Notify.Init)
+hook.Add("InitPostEntity", "RiceUI_InitNotify", init)
 
 concommand.Add("riceui_notify_clear", function()
-    RiceUI.Notify.Base.riceui_elements.ScrollPanel:Clear()
+    Base:GetElement("ScrollPanel"):Clear()
 end)
 
 concommand.Add("riceui_notify_reload", function()
-    if IsValid(RiceUI.Notify.Base) then
-        RiceUI.Notify.Base:Remove()
+    if IsValid(Base) then
+        Base:Remove()
     end
 
-    RiceUI.Notify.Init()
+    init()
 end)
 
 concommand.Add("riceui_notify_message", function(ply, cmd, args, argStr)
-    RiceUI.Notify.Message({
-        Text = argStr
-    })
+    message{
+        Text = argStr,
+        Sound = "garrysmod/content_downloaded.wav"
+    }
 end)
 
 concommand.Add("riceui_notify_warn", function(ply, cmd, args, argStr)
-    RiceUI.Notify.Message({
+    message{
         Text = argStr,
         Title = "Warning",
         Icon = "vgui/notices/generic",
         Sound = "garrysmod/ui_hover.wav",
         BarColor = Color(255, 255, 0)
-    })
+    }
 end)
 
 concommand.Add("riceui_notify_error", function(ply, cmd, args, argStr)
-    RiceUI.Notify.Message({
+    message{
         Text = argStr,
         Title = "ERROR",
         Icon = "vgui/notices/error",
         Sound = "garrysmod/ui_hover.wav",
         BarColor = Color(255, 0, 0)
-    })
+    }
 end)
+
+RiceUI.Notify = {
+    Message = message
+}

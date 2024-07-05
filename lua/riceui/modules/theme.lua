@@ -94,6 +94,9 @@ concommand.Add("riceui_themes", function()
     PrintTable(themes)
 end)
 
+
+-- MARK: ThemeProcess
+
 function RiceUI.DefineThemeProcess(name, data)
     theme_processes[name] = theme_processes[name] or {}
 
@@ -113,11 +116,12 @@ end
 
 RiceUI.DefineThemeProcess("Label", function(panel)
     if panel.IsThemeNT then
-        panel:SetColor(panel:RiceUI_Color("Text", "Primary"))
+        panel:SetColor(panel:RiceUI_GetColor("Text", "Primary"))
 
         return
     end
 
+    if not panel.ThemeMeta then return end
     panel:SetColor(get_color_base(panel.ThemeMeta, panel, "Text"))
 end)
 
@@ -130,16 +134,17 @@ RiceUI.DefineThemeProcess("ScrollPanel", function(panel)
 end)
 
 RiceUI.DefineThemeProcess("Switch", function(panel)
-    panel.Color = get_color_base(panel.ThemeMeta, panel, "Focus")
-
+    if not panel.ThemeMeta then return end
     if not panel.Value then return end
 
+    panel.Color = get_color_base(panel.ThemeMeta, panel, "Focus")
     panel:SetColor(panel.Color)
 end)
 
 RiceUI.AddThemeParamaBlacklist("Shadow")
 RiceUI.AddThemeParamaBlacklist("Blur")
 RiceUI.AddThemeParamaBlacklist("Corner")
+
 
 RiceUI.GetTheme = get_theme
 RiceUI.GetColorBase = get_color_base
@@ -148,6 +153,7 @@ RiceUI.ApplyTheme = apply_theme
 RiceUI.DoThemeProcess = do_theme_process
 
 RiceUI.ReloadThemes = reload_themes
+
 
 -- MARK: ThemeNT
 -- ThemeNT
@@ -176,7 +182,7 @@ function apply_theme_nt(panel, themeData)
     panel.IsThemeNT = true
     panel.ThemeNT_Color = themeData.Color
 
-    local class = theme.Class or (panel.Theme or {ThemeType = nil}).ThemeType or panel.ProcessID 
+    local class = theme.Class or (panel.Theme or {ThemeType = nil}).ThemeType or panel.ProcessID
     local paintFunction = themeTable.Classes[class][theme.Style]
     if paintFunction then
         panel.RiceUI_ThemeNT_Paint = paintFunction
@@ -186,6 +192,8 @@ function apply_theme_nt(panel, themeData)
     end
 
     panel.Colors = themeTable.Colors or get_theme(themeTable.Base).Colors
+
+    do_theme_process(panel)
 
     if theme.IgnoreChildren then return end
     for _, child in ipairs(panel:GetChildren()) do

@@ -20,7 +20,7 @@ function RiceUI.Smooth(controller, val)
     local newVal = controller.newVal
     local time = controller.time
 
-    local smoothVal = Lerp( (SysTime() - valStart) / time , oldVal, newVal )
+    local smoothVal = Lerp( math.ease.OutExpo((SysTime() - valStart) / time) , oldVal, newVal )
 
     if newVal ~= val then
         if smoothVal ~= val then

@@ -468,3 +468,99 @@ function RiceUI.Prefab.Confirm(args)
         }
     })
 end
+
+RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent)
+    RiceLib.table.Inherit(data, {
+        Title = "确认",
+        Text = "确定进行此操作吗？",
+
+        OnConfirm = function(self) self:Remove() end,
+        OnCancel = function(self) self:Remove() end,
+
+        ThemeNT = {
+            Theme = "Modern",
+            Class = "Frame",
+            Style = "Shadow"
+        },
+    })
+
+    local wide = math.max(500,RiceLib.VGUI.TextWide("RiceUI_36", data.Text))
+
+    return RiceUI.SimpleCreate({type = "rl_panel",
+        w = wide,
+        h = 230,
+
+        Center = true,
+        OnTop = true,
+
+        UseNewTheme = true,
+        ThemeNT = data.ThemeNT,
+
+        ChildrenIgnoreRoot = true,
+        children = {
+            {type = "label",
+                Text = data.Title,
+                Font = "RiceUI_M_36",
+
+                Dock = TOP,
+                Margin = {20,20,0,0}
+            },
+
+            {type = "label",
+                Text = data.Text,
+                Font = "RiceUI_28",
+
+                Dock = TOP,
+                Margin = {20,10,0,0}
+            },
+
+            {type = "rl_panel",
+                ThemeNT = {
+                    StyleSheet = {
+                        Corner = {false,false,true,true},
+                        Color = Color(0, 0, 0, 25)
+                    }
+                },
+
+                h = 80,
+
+                Dock = BOTTOM,
+                Margin = {0,0,0,0},
+
+                children = {
+                    {type = "rl_button",
+                        Text = "确定",
+                        Font = "RiceUI_30",
+
+                        Dock = LEFT,
+                        Margin = {20,20,0,20},
+
+                        w = wide / 2 - RiceLib.hudScaleX(25),
+
+                        Theme = {ThemeType = "Button_Accent"},
+
+                        DoClick = function(self)
+                            data.OnConfirm(self:RiceUI_GetRootPanel())
+                        end
+                    },
+
+                    {type = "rl_button",
+                        Text = "取消",
+                        Font = "RiceUI_30",
+
+                        Dock = RIGHT,
+                        Margin = {0,20,20,20},
+
+                        w = wide / 2 - RiceLib.hudScaleX(25),
+
+                        Theme = {ThemeType = "Button_NT"},
+
+                        DoClick = function(self)
+                            data.OnCancel(self:RiceUI_GetRootPanel())
+                        end
+                    },
+                }
+            }
+        }
+    }, parent)
+end)

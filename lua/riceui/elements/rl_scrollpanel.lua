@@ -22,6 +22,22 @@ end
 local tScroll = 0
 local newerT = 0
 
+local function recersiveGetHeight(pnl, height)
+    for _, child in ipairs(pnl:GetChildren()) do
+        local cheight = child:GetY() + child:GetTall()
+
+        if cheight > height then
+            height = cheight
+        end
+
+        if #child:GetChildren() > 0 then
+            height = recersiveGetHeight(child, height)
+        end
+    end
+
+    return height
+end
+
 function Element.Create(data, parent)
     RiceLib.table.Inherit(data, {
         x = 10,
@@ -29,6 +45,7 @@ function Element.Create(data, parent)
         w = 300,
         h = 500,
         Theme = {ThemeType = "NoDraw"},
+        ScrollSpeed = 1
     })
 
     local panel = RiceUI.SimpleCreate({type = "rl_panel",
@@ -42,6 +59,7 @@ function Element.Create(data, parent)
         children = {
             {type = "rl_panel",
                 SubID = "Canvas",
+                PreventClear = true,
 
                 x = 0,
                 y = 0,
@@ -51,14 +69,7 @@ function Element.Create(data, parent)
                 PerformLayout = function(self)
                     local base = self:GetParent()
 
-                    local height = 0
-                    for _, child in ipairs(self:GetChildren()) do
-                        local cheight = child:GetY() + child:GetTall()
-
-                        if cheight > height then
-                            height = cheight
-                        end
-                    end
+                    local height = recersiveGetHeight(self, 0)
 
                     self:SetSize(base:GetWide(), height)
                 end,
@@ -78,7 +89,7 @@ function Element.Create(data, parent)
         ScrollEase = 0.3,
 
         OnMouseWheeled = function(self, delta)
-            self:AddScroll(-delta)
+            self:AddScroll(-delta * self.ScrollSpeed)
         end,
 
         OnCreated = function(self)
@@ -136,7 +147,7 @@ function Element.Create(data, parent)
 
         Clear = function(self)
             for _, pnl in ipairs(self:GetChildren()) do
-                if pnl.SubID == "Canvas" then continue end
+                if pnl.PreventClear then continue end
 
                 pnl:Remove()
             end

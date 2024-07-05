@@ -8,7 +8,13 @@ function RiceLib.Config.LoadConfig(Config, Name, default)
     local dir = root .. "/" .. Name .. ".json"
 
     if file.Exists(root, "DATA") and file.Exists(dir, "DATA") then
-        local data = RiceLib.table.Inherit(util.JSONToTable(file.Read(dir)), default)
+        local data = util.JSONToTable(file.Read(dir))
+        if data then
+            RiceLib.table.Inherit(data, default)
+        else
+            data = table.Copy(default)
+        end
+
         RiceLib.Config.SaveConfig(Config, Name, data)
 
         return data

@@ -38,10 +38,11 @@ function Element.Create(data, parent)
     function panel:OnValueChanged(val, noanim)
     end
 
-    function panel:SetValue(val)
+    function panel:SetValue(val, noTrigger)
         panel.Value = val
         panel:DoAnim(panel.Value, true)
-        panel:OnValueChanged(val)
+
+        if not noTrigger then panel:OnValueChanged(val) end
     end
 
     function panel:DoAnim(val, noanim)
@@ -76,7 +77,7 @@ function Element.Create(data, parent)
     end
 
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
-    panel:SetValue(data.Value or false)
+    panel:SetValue(data.Value or false, true)
 
     return panel
 end
