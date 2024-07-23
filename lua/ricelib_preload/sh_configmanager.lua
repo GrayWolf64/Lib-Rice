@@ -32,21 +32,58 @@ function RiceLib.Config.SaveConfig(Config, Name, tbl)
 end
 
 -- key based config
-RiceLib.Config.All = RiceLib.Config.LoadConfig("ricelib", "config_manager", {})
+local ConfigTable = RiceLib.Config.LoadConfig("ricelib", "config_manager", {})
 
-function RiceLib.Config.Set(NameSpace, Key, Value)
-    RiceLib.Config.All[NameSpace] = RiceLib.Config.All[NameSpace] or {}
-    RiceLib.Config.All[NameSpace][Key] = Value
-    RiceLib.Config.SaveConfig("ricelib", "config_manager", RiceLib.Config.All)
+function set(NameSpace, Key, Value)
+    ConfigTable[NameSpace] = ConfigTable[NameSpace] or {}
+    ConfigTable[NameSpace][Key] = Value
+    RiceLib.Config.SaveConfig("ricelib", "config_manager", ConfigTable)
 end
 
-function RiceLib.Config.Get(NameSpace, Key)
+function get(NameSpace, Key)
     if NameSpace == nil or Key == nil then return end
 
-    RiceLib.Config.All[NameSpace] = RiceLib.Config.All[NameSpace] or {}
+    ConfigTable[NameSpace] = ConfigTable[NameSpace] or {}
 
-    return RiceLib.Config.All[NameSpace][Key]
+    return ConfigTable[NameSpace][Key]
 end
+
+local configEntrys = {}
+local baseEntryInfo = {
+    Type = "Number",
+    Default = 0,
+
+    -- Post to Server when change in Client
+    AutoPost = false,
+
+    -- 0 Anyone
+    -- 1 Admin
+    -- 2 SuperAdmin
+    AdminLevel = 1,
+
+    Server = false,
+    Client = true
+}
+
+local function defineEntry(entryInfo)
+    local nameSpace = entryInfo.Namespace
+    local key = entryInfo.Key
+
+    if not configEntrys[nameSpace] then configEntrys[nameSpace] = {} end
+
+    configEntrys[nameSpace][key] = RiceLib.table.InheritCopy(entryInfo, baseEntryInfo)
+
+    if not ConfigTable[nameSpace][key] then
+        if CLIENT and not entryInfo.Client then return end
+        if SERVER and not entryInfo.Server then return end
+
+        set(nameSpace, key, entryInfo.Default)
+    end
+end
+
+RiceLib.Config.All = ConfigTable
+RiceLib.Config.Set = set
+RiceLib.Config.Get = get
 
 if SERVER then
     util.AddNetworkString("RL_Config_Command")
@@ -233,12 +270,26 @@ else
         RiceLib.Config.ConfigMenu[name] = {"Page", returnChoice}
     end
 
+    function RiceLib.Config.RegisterCustomPage(name, func)
+        RiceLib.Config.ConfigMenu[name] = {"Page", function(pnl)
+            func(pnl)
+
+            RiceUI.ApplyTheme(pnl)
+        end}
+    end
+
     function RiceLib.Config.OpenMenu()
         RiceLib.Config.MenuPanel = RiceUI.SimpleCreate({type = "rl_frame2",
             Center = true,
             Root = true,
 
             Title = "控制中心",
+
+            ThemeNT = {
+                Theme = "Modern",
+                Class = "Frame",
+                Style = "Acrylic"
+            },
 
             children = {
                 {type = "rl_navigation_view",

@@ -588,6 +588,103 @@ RiceUI.Examples.ModernBlack[1].Theme = {
     Shadow = true,
 }
 
+local function createSegment(parent, radius)
+    local segment = {
+        X = 0,
+        Y = 0,
+        Radius = radius or 16,
+        Parent = parent,
+        NextUpdate = CurTime()
+    }
+
+    function segment:SetPos(x, y)
+        self.X = x or self.X
+        self.Y = y or self.Y
+    end
+
+    function segment:SetPosVector(pos)
+        self.X = pos.x or self.X
+        self.Y = pos.y or self.Y
+    end
+
+    function segment:GetPos()
+        return self.X, self.Y
+    end
+
+    function segment:GetPosVector()
+        return Vector(self.X, self.Y)
+    end
+
+    function segment:Draw()
+        surface.SetDrawColor(255, 255, 255)
+        surface.DrawCircle(self.X, self.Y, self.Radius)
+
+        --RiceLib.Draw.Circle(self.x, self.y, self.radius, 32, color_white)
+
+        if self.Children then
+            self:Update()
+
+            self.Children:Draw()
+        end
+    end
+
+    function segment:Update()
+        local children = self.Children
+        if not children then return end
+
+        children:SetPosVector(self:GetPosVector() + (children:GetPosVector() - self:GetPosVector()):GetNormalized() * (self.Radius + children.Radius))
+    end
+
+    if parent then parent.Children = segment end
+
+    return segment
+end
+
+local head = createSegment(_, 24)
+local tail = createSegment(createSegment(createSegment(createSegment(createSegment(createSegment(createSegment(head, 22), 23), 20), 20), 20), 18), 16)
+
+local function r(nextSeg, iter)
+    if iter > 10 then return end
+
+    r(createSegment(nextSeg or tail), iter + 1)
+end
+
+r(rail, 1)
+
+RiceUI.Examples.ProceduralAnimation = {
+    {type = "rl_frame2",
+        Center = true,
+        Root = true,
+
+        ThemeNT = {
+            Theme = "Modern",
+            Class = "Frame",
+            Color = "black"
+        },
+
+        children = {
+            {type = "rl_canvas",
+                Dock = FILL,
+
+                Paint = function(self, w, h)
+                    head:Draw()
+                end,
+
+                Think = function(self)
+                    local x, y = input.GetCursorPos()
+                    local lx, ly = self:LocalToScreen()
+
+                    --head:SetPos(x - lx, y - ly)
+
+                    local deltaTime = FrameTime() * 100
+
+                    head:SetPosVector(head:GetPosVector() + (Vector(x - lx, y - ly, 0) - head:GetPosVector()):GetNormalized() * 5 * deltaTime)
+                end
+            }
+        }
+    }
+}
+
 concommand.Add("riceui_examples", function()
     RiceUI.SimpleCreate({type = "rl_frame",
         Text = "Examples",
