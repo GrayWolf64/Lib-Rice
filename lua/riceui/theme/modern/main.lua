@@ -1,3 +1,5 @@
+local getFont = RiceUI.Font.Get
+
 local colors = {
     white = {
         Text = {
@@ -21,10 +23,7 @@ local colors = {
                 Secondary = RiceUI.AlphaPercent(color_black, 0.16),
             },
 
-            Frame = {
-                Primary = RiceUI.AlphaPercent(color_white, 0.75),
-                Secondary = RiceUI.AlphaPercent(color_white, 0.35),
-            }
+            Frame = RiceUI.AlphaPercent(color_white, 0.75),
         },
 
         Background = {
@@ -42,8 +41,8 @@ local colors = {
             },
 
             Frame = {
-                Primary = ColorAlpha(color_white, 150),
-                Secondary = ColorAlpha(color_white, 75),
+                Acrylic = ColorAlpha(color_white, 150),
+                Primary = color_white
             },
 
             Layer = ColorAlpha(color_white, 50),
@@ -75,6 +74,7 @@ local colors = {
             }
         },
     },
+
     black = {
         Text = {
             Primary = color_white,
@@ -94,8 +94,8 @@ local colors = {
             Solid = HSLToColor(0, 0, 0.11),
 
             Control = {
-                Default = RiceUI.AlphaPercent(HSLToColor(0, 0, 1), 0.04),
-                Secondary = RiceUI.AlphaPercent(HSLToColor(0, 0, 1), 0.06),
+                Default = RiceUI.AlphaPercent(color_white, 0.015),
+                Secondary = RiceUI.AlphaPercent(color_white, 0.02),
             },
 
             Frame = Color(50, 50, 50, 191)
@@ -115,7 +115,11 @@ local colors = {
                 Secondary = HSLToColor(0, 0, 0.20)
             },
 
-            Frame = ColorAlpha(HSLToColor(0, 0, 0.15), 250),
+            Frame = {
+                Acrylic = ColorAlpha(HSLToColor(0, 0, 0.15), 250),
+                Primary = Color(32, 32, 32)
+            },
+
             Layer = ColorAlpha(color_black, 30),
 
             NavigationButton = {
@@ -125,8 +129,8 @@ local colors = {
             },
 
             Control = {
-                Default = RiceUI.AlphaPercent(color_white, 0.02),
-                Secondary = RiceUI.AlphaPercent(color_white, 0.04),
+                Default = Color(40, 40, 40),
+                Secondary = RiceUI.AlphaPercent(color_white, 0.02),
                 Tertiary = RiceUI.AlphaPercent(color_white, 0.01),
                 Active = RiceUI.AlphaPercent(Color(30, 30, 30), 0.7)
             },
@@ -147,6 +151,7 @@ local colors = {
     }
 }
 
+
 RiceUI.ThemeNT.DefineTheme("Modern", {
     Base = "modern",
     BaseNT = false,
@@ -154,33 +159,53 @@ RiceUI.ThemeNT.DefineTheme("Modern", {
     Colors = colors
 })
 
-local DEFAULT_BORDER_RADIUS = 6
 
-local function drawBox(self, w, h, Color, Corner, borderRadius)
-    local Corner = Corner or {true, true, true, true}
-
-    draw.RoundedBoxEx(borderRadius or DEFAULT_BORDER_RADIUS, 0, 0, w, h, Color or self:RiceUI_GetColor("Fill", "Control", "Prmiary"), unpack(Corner))
-end
-
+local DEFAULT_BODY_BORDER_RADIUS = 8
+local DEFAULT_CONTROLL_BORDER_RADIUS = 4
 
 local point = Material("gui/point.png")
 local cross = Material("rl_icons/xmark.png")
 local zoom = Material("icon16/zoom.png")
-local unit_2 = RiceLib.hudScaleY(2)
-local unit_8 = RiceLib.hudScaleY(8)
+
+local unit_1 = RiceUI.Scale.Size(1)
+local unit_2 = RiceUI.Scale.Size(2)
+local unit_4 = RiceUI.Scale.Size(4)
+local unit_8 = RiceUI.Scale.Size(8)
 
 
-RiceUI.ThemeNT.RegisterClass("Modern", "Panel",{
+local function drawControll(self, w, h, Color, Corner, borderRadius)
+    local Corner = Corner or {true, true, true, true}
+
+    local x, y = self:LocalToScreen()
+
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Control", "Default"), unpack(Corner))
+    render.SetScissorRect(x, y + h - unit_1, x + w, y + h, true)
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Control", "Secondary"), unpack(Corner))
+    render.SetScissorRect(0, 0, 0, 0, false)
+
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, unit_1, unit_1, w - unit_1 * 2, h - unit_1 * 2, Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(Corner))
+end
+
+local function drawControll_NoOutline(self, w, h, Color, Corner, borderRadius)
+    local Corner = Corner or {true, true, true, true}
+
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(Corner))
+end
+
+
+local themePanel = {
     Default = function(self, w, h, style)
-        surface.SetDrawColor(255, 255, 255)
-        surface.DrawRect(0, 0, w, h)
+        local corner = style.Corner or {true, true, true, true}
+        local color = style.Color or self:RiceUI_GetColor("Fill", "Control", "Default")
+
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
     end,
 
     Shadow = function(self, w, h, style)
         local corner = style.Corner or {true, true, true, true}
 
-        draw.RoundedBoxEx(8, 0, 0, w, h, ColorAlpha(color_black, 100), unpack(corner))
-        draw.RoundedBoxEx(8, 0, 0, w, h - unit_2, color_white, unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, ColorAlpha(color_black, 100), unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
     end,
 
     ShadowExpensive = function(self, w, h, style)
@@ -190,20 +215,18 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Panel",{
         local x, y = self:LocalToScreen()
         local parent = self:GetParent()
         local _shadowOnly, startY = parent:LocalToScreen()
-        local sizeW, sizeH = parent:GetSize()
+        local _, sizeH = parent:GetSize()
         RiceUI.Render.StartShadow()
-        draw.RoundedBoxEx(6, x + unit_2, y + unit_2, w - unit_2 * 2, h  - unit_2 * 2, color_white, unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS - unit_2, x + unit_2, y + unit_2, w - unit_2 * 2, h  - unit_2 * 2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
         RiceUI.Render.EndShadow(unpack( table.Add(shadowData, {0, startY, ScrW(), sizeH}) ))
 
-        draw.RoundedBoxEx(8, 0, 0, w, h, style.Color or color_white, unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
     end,
 
     Acrylic = function(self, w, h, style)
-        local level = style.Level or "Primary"
-
         RiceLib.Render.StartStencil()
 
-        RiceLib.Draw.RoundedBox(8, 0, 0, w, h, color_white)
+        RiceLib.Draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color_white)
 
         render.SetStencilCompareFunction(STENCIL_EQUAL)
         render.SetStencilFailOperation(STENCIL_KEEP)
@@ -217,23 +240,48 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Panel",{
         render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
         render.SetStencilFailOperation(STENCIL_ZERO)
 
-        draw.RoundedBoxEx(8, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Frame", level), true, true, true, true)
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Frame", "Primary"), true, true, true, true)
 
         render.SetStencilEnable(false)
 
-        draw.RoundedBoxEx(8, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame", level), true, true, true, true)
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame", "Acrylic"), true, true, true, true)
     end,
-})
+
+    Layer = function(self, w, h, style)
+        local color = self:RiceUI_GetColor("Fill", "Layer")
+        local corner = style.Corner or {true, true, true, true}
+
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
+    end
+}
+
+RiceUI.ThemeNT.RegisterClass("Modern", "Panel", themePanel)
+RiceUI.ThemeNT.RegisterClass("Modern", "RL_Popup", themePanel)
 
 RiceUI.ThemeNT.RegisterClass("Modern", "Frame",{
     Default = function(self, w, h, style)
-        draw.RoundedBox(8, 0, 0, w, h - unit_2, color_white)
+        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Frame", "Primary"))
+    end,
+
+    Shadow = function(self, w, h, style)
+        local corner = style.Corner or {true, true, true, true}
+        local shadowData = table.Copy(style.Shadow) or {1, 2, 2, 255, 0, 5}
+
+        local x, y = self:LocalToScreen()
+        local parent = self:GetParent()
+        local _shadowOnly, startY = parent:LocalToScreen()
+        local _, sizeH = parent:GetSize()
+        RiceUI.Render.StartShadow()
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, x, y, w, h, color_white, unpack(corner))
+        RiceUI.Render.EndShadow(unpack( table.Add(shadowData, {0, startY, ScrW(), sizeH}) ))
+
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Frame", "Primary"), unpack(corner))
     end,
 
     Acrylic = function(self, w, h, style)
         RiceLib.Render.StartStencil()
 
-        RiceLib.Draw.RoundedBox(8, 0, 0, w, h, color_white)
+        RiceLib.Draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color_white)
 
         render.SetStencilCompareFunction(STENCIL_EQUAL)
         render.SetStencilFailOperation(STENCIL_KEEP)
@@ -245,18 +293,18 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Frame",{
         local thickness = RiceLib.hudScaleY(2)
 
         DisableClipping(true)
-        draw.RoundedBox(8, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Stroke", "Frame"))
+        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Stroke", "Frame"))
         DisableClipping(false)
 
         render.SetStencilEnable(false)
 
-        draw.RoundedBox(8, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame"))
+        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame", "Acrylic"))
     end,
 
     Transparent = function(self, w, h, style)
         RiceLib.Render.StartStencil()
 
-        RiceLib.Draw.RoundedBox(8, 0, 0, w, h, color_white)
+        RiceLib.Draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color_white)
 
         render.SetStencilCompareFunction(STENCIL_EQUAL)
         render.SetStencilCompareFunction(STENCIL_INVERT)
@@ -264,12 +312,12 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Frame",{
         local thickness = RiceLib.hudScaleY(3)
 
         DisableClipping(true)
-        draw.RoundedBox(8, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Fill", "Layer"))
+        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Fill", "Layer"))
         DisableClipping(false)
 
         render.SetStencilEnable(false)
 
-        draw.RoundedBox(8, 0, 0, w, h, Color(255, 255, 255, 10))
+        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, Color(255, 255, 255, 10))
     end,
 })
 
@@ -284,35 +332,58 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Button", {
     Default = function(self, w, h, style)
         local textColor = self:RiceUI_GetColor("Text", "Primary")
 
-        drawBox(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+        if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
+        if self:IsDown() then color = self:RiceUI_GetColor("Text", "Tertiary") end
+
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+        draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end,
+
+    TextLeft = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
 
         if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
         if self:IsDown() then color = self:RiceUI_GetColor("Text", "Tertiary") end
 
-        draw.SimpleText(self.Text, self:GetFont(), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+        draw.SimpleText(self.Text, getFont(self:GetFont()), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end,
 
     Transparent = function(self, w, h, style)
         local color = self:RiceUI_GetColor("Fill", "Control", "Default")
         local textColor = self:RiceUI_GetColor("Text", "Primary")
 
-        drawBox(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)), style.Corner)
+        drawControll_NoOutline(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)), style.Corner)
 
         if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
         if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
 
-        draw.SimpleText(self.Text, self:GetFont(), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end,
 
     Close = function(self, w, h, style)
         local color = self:RiceUI_GetColor("Fill", "Accent", "Critical")
 
-        drawBox(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)), {false, true, false, false})
+        drawControll_NoOutline(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)), {false, true, false, false}, DEFAULT_BODY_BORDER_RADIUS)
 
         surface.SetDrawColor(self:RiceUI_GetColor("Text", "Primary"))
         surface.SetMaterial(cross)
         surface.DrawTexturedRectRotated(w / 2, h / 2, h / 2, h / 2, 0)
-    end
+    end,
+
+    Accent = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "OnAccent", "Primary")
+        local color = self:RiceUI_GetColor("Fill", "Accent", "Primary")
+
+        if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "OnAccent", "Secondary") end
+        if self:IsDown() then
+            textColor = self:RiceUI_GetColor("Text", "OnAccent", "Disable")
+            color = self:RiceUI_GetColor("Fill", "Accent", "Secondary")
+        end
+
+        drawControll_NoOutline(self, w, h, color, style.Corner)
+        draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end,
 })
 
 RiceUI.ThemeNT.RegisterClass("Modern", "Entry", {
@@ -331,27 +402,78 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Entry", {
         render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
         render.SetStencilFailOperation(STENCIL_KEEP)
 
-        drawBox(self, w, h + unit_2, statusColor, style.Corner)
+        drawControll(self, w, h + unit_2, statusColor, style.Corner)
 
         render.SetStencilCompareFunction(STENCIL_EQUAL)
 
-        drawBox(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
 
         render.SetStencilEnable(false)
 
-        draw.SimpleText(self:GetText(), RiceUI.Font.Get(self:GetFont()), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        --draw.SimpleText(self:GetText(), RiceUI.Font.Get(getFont(self:GetFont())), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
-        -- Text Cursor
+        --[[ Text Cursor
         if hasFocus then
             surface.SetDrawColor(ColorAlpha(textColor, 255 * math.abs(math.sin(SysTime() * 6 % 360))))
             local len = 0
 
             for i = 1, self:GetCaretPos() do
-                local w, _ = RiceLib.VGUI.TextWide(self:GetFont(), utf8.sub(self:GetText(), i, i))
+                local w, _ = RiceLib.VGUI.TextWide(getFont(self:GetFont()), utf8.sub(self:GetText(), i, i))
                 len = len + w
             end
 
             surface.DrawRect(unit_8 + len, 4, 1, h - 8)
+        end]]
+
+        self:DrawTextEntryText( textColor, self:GetHighlightColor(), self:GetCursorColor() )
+    end,
+})
+
+RiceUI.ThemeNT.RegisterClass("Modern", "ProgressBar", {
+    Default = function(self, w, h, style)
+        draw.RoundedBox(DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Text", "Disable"))
+
+        draw.RoundedBox(DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w * self:GetSmoothFraction(), h, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+    end
+})
+
+RiceUI.ThemeNT.RegisterClass("Modern", "RL_NumberCounter", {
+    Default = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
+        local statusColor = self:RiceUI_GetColor("Text", "Disable")
+        local hasFocus = self:HasFocus()
+
+        if hasFocus then statusColor = self:RiceUI_GetColor("Fill", "Accent", "Primary") end
+
+        RiceLib.Render.StartStencil()
+
+        surface.SetDrawColor(255, 255, 255)
+        surface.DrawRect(0, 0, w, h - unit_2)
+
+        render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+        render.SetStencilFailOperation(STENCIL_KEEP)
+
+        drawControll(self, w, h + unit_2, statusColor, style.Corner)
+
+        render.SetStencilCompareFunction(STENCIL_EQUAL)
+
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+
+        render.SetStencilEnable(false)
+
+        draw.SimpleText(self:GetValue(), getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+        if hasFocus then
+            surface.SetDrawColor(ColorAlpha(textColor, 255 * math.abs(math.sin(SysTime() * 6 % 360))))
+            local len = 0
+            local textW = RiceLib.VGUI.TextWide(getFont(self:GetFont()), self:GetText())
+
+            for i = 1, self:GetCaretPos() do
+                local w, _ = RiceLib.VGUI.TextWide(getFont(self:GetFont()), utf8.sub(self:GetText(), i, i))
+                len = len + w
+            end
+
+            surface.DrawRect(w / 2 + len - textW / 2, 4, 1, h - 8)
         end
     end,
 })

@@ -1,3 +1,18 @@
+local ANIMATION_RATE = 1
+local Speeds = {
+    Normal = 0.3,
+    Fast = 0.2,
+    Instant = 0.1
+}
+
+local function setRate(rate)
+    ANIMATION_RATE = rate
+end
+
+local function getTime(time)
+    return Speeds[time] * ANIMATION_RATE
+end
+
 local function expandFromPos(panel, data)
     if not IsValid(panel) then return end
 
@@ -124,5 +139,8 @@ RiceUI.Animation = {
     Shrink = shrink,
     FadeIn = fadeIn,
     FadeOut = fadeOut,
-    FadeInOut = fadeInOut
+    FadeInOut = fadeInOut,
+
+    SetRate = setRate,
+    GetTime = getTime
 }

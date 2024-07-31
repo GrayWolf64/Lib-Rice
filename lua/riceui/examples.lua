@@ -411,7 +411,9 @@ RiceUI.Examples = {
 
             ThemeNT = {
                 Theme = "Modern",
-                Class = "RL_Frame2"
+                Class = "Frame",
+                --Style = "Acrylic",
+                Color = "black"
             },
 
             w = 1000,
@@ -420,31 +422,160 @@ RiceUI.Examples = {
             children = {
                 {type = "rl_scrollpanel",
                     Dock = LEFT,
+                    Margin = {8, 0, 0, 8},
                     w = 256,
+
+                    UseNewTheme = true,
+                    ThemeNT = {
+                        Theme = "Modern",
+                        Class = "NoDraw",
+                        Color = "black"
+                    },
 
                     ScrollAmount = 100,
 
                     OnCreated = function(self)
                         for i = 1, 100 do
-                            RiceUI.SimpleCreate({type = "rl_panel",
+                            RiceUI.SimpleCreate({type = "rl_button",
                                 Dock = TOP,
-                                h = 48,
-
-                                children = {
-                                    {type = "label",
-                                        Dock = LEFT,
-                                        Margin = {8, 0, 0, 0},
-
-                                        Text = "Panel " .. i,
-                                    }
-                                }
+                                Margin = {0, 8, 0, 0},
+                                h = 48
                             }, self)
                         end
+
+                        RiceUI.ApplyTheme(self)
                     end
-                }
+                },
+
+                {type = "rl_panel",
+                    Dock = LEFT,
+                    Margin = {8, 0, 0, 8},
+                    w = 296,
+
+                    children = {
+                        {type = "entry",
+                            Dock = TOP,
+                            Margin = {8, 8, 8, 0}
+                        }
+                    }
+                },
             }
         }
     },
+
+    Animations = {
+        {type = "rl_frame2",
+            Center = true,
+            Root = true,
+
+            w = 1200,
+            h = 960,
+
+            children = {
+                {type = "slider",
+                    Dock = TOP,
+                    Margin = {16, 0, 16, 0},
+
+                    Min = 1,
+                    Max = 10,
+                    Decimals = 2,
+
+                    OnValueChanged = function(self, val)
+                        RiceUI.Animation.SetRate(self:GetValue())
+                    end
+                },
+
+                {type = "rl_scrollpanel",
+                    ID = "SP",
+
+                    Dock = LEFT,
+                    Margin = {0, 0, 16, 0},
+                    w = 512,
+                },
+
+                {type = "rl_scrollpanel",
+                    ID = "SP2",
+
+                    Dock = FILL,
+                    Margin = {0, 0, 16, 0}
+                }
+            },
+
+            OnCreated = function(self)
+                local index = 0
+                for funcName, func in SortedPairs(math.ease) do
+                    if not isfunction(func) then continue end
+
+                    RiceUI.SimpleCreate({type = "rl_button",
+                        y = 54 * index,
+                        w = 128,
+
+                        Text = funcName,
+
+                        --[[ThemeNT = {
+                            Theme = "Modern",
+                            Class = "NoDraw",
+                            Style = "Custom",
+                            StyleSheet = {
+                                Draw = function(self, w, h)
+                                    local Corner = Corner or {true, true, true, true}
+                                    local x, y = self:LocalToScreen()
+                                    local unit_1 = RiceUI.Scale.Size(1)
+                                    local textColor = self:RiceUI_GetColor("Text", "Primary")
+
+                                    if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
+
+                                    local c = HSVToColor((SysTime() % 360) * 300 + self:GetY() / 8, 1, 1)
+
+                                    draw.RoundedBoxEx(8, 0, 0, w, h, c, unpack(Corner))
+                                    render.SetScissorRect(x, y + h - unit_1, x + w, y + h, true)
+                                    draw.RoundedBoxEx(8, 0, 0, w, h, c, unpack(Corner))
+                                    render.SetScissorRect(0, 0, 0, 0, false)
+
+                                    draw.RoundedBoxEx(8, unit_1, unit_1, w - unit_1 * 2, h - unit_1 * 2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(Corner))
+
+                                    draw.SimpleText(self.Text, self:GetFont(), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                                end
+                            }
+                        },]]
+
+                        DoClick = function(btn)
+                            local x = btn:GetPos()
+                            if x == RiceUI.Scale.PosX(10) then
+                                x = RiceUI.Scale.PosX(372)
+                            else
+                                x = RiceUI.Scale.PosX(10)
+                            end
+
+                            btn:RiceUI_MoveTo{X = x, EaseFunction = func}
+                        end
+                    }, self:GetElement("SP"))
+
+                    RiceUI.SimpleCreate({type = "rl_button",
+                        y = 54 * index,
+                        w = 128,
+
+                        Text = funcName,
+
+                        DoClick = function(btn)
+                            local w = btn:GetWide()
+                            if w == RiceUI.Scale.Size(128) then
+                                w = RiceUI.Scale.Size(648)
+                                h = RiceUI.Scale.Size(648)
+                            else
+                                w = RiceUI.Scale.Size(128)
+                                h = RiceUI.Scale.Size(48)
+                            end
+
+                            btn:RiceUI_SizeTo{W = w, h = H, EaseFunction = func}
+                        end
+                    }, self:GetElement("SP2"))
+
+                    index = index + 1
+                end
+            end
+        }
+    }
 }
 
 RiceUI.Examples.ModernBlack = table.Copy(RiceUI.Examples.Modern)
@@ -455,6 +586,103 @@ RiceUI.Examples.ModernBlack[1].Theme = {
     Color = "black",
     TextColor = "black",
     Shadow = true,
+}
+
+local function createSegment(parent, radius)
+    local segment = {
+        X = 0,
+        Y = 0,
+        Radius = radius or 16,
+        Parent = parent,
+        NextUpdate = CurTime()
+    }
+
+    function segment:SetPos(x, y)
+        self.X = x or self.X
+        self.Y = y or self.Y
+    end
+
+    function segment:SetPosVector(pos)
+        self.X = pos.x or self.X
+        self.Y = pos.y or self.Y
+    end
+
+    function segment:GetPos()
+        return self.X, self.Y
+    end
+
+    function segment:GetPosVector()
+        return Vector(self.X, self.Y)
+    end
+
+    function segment:Draw()
+        surface.SetDrawColor(255, 255, 255)
+        surface.DrawCircle(self.X, self.Y, self.Radius)
+
+        --RiceLib.Draw.Circle(self.x, self.y, self.radius, 32, color_white)
+
+        if self.Children then
+            self:Update()
+
+            self.Children:Draw()
+        end
+    end
+
+    function segment:Update()
+        local children = self.Children
+        if not children then return end
+
+        children:SetPosVector(self:GetPosVector() + (children:GetPosVector() - self:GetPosVector()):GetNormalized() * (self.Radius + children.Radius))
+    end
+
+    if parent then parent.Children = segment end
+
+    return segment
+end
+
+local head = createSegment(_, 24)
+local tail = createSegment(createSegment(createSegment(createSegment(createSegment(createSegment(createSegment(head, 22), 23), 20), 20), 20), 18), 16)
+
+local function r(nextSeg, iter)
+    if iter > 10 then return end
+
+    r(createSegment(nextSeg or tail), iter + 1)
+end
+
+r(rail, 1)
+
+RiceUI.Examples.ProceduralAnimation = {
+    {type = "rl_frame2",
+        Center = true,
+        Root = true,
+
+        ThemeNT = {
+            Theme = "Modern",
+            Class = "Frame",
+            Color = "black"
+        },
+
+        children = {
+            {type = "rl_canvas",
+                Dock = FILL,
+
+                Paint = function(self, w, h)
+                    head:Draw()
+                end,
+
+                Think = function(self)
+                    local x, y = input.GetCursorPos()
+                    local lx, ly = self:LocalToScreen()
+
+                    --head:SetPos(x - lx, y - ly)
+
+                    local deltaTime = FrameTime() * 100
+
+                    head:SetPosVector(head:GetPosVector() + (Vector(x - lx, y - ly, 0) - head:GetPosVector()):GetNormalized() * 5 * deltaTime)
+                end
+            }
+        }
+    }
 }
 
 concommand.Add("riceui_examples", function()

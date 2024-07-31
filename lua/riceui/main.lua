@@ -33,12 +33,20 @@ function RiceUI.SimpleCreate(data, parent, root)
     if data.ShouldCreate and not data.ShouldCreate() then return end
 
     local panel = elements[data.type].Create(data, parent)
+    panel.RiceUI_Root = root
+
     root = root or panel
 
-    RiceUI.DoProcess(panel)
+    RiceUI.DoProcess(panel, root)
     RiceUI.ApplyMixins(panel)
 
-    if data.children then RiceUI.Create(data.children, panel, root) end
+    if data.children then
+        local childRoot = root
+        if data.ChildrenIgnoreRoot then childRoot = panel end
+
+        RiceUI.Create(data.children, panel, childRoot)
+    end
+
     if data.OnCreated then data.OnCreated(panel) end
     if panel.ChildCreated then panel:ChildCreated() end
 
@@ -69,7 +77,7 @@ end
 -- @section UniProcess
 local uniProcess = uniProcess or {}
 
-function RiceUI.DoProcess(panel)
+function RiceUI.DoProcess(panel, root)
     if not panel.riceui_data then return end
 
     for name, data in pairs(panel.riceui_data) do
@@ -83,7 +91,7 @@ function RiceUI.DoProcess(panel)
         end
 
         if not processor then continue end
-        processor(panel, data)
+        processor(panel, data, root)
     end
 end
 

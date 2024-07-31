@@ -13,17 +13,13 @@ local function start3D2D(self, dist, scale, pos, u, f, r, func)
     cam.End3D2D()
 end
 
-local function startHoloDisplay(self, dist, scale, pos, func)
-    local dist = dist or 500
-    local pos = pos or Vector(0, 0, 0)
-    if LocalPlayer():EyePos():DistToSqr(self:GetPos()) >= dist * dist then return end
+local function eyeTracker3D2D()
     local ang = EyeAngles()
     ang = Angle(0, ang.y, 0)
     ang:RotateAroundAxis(ang:Up(), -90)
     ang:RotateAroundAxis(ang:Forward(), 90)
-    cam.Start3D2D(self:LocalToWorld(pos), ang, scale or 0.1)
-    func()
-    cam.End3D2D()
+
+    return ang
 end
 
 local function startStencil()
@@ -45,6 +41,7 @@ local blur_passes = 6
 local blur_mat = Material"pp/blurscreen"
 
 local function blur(x, y, w, h, amount)
+
     surface.SetMaterial(blur_mat)
     surface.SetDrawColor(color_white:Unpack())
 
@@ -58,11 +55,14 @@ local function blur(x, y, w, h, amount)
     end
 
     render.SetScissorRect(0, 0, 0, 0 , false)
+    draw.NoTexture()
+
 end
 
 RiceLib.Render = {
     StartStencil = startStencil,
     Start3D2D = start3D2D,
-    StartHoloDisplay = startHoloDisplay,
     Blur = blur,
+
+    EyeTracker3D2D = eyeTracker3D2D
 }

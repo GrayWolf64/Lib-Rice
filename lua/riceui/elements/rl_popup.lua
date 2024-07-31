@@ -21,9 +21,21 @@ function Element.Create(data,parent)
     end
 
     function panel:DoRemove()
-        self:SizeTo(-1, 0, 0.3, 0, 0.3, function()
-            self:Remove()
-        end)
+        self:RiceUI_SizeTo{
+            H = 0,
+            Time = RiceUI.Animation.GetTime("Fast"),
+
+            Callback = function()
+                self:Remove()
+            end
+        }
+    end
+
+    function panel:ChildCreated()
+        self:RiceUI_SizeTo{
+            H = RiceLib.hudScaleY(self.h),
+            Time = RiceUI.Animation.GetTime("Fast")
+        }
     end
 
     function panel:Layout()
@@ -43,7 +55,6 @@ function Element.Create(data,parent)
 
     panel:MakePopup()
     panel:Layout()
-    panel:SizeTo(-1, RiceLib.hudScaleY(data.h), 0.3, 0, 0.3)
 
     return panel
 end

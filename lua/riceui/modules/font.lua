@@ -1,7 +1,7 @@
 -- Use height for ratio should be better
 local RATIO  = ScrH() / 1080
 
-local function mkFontData(font, size, weight)
+local function mkFontData(font, size, weight, codeSize)
     return {
         font = font,
         size = size,
@@ -43,10 +43,10 @@ local function registerFont(data)
 
         local base = mkFontData(fontFileName, size, 500)
         local fontData = RiceLib.table.Inherit(base, data)
-        local fontNameIndex = fontName .. "_" .. size
+        local fontNameIndex = fontName .. "_" .. i * 2
 
         if data.Debug then
-            print(size, fontData.size)
+            print(size, fontData.size, fontNameIndex)
             print(fontName, fontFileName)
         end
 
