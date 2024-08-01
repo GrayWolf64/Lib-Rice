@@ -6,7 +6,7 @@ local elements = {}
 local widgets = {}
 local instances = {}
 
-RiceLib.Util.LoadFiles(elements, "riceui/elements")
+RiceLib.FS.LoadFiles(elements, "riceui/elements")
 RiceLib.IncludeDir("riceui/modules", true)
 
 --- Load Widgets, which are groups of elements
@@ -107,8 +107,8 @@ RiceLib.IncludeDir("riceui/prefabs", true)
 
 
 concommand.Add("riceui_reload", function()
-    RiceLib.Util.LoadFiles(elements, "riceui/elements")
-    RiceLib.Util.LoadFiles(uniProcess, "riceui/uniprocess")
+    RiceLib.FS.LoadFiles(elements, "riceui/elements")
+    RiceLib.FS.LoadFiles(uniProcess, "riceui/uniprocess")
     RiceUI.ReloadThemes()
 end)
 

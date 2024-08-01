@@ -5,17 +5,18 @@ local function start3D2D(self, dist, scale, pos, u, f, r, func)
     local pos = pos or Vector(0, 0, 0)
     if LocalPlayer():EyePos():DistToSqr(self:GetPos()) >= dist * dist then return end
     local ang = self:GetAngles()
+
     ang:RotateAroundAxis(ang:Up(), u or 0)
     ang:RotateAroundAxis(ang:Forward(), f or 0)
     ang:RotateAroundAxis(ang:Right(), r or 0)
+
     cam.Start3D2D(self:LocalToWorld(pos), ang, scale or 0.1)
     func()
     cam.End3D2D()
 end
 
 local function eyeTracker3D2D()
-    local ang = EyeAngles()
-    ang = Angle(0, ang.y, 0)
+    local ang = Angle(0, EyeAngles().y, 0)
     ang:RotateAroundAxis(ang:Up(), -90)
     ang:RotateAroundAxis(ang:Forward(), 90)
 
@@ -41,7 +42,6 @@ local blur_passes = 6
 local blur_mat = Material"pp/blurscreen"
 
 local function blur(x, y, w, h, amount)
-
     surface.SetMaterial(blur_mat)
     surface.SetDrawColor(color_white:Unpack())
 
@@ -56,7 +56,6 @@ local function blur(x, y, w, h, amount)
 
     render.SetScissorRect(0, 0, 0, 0 , false)
     draw.NoTexture()
-
 end
 
 RiceLib.Render = {

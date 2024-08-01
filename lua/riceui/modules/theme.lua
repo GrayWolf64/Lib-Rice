@@ -87,7 +87,7 @@ function apply_theme(self, theme)
 end
 
 local function reload_themes()
-    RiceLib.Util.LoadFiles(themes, "riceui/theme")
+    RiceLib.FS.LoadFiles(themes, "riceui/theme")
 end
 
 concommand.Add("riceui_themes", function()

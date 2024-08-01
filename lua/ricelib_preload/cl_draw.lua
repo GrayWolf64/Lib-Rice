@@ -2,29 +2,30 @@ local rad          = math.rad
 local sin          = math.sin
 local cos          = math.cos
 local draw_rect    = surface.DrawRect
+local draw_poly    = surface.DrawPoly
+
+local function mkvertex(ang, r, x, y)
+	return {
+		x = x + sin(ang) * r,
+		y = y + cos(ang) * r,
+		u = sin(ang) / 2 + 0.5,
+		v = cos(ang) / 2 + 0.5
+	}
+end
 
 local function draw_circle(x, y, r, seg, color, do_texture)
-	local function mkvertex(ang)
-		return {
-			x = x + sin(ang) * r,
-			y = y + cos(ang) * r,
-			u = sin(ang) / 2 + 0.5,
-			v = cos(ang) / 2 + 0.5
-		}
-	end
-
 	local cir = {{x = x, y = y, u = 0.5, v = 0.5}}
 
 	for i = 0, seg do
-		cir[#cir + 1] = mkvertex(rad((i / seg) * -360))
+		cir[#cir + 1] = mkvertex(rad((i / seg) * -360), r, x, y)
 	end
 
-	cir[#cir + 1] = mkvertex(0)
+	cir[#cir + 1] = mkvertex(0, r, x, y)
 
 	if not do_texture then draw.NoTexture() end
 	if color then surface.SetDrawColor(color:Unpack()) end
 
-	surface.DrawPoly(cir)
+	draw_poly(cir)
 end
 
 local function draw_textured_circle(x, y, r, seg)
@@ -44,9 +45,9 @@ local function draw_rounded_box(size_border, x, y, w, h, color, corner)
 	local top_left, top_right, bottom_left, bottom_right = unpack(corner)
 	local color = color or color_white
 
-	surface.SetDrawColor(color)
-
 	size_border = size_border or 8
+
+	surface.SetDrawColor(color)
 
 	if size_border <= 0 then draw_rect(x, y, w, h) return end
 
@@ -65,24 +66,26 @@ end
 local function drawRoundedBoxOutlined(size_border, x, y, w, h, color, corner, thickness)
 	RiceLib.Render.StartStencil()
 
-	draw_rounded_box(size_border, x + thickness, y + thickness, w - thickness * 2, h - thickness * 2, color_white, Corner)
+	draw_rounded_box(size_border, x + thickness, y + thickness, w - thickness * 2, h - thickness * 2, color_white, corner)
 
 	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
 	render.SetStencilFailOperation(STENCIL_KEEP)
 
-	draw_rounded_box(size_border, x, y, w, h, color, Corner)
+	draw_rounded_box(size_border, x, y, w, h, color, corner)
 
 	render.SetStencilEnable(false)
 end
 
 -- https://github.com/Bo98/garrysmod-util/blob/master/lua/autorun/client/gradient.lua
 local mat_white = Material("vgui/white")
-local function drawLinearGradient(x, y, w, h, stops, horizontal)
+
+local function drawLinearGradient(x, y, w, h, stops, is_horizontal)
 	if #stops == 0 then
 		return
 	elseif #stops == 1 then
 		surface.SetDrawColor(stops[1].color)
 		surface.DrawRect(x, y, w, h)
+
 		return
 	end
 
@@ -90,9 +93,11 @@ local function drawLinearGradient(x, y, w, h, stops, horizontal)
 
 	render.SetMaterial(mat_white)
 	mesh.Begin(MATERIAL_QUADS, #stops - 1)
+
 	for i = 1, #stops - 1 do
 		local offset1 = math.Clamp(stops[i].offset, 0, 1)
 		local offset2 = math.Clamp(stops[i + 1].offset, 0, 1)
+
 		if offset1 == offset2 then continue end
 
 		local deltaX1, deltaY1, deltaX2, deltaY2
@@ -105,7 +110,7 @@ local function drawLinearGradient(x, y, w, h, stops, horizontal)
 		local r3, g3, b3, a3 = color2.r, color2.g, color2.b, color2.a
 		local r4, g4, b4, a4
 
-		if horizontal then
+		if is_horizontal then
 			r2, g2, b2, a2 = r3, g3, b3, a3
 			r4, g4, b4, a4 = r1, g1, b1, a1
 			deltaX1 = offset1 * w
@@ -137,6 +142,7 @@ local function drawLinearGradient(x, y, w, h, stops, horizontal)
 		mesh.Position(Vector(x + deltaX1, y + deltaY2))
 		mesh.AdvanceVertex()
 	end
+
 	mesh.End()
 end
 
