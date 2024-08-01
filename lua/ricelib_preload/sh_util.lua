@@ -22,32 +22,6 @@ function RiceLib.Util.IsWeekend()
     return os.date"%w" == 0 or os.date"%w" == 6
 end
 
-local function load_files(target, dir)
-    if not target or not dir then return end
-    local files = file.Find(dir .. "/*", "LUA")
-
-    for _, f in ipairs(files) do
-        local path_name = f:StripExtension()
-        local include_ret = include(dir .. "/" .. f)
-
-        AddCSLuaFile(dir .. "/" .. f)
-
-        if isfunction(target) then
-            target(path_name, include_ret)
-        elseif istable(target) then
-            target[path_name] = include_ret
-        end
-    end
-end
-
-function RiceLib.Util.LoadFiles(tbl, dir)
-    load_files(tbl, dir)
-end
-
-function RiceLib.Util.LoadFilesRaw(loader, dir)
-    load_files(loader, dir)
-end
-
 function RiceLib.RunFromTable(tbl, name, ...)
     return tbl[name](...)
 end

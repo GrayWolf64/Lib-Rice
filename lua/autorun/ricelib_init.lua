@@ -114,6 +114,21 @@ end
 -- @section FS
 RiceLib.FS = RiceLib.FS or {}
 
+--- Modifies target table or calls target with filenames using corresponding include result
+function RiceLib.FS.LoadFiles(target, dir)
+    if not target or not dir then return end
+
+    for _, f in ipairs(get_all_files(dir, "LUA")) do
+        AddCSLuaFile(dir .. "/" .. f)
+
+        local ret = include(dir .. "/" .. f)
+        local filename = f:StripExtension()
+
+        if isfunction(target) then target(filename, ret)
+        elseif istable(target) then target[filename] = ret end
+    end
+end
+
 --- Apply a function to every values in a table alongside with specific parameters orderly
 -- @lfunction ieach
 -- @param _t Table
