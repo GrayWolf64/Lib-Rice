@@ -10,11 +10,11 @@ local function scale_pos_single(xory, ratio)
     return xory * ratio
 end
 
-local function scale_pos_x(x, profile)
+local function scale_pos_x(x)
     return scale_pos_single(x, ratio_w)
 end
 
-local function scale_pos_y(y, profile)
+local function scale_pos_y(y)
     return scale_pos_single(y, ratio_h)
 end
 
