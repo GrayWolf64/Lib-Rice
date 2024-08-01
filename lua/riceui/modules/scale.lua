@@ -36,3 +36,13 @@ RiceUI.Scale = {
 
     Size = size
 }
+
+RICEUI_SIZE_2 = size(2)
+RICEUI_SIZE_4 = size(4)
+RICEUI_SIZE_6 = size(6)
+RICEUI_SIZE_8 = size(8)
+RICEUI_SIZE_16 = size(16)
+RICEUI_SIZE_32 = size(32)
+RICEUI_SIZE_64 = size(64)
+RICEUI_SIZE_128 = size(128)
+RICEUI_SIZE_512 = size(512)

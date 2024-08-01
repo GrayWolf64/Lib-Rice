@@ -1,5 +1,6 @@
 local ANIMATION_RATE = 1
 local Speeds = {
+    Slow = 0.5,
     Normal = 0.3,
     Fast = 0.2,
     Instant = 0.1
