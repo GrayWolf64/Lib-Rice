@@ -34,16 +34,14 @@ local function get_by_str(str)
 end
 
 local function remove_by_val(t, value)
-	local instances = {}
+	local n = 0
 
-	for index, val in ipairs(t) do
-		if val == value then table.insert(instances, index) end
+	for _, v in pairs(t) do
+		if v == value then n = n + 1 end
 	end
 
-	if not table.IsEmpty(instances) then table.remove(t, instances[1]) end
-
-	if #instances > 1 then
-		remove_by_val(t, value)
+	for i = 1, n do
+		table.RemoveByValue(t, value)
 	end
 end
 
