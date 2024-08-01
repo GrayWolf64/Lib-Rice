@@ -3,7 +3,7 @@ local sin          = math.sin
 local cos          = math.cos
 local draw_rect    = surface.DrawRect
 
-local function mkvertex(ang)
+local function mkvertex(ang, r, x, y)
 	return {
 		x = x + sin(ang) * r,
 		y = y + cos(ang) * r,
@@ -16,10 +16,10 @@ local function draw_circle(x, y, r, seg, color, do_texture)
 	local cir = {{x = x, y = y, u = 0.5, v = 0.5}}
 
 	for i = 0, seg do
-		cir[#cir + 1] = mkvertex(rad((i / seg) * -360))
+		cir[#cir + 1] = mkvertex(rad((i / seg) * -360), r, x, y)
 	end
 
-	cir[#cir + 1] = mkvertex(0)
+	cir[#cir + 1] = mkvertex(0, r, x, y)
 
 	if not do_texture then draw.NoTexture() end
 	if color then surface.SetDrawColor(color:Unpack()) end
