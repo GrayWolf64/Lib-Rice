@@ -105,9 +105,20 @@ local function cos(speed)
     return math.abs(math.cos(SysTime() * (speed or 6) % 360))
 end
 
+local function round_vec(vec, dec)
+    dec = dec or 2
+
+    vec.x = math.Round(vec.x, dec)
+    vec.y = math.Round(vec.y, dec)
+    vec.z = math.Round(vec.z, dec)
+
+    return vec
+end
+
 RiceLib.math = {
 	CubicSmooth5 = CubicSmooth5,
 	CubicSmooth7 = CubicSmooth7,
 	Sin = sin,
-	Cos = cos
+	Cos = cos,
+	RoundVector = round_vec
 }
