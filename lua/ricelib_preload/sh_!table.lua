@@ -1,4 +1,6 @@
-local pairs = pairs
+local pairs         = pairs
+local ipairs        = ipairs
+local t_remove_by_v = table.RemoveByValue
 
 local function inherit(t, base, override, blacklist)
 	override  = override or {}
@@ -41,7 +43,7 @@ local function remove_by_val(t, value)
 	end
 
 	for _ = 1, n do
-		table.RemoveByValue(t, value)
+		t_remove_by_v(t, value)
 	end
 end
 
