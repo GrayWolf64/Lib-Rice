@@ -1,5 +1,3 @@
-RiceLib.table = RiceLib.table or {}
-
 local pairs = pairs
 
 local function inherit(t, base, override, blacklist)
@@ -51,7 +49,7 @@ end
 
 RiceLib.table = {
 	Inherit = inherit,
-	InheritCopy = inherit_copy
-	GetByString = get_by_str
+	InheritCopy = inherit_copy,
+	GetByString = get_by_str,
 	RemoveByValue = remove_by_val
 }
