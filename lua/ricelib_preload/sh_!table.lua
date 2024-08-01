@@ -40,7 +40,7 @@ local function remove_by_val(t, value)
 		if v == value then n = n + 1 end
 	end
 
-	for i = 1, n do
+	for _ = 1, n do
 		table.RemoveByValue(t, value)
 	end
 end
