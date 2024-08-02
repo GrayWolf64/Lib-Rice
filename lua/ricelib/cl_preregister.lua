@@ -50,12 +50,18 @@ RiceUI.Font.Register{
 
 RiceUI.Font.Register{
     CodeName = "Digi",
-    FontName = "DS-Digital"
+    FontName = "DS-Digital",
+    EnableCaching = true
 }
 
 RiceUI.Font.Register{
     CodeName = "VCR",
     FontName = "VCR OSD Mono"
+}
+
+RiceUI.Font.Register{
+    CodeName = "PoppinsMedium",
+    FontName = "Poppins Medium"
 }
 
 RiceLib.VGUI.RegisterColorTheme("Dark1", {Color(40, 40, 40, 255), Color(60, 60, 60, 255), Color(250, 250, 250), Color(60, 60, 60)})
