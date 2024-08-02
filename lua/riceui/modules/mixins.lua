@@ -31,6 +31,8 @@ RiceUI.DefineMixin("GetElementValue", function(self, element)
 end)
 
 RiceUI.DefineMixin("GetElement", function(self, element)
+    if self.HasCanvas and IsValid(self.Canvas) then self = self.Canvas end
+
     if not self.riceui_elements then return end
 
     return self.riceui_elements[element]
