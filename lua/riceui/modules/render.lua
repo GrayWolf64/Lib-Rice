@@ -38,7 +38,7 @@ end
 
 local function shadowText(text, font, x, y, color, alignX, alignY, shadowAlpha)
     local offsetX, offsetY = hudScale(2, 2)
-    local shadowColor = color_black
+    local shadowColor = Color(0, 0, 0)
     shadowColor.a = shadowAlpha or 50
 
     color = color or color_white
