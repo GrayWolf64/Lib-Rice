@@ -6,6 +6,7 @@ local classes = {
         panel:SetPos(RiceLib.hudScale(data.x, data.y))
         panel:SetSize(RiceLib.hudScale(data.w, data.h))
         panel:SetPlayer(data.ply or data.Player, data.w)
+        if data.SteamID then panel:SetSteamID(data.SteamID, data.w) end
 
         return panel
     end,
@@ -15,6 +16,8 @@ local classes = {
             NoGTheme = true,
             Theme = {},
 
+            x = data.x,
+            y = data.y,
             w = data.w,
             h = data.h,
 
@@ -40,6 +43,7 @@ local classes = {
         local picture = vgui.Create("AvatarImage", panel)
         picture:SetPaintedManually(true)
         picture:SetPlayer(data.ply or data.Player, data.w)
+        if data.SteamID then picture:SetSteamID(data.SteamID, data.w) end
 
         panel.Picture = picture
 
@@ -51,6 +55,8 @@ local classes = {
             NoGTheme = true,
             Theme = {},
 
+            x = data.x,
+            y = data.y,
             w = data.w,
             h = data.h,
 
@@ -74,6 +80,7 @@ local classes = {
         local picture = vgui.Create("AvatarImage", panel)
         picture:SetPaintedManually(true)
         picture:SetPlayer(data.ply or data.Player, data.w)
+        if data.SteamID then picture:SetSteamID(data.SteamID, data.w) end
 
         panel.Picture = picture
 

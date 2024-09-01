@@ -186,7 +186,7 @@ function RiceUI.Prefab.RequestInput(args)
 
     local wide = math.max(500,RiceLib.VGUI.TextWide("RiceUI_36", args.Title))
 
-    RiceUI.SimpleCreate({type = "epanel",
+    return RiceUI.SimpleCreate({type = "epanel",
         w = wide,
         h = 200,
 
@@ -241,7 +241,7 @@ function RiceUI.Prefab.RequestInput(args)
                         Theme = {ThemeType = "Button_Accent"},
 
                         DoClick = function(self)
-                            args.OnConfirm(self:RiceUI_GetRoot(), self:RiceUI_GetRoot().riceui_elements.Entry:GetValue())
+                            args.OnConfirm(self:RiceUI_GetRootPanel(), self:RiceUI_GetRootPanel():GetElement("Entry"):GetValue())
                         end
                     },
 
@@ -257,7 +257,7 @@ function RiceUI.Prefab.RequestInput(args)
                         Theme = {ThemeType = "Button_NT"},
 
                         DoClick = function(self)
-                            args.OnCancel(self:RiceUI_GetRoot())
+                            args.OnCancel(self:RiceUI_GetRootPanel())
                         end
                     },
                 }

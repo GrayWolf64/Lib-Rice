@@ -161,7 +161,11 @@ RiceUI.ReloadThemes = reload_themes
 function apply_theme_nt(panel, themeData)
     if panel.NoGTheme then return end
 
-    local theme = panel.ThemeNT or {}
+    if not panel.ThemeNT then
+        panel.ThemeNT = {}
+    end
+
+    local theme = panel.ThemeNT
     theme = RiceLib.table.Inherit(theme, themeData or {}, _, {
         Class = 1,
         Style = 1,

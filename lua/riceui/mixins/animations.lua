@@ -53,9 +53,16 @@ local function moveTo(self, args)
     anim.Think = function(animData, panel, fraction)
         local easedFraction = args.EaseFunction(fraction)
         local pos = LerpVector(easedFraction, animData.StartPos, Vector(x, y, 0))
+        animData.EasedFraction = easedFraction
 
         panel:SetPos(pos.x, pos.y)
         if panel:GetDock() > 0 then panel:InvalidateParent() end
+    end
+
+    if args.ID then
+        if not self.RiceUI_Animations then self.RiceUI_Animations = {} end
+
+        self.RiceUI_Animations[args.ID] = anim
     end
 end
 
@@ -82,9 +89,16 @@ local function sizeTo(self, args)
 
         local easedFraction = args.EaseFunction(fraction)
         local size = LerpVector(easedFraction, animData.StartSize, Vector(w, h, 0))
+        animData.EasedFraction = easedFraction
 
         panel:SetSize(size.x, size.y)
         if panel:GetDock() > 0 then panel:InvalidateParent() end
+    end
+
+    if args.ID then
+        if not self.RiceUI_Animations then self.RiceUI_Animations = {} end
+
+        self.RiceUI_Animations[args.ID] = anim
     end
 end
 

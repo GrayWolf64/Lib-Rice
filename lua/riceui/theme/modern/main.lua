@@ -1,4 +1,5 @@
 local getFont = RiceUI.Font.Get
+local registerClass = RiceUI.ThemeNT.RegisterClass
 
 local colors = {
     white = {
@@ -224,6 +225,8 @@ local themePanel = {
     end,
 
     Acrylic = function(self, w, h, style)
+        local blur = style.Blur or 8
+
         RiceLib.Render.StartStencil()
 
         RiceLib.Draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color_white)
@@ -231,7 +234,7 @@ local themePanel = {
         render.SetStencilCompareFunction(STENCIL_EQUAL)
         render.SetStencilFailOperation(STENCIL_KEEP)
 
-        RiceLib.VGUI.blurPanel(self, 8)
+        RiceLib.VGUI.blurPanel(self, blur)
 
         RiceLib.Render.StartStencil()
 
@@ -240,7 +243,7 @@ local themePanel = {
         render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
         render.SetStencilFailOperation(STENCIL_ZERO)
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Frame", "Primary"), true, true, true, true)
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Frame"), true, true, true, true)
 
         render.SetStencilEnable(false)
 
@@ -255,10 +258,10 @@ local themePanel = {
     end
 }
 
-RiceUI.ThemeNT.RegisterClass("Modern", "Panel", themePanel)
-RiceUI.ThemeNT.RegisterClass("Modern", "RL_Popup", themePanel)
+registerClass("Modern", "Panel", themePanel)
+registerClass("Modern", "RL_Popup", themePanel)
 
-RiceUI.ThemeNT.RegisterClass("Modern", "Frame",{
+registerClass("Modern", "Frame",{
     Default = function(self, w, h, style)
         draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Frame", "Primary"))
     end,
@@ -321,14 +324,14 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Frame",{
     end,
 })
 
-RiceUI.ThemeNT.RegisterClass("Modern", "NoDraw",{
+registerClass("Modern", "NoDraw",{
     Default = function(self, w, h, style) end,
     Custom = function(self, w, h, style)
         style.Draw(self, w, h, style)
     end
 })
 
-RiceUI.ThemeNT.RegisterClass("Modern", "Button", {
+registerClass("Modern", "Button", {
     Default = function(self, w, h, style)
         local textColor = self:RiceUI_GetColor("Text", "Primary")
 
@@ -337,6 +340,23 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Button", {
 
         drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
         draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end,
+
+    NavgationButton = function(self, w, h, style)
+        local color = self:RiceUI_GetColor("Fill", "NavigationButton", "Default")
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
+
+        if self:IsHovered() or self.Selected then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Hover") end
+        if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
+        if self.Selected then color = self:RiceUI_GetColor("Fill", "NavigationButton", "Selected") end
+
+        drawControll_NoOutline(self, w, h, color)
+
+        if self.Selected then
+            draw.RoundedBox(8, 0, h / 4, RiceLib.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+        end
+
+        draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end,
 
     TextLeft = function(self, w, h, style)
@@ -384,9 +404,23 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Button", {
         drawControll_NoOutline(self, w, h, color, style.Corner)
         draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end,
+
+    AccentTyped = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "OnAccent", "Primary")
+        local color = self:RiceUI_GetColor("Fill", "Accent", style.AccentType or "Accent")
+
+        if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "OnAccent", "Secondary") end
+        if self:IsDown() then
+            textColor = self:RiceUI_GetColor("Text", "OnAccent", "Disable")
+            color = ColorAlpha(color, 240)
+        end
+
+        drawControll_NoOutline(self, w, h, color, style.Corner)
+        draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end,
 })
 
-RiceUI.ThemeNT.RegisterClass("Modern", "Entry", {
+registerClass("Modern", "Entry", {
     Default = function(self, w, h, style)
         local textColor = self:RiceUI_GetColor("Text", "Primary")
         local statusColor = self:RiceUI_GetColor("Text", "Disable")
@@ -429,7 +463,7 @@ RiceUI.ThemeNT.RegisterClass("Modern", "Entry", {
     end,
 })
 
-RiceUI.ThemeNT.RegisterClass("Modern", "ProgressBar", {
+registerClass("Modern", "ProgressBar", {
     Default = function(self, w, h, style)
         draw.RoundedBox(DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Text", "Disable"))
 
@@ -437,7 +471,7 @@ RiceUI.ThemeNT.RegisterClass("Modern", "ProgressBar", {
     end
 })
 
-RiceUI.ThemeNT.RegisterClass("Modern", "RL_NumberCounter", {
+registerClass("Modern", "RL_NumberCounter", {
     Default = function(self, w, h, style)
         local textColor = self:RiceUI_GetColor("Text", "Primary")
         local statusColor = self:RiceUI_GetColor("Text", "Disable")

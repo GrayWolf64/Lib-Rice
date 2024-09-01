@@ -142,6 +142,10 @@ function Element.Create(data, parent)
                 end
             end
 
+            if self:GetScroll() + tScroll > self.Canvas:GetTall() - self:GetTall() then
+                self:ReachBottom()
+            end
+
             return math.Clamp(self:GetScroll() + tScroll, 0, self.Canvas:GetTall()) ~= self:GetScroll()
         end,
 
@@ -155,7 +159,9 @@ function Element.Create(data, parent)
 
         GetChildren = function(self)
             return self.Canvas:GetChildren()
-        end
+        end,
+
+        ReachBottom = function(self) end,
     }, parent, parent)
 
     function panel:OnChildAdded(child)

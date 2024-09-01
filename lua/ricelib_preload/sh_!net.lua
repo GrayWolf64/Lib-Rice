@@ -251,4 +251,20 @@ if CLIENT then
             Callback = function(data) print(data) end
         })
     end)
+
+    concommand.Add("ricelib_net_dump_cl", function()
+        print("\nResponesiveReceivers")
+        PrintTable(ResponesiveCommmands)
+
+        print("\nReceivers")
+        PrintTable(Receivers)
+    end)
 end
+
+concommand.Add("ricelib_net_dump", function()
+    print("\nResponesiveReceivers")
+    PrintTable(ResponesiveCommmands)
+
+    print("\nReceivers")
+    PrintTable(Receivers)
+end)
