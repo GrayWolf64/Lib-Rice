@@ -148,6 +148,39 @@ function Element.Create(data, parent)
             return math.Clamp(self:GetScroll() + tScroll, 0, self.Canvas:GetWide()) ~= self:GetScroll()
         end,
 
+        AddScrollRaw = function(self, amount)
+            self.Old_Pos = nil
+            self.Old_Sign = nil
+            local OldScroll = self:GetScroll()
+            local anim = self:NewAnimation(self.ScrollTime, 0, self.ScrollEase)
+            anim.StartPos = OldScroll
+            anim.TargetPos = OldScroll + amount + tScroll
+            tScroll = tScroll + amount
+            local ctime = RealFrameTime()
+            local doing_scroll = true
+            newerT = ctime
+
+            anim.Think = function(anim, pnl, fraction)
+                local nowpos = Lerp(fraction, anim.StartPos, anim.TargetPos)
+
+                if ctime == newerT then
+                    self:SetScroll(getBiggerPos(self.Old_Sign, sign(amount), self.Old_Pos, nowpos))
+                    tScroll = tScroll - (tScroll * fraction)
+                end
+
+                if doing_scroll then
+                    self.Old_Sign = sign(amount)
+                    self.Old_Pos = nowpos
+                end
+
+                if ctime ~= newerT then
+                    doing_scroll = false
+                end
+            end
+
+            return math.Clamp(self:GetScroll() + tScroll, 0, self.Canvas:GetWide()) ~= self:GetScroll()
+        end,
+
         Clear = function(self)
             for _, pnl in ipairs(self:GetChildren()) do
                 if pnl.PreventClear then continue end

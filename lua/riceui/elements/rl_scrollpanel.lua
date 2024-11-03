@@ -44,8 +44,10 @@ function Element.Create(data, parent)
         y = 10,
         w = 300,
         h = 500,
-        Theme = {ThemeType = "NoDraw"},
-        ScrollSpeed = 1
+
+        ScrollSpeed = 1,
+
+        ShowGripBar = true,
     })
 
     local panel = RiceUI.SimpleCreate({type = "rl_panel",
@@ -81,7 +83,50 @@ function Element.Create(data, parent)
                 LocalToScreen = function(self)
                     return self:GetParent():LocalToScreen()
                 end,
-            }
+            },
+
+            {type = "rl_button",
+                ID = "GripBar",
+                PreventClear = true,
+
+                Dock = RIGHT,
+                w = 8,
+
+                ThemeNT = {
+                    Style = "ScrollPanelGrip"
+                },
+
+                Moving = false,
+                OnMousePressed = function(self, code)
+                    if code ~= MOUSE_LEFT then return end
+
+                    local _, y = self:ScreenToLocal(input.GetCursorPos())
+                    local scrollPanel = self:GetParent()
+                    local offset = self:GetTall() * scrollPanel:GetScroll() / scrollPanel:GetCanvasTall()
+
+                    self:MouseCapture(true)
+                    self.Moving = true
+                    self.GripY = y - offset
+                    self.Offset = offset
+                end,
+
+                OnMouseReleased = function(self, code)
+                    if code ~= MOUSE_LEFT then return end
+
+                    self:MouseCapture(false)
+                    self.Moving = false
+                end,
+
+                Think = function(self)
+                    if not self.Moving then return end
+
+                    local _, y = self:ScreenToLocal(input.GetCursorPos())
+                    local fraction = (y - self.GripY) / self:GetTall()
+                    local parent = self:GetParent()
+
+                    parent:SetScroll(parent:GetCanvasTall() * fraction)
+                end
+            },
         },
 
         ScrollAmount = 30,
@@ -94,10 +139,19 @@ function Element.Create(data, parent)
 
         OnCreated = function(self)
             self.Canvas = self:GetChild(0)
+            self.GripBar = self:GetChild(1)
         end,
 
         GetScroll = function(self)
             return self.Scroll or 0
+        end,
+
+        GetScrollable = function(self)
+            return self.Canvas:GetTall() > self:GetTall()
+        end,
+
+        GetCanvasTall = function(self)
+            return self.Canvas:GetTall()
         end,
 
         SetScroll = function(self, amount)
@@ -158,7 +212,14 @@ function Element.Create(data, parent)
         end,
 
         GetChildren = function(self)
-            return self.Canvas:GetChildren()
+            local childrens = self.Canvas:GetChildren()
+            table.insert(childrens, self.GripBar)
+
+            return childrens
+        end,
+
+        DockPadding = function(self, left, top, right, bottom)
+            self.Canvas:DockPadding(left, top, right, bottom)
         end,
 
         ReachBottom = function(self) end,

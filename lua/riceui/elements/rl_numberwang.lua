@@ -34,6 +34,8 @@ function Element.Create(data, parent)
         UseNewTheme = true,
         Theme = data.Theme,
 
+        ProcessID = "RL_NumberWang",
+
         children = {
             {type = "rl_panel",
                 Theme = {Corner = {false,true,false,true}},
@@ -73,7 +75,6 @@ function Element.Create(data, parent)
         }
     }, parent)
 
-    panel.ProcessID = "RL_NumberWang"
     panel.IsBase = true
     panel.Value = 0
     panel:SetPlaceholderText("")
@@ -116,6 +117,10 @@ function Element.Create(data, parent)
     function panel:GetValue()
         return self.Value
     end
+
+    --[[function panel:GetText()
+        return tostring(self.Value)
+    end]]
 
     function panel:OnValueChanged(val)
     end

@@ -14,6 +14,10 @@ RiceUI.DefineUniProcess("Padding", function(panel, data)
     panel:DockPadding(data[1], data[2] or 0, data[3] or 0, data[4] or 0)
 end)
 
+RiceUI.DefineUniProcess("ZPos", function(panel, data)
+    panel:SetZPos(data)
+end)
+
 RiceUI.DefineUniProcess("Root", function(panel)
     panel:MakePopup()
 end)
@@ -74,7 +78,7 @@ RiceUI.DefineUniProcess("Choice", {
         end
     end,
 
-    RL_Combo = function(panel, data)
+    ComboBox = function(panel, data)
         for i, v in ipairs(data) do
             panel:AddChoice(unpack(v))
         end

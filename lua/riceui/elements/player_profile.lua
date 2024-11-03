@@ -5,8 +5,9 @@ local classes = {
         local panel = vgui.Create("AvatarImage", parent)
         panel:SetPos(RiceLib.hudScale(data.x, data.y))
         panel:SetSize(RiceLib.hudScale(data.w, data.h))
-        panel:SetPlayer(data.ply or data.Player, data.w)
-        if data.SteamID then panel:SetSteamID(data.SteamID, data.w) end
+        panel:SetPlayer(data.ply or data.Player, data.AvatarSize or data.w)
+
+        if data.SteamID then panel:SetSteamID(data.SteamID, data.AvatarSize or data.w) end
 
         return panel
     end,
@@ -21,28 +22,39 @@ local classes = {
             w = data.w,
             h = data.h,
 
-            Paint = function(self, w, h)
-                RiceLib.Render.StartStencil()
+            ThemeNT = {
+                Class = "NoDraw",
+                Style = "Custom",
+                StyleSheet = {
+                    Draw =function(self, w, h)
+                        RiceLib.Render.StartStencil()
 
-                RiceLib.Draw.RoundedBox(8, 0, 0, w, h, color_white)
+                        RiceLib.Draw.RoundedBox(8, 0, 0, w, h, color_white)
 
-                render.SetStencilCompareFunction(STENCIL_EQUAL)
-                render.SetStencilFailOperation(STENCIL_KEEP)
+                        render.SetStencilCompareFunction(STENCIL_EQUAL)
+                        render.SetStencilFailOperation(STENCIL_KEEP)
 
-                self.Picture:SetSize(w, h)
-                self.Picture:PaintManual()
+                        self.Picture:SetSize(w, h)
+                        self.Picture:PaintManual()
 
-                render.SetStencilEnable(false)
-            end,
+                        render.SetStencilEnable(false)
+                    end
+                }
+            }
         }, parent, parent)
 
         function panel:OnRemove()
             self.Picture:Remove()
         end
 
+        function panel:SetPlayer(ply, avatarSize)
+            self.Picture:SetPlayer(ply, avatarSize)
+        end
+
         local picture = vgui.Create("AvatarImage", panel)
         picture:SetPaintedManually(true)
         picture:SetPlayer(data.ply or data.Player, data.w)
+
         if data.SteamID then picture:SetSteamID(data.SteamID, data.w) end
 
         panel.Picture = picture
@@ -60,10 +72,20 @@ local classes = {
             w = data.w,
             h = data.h,
 
+            ThemeNT = {
+                Class = "NoDraw",
+                Style = "Custom",
+                StyleSheet = {
+                    Draw = function(self, w, h)
+                        self:CustomPaint(w, h)
+                    end
+                }
+            },
+
             PrePaint = function() end,
             PostPaint = function() end,
 
-            Paint = function(self, w, h)
+            CustomPaint = function(self, w, h)
                 self:PrePaint(w, h)
 
                 self.Picture:SetSize(w, h)

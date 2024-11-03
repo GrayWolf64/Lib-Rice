@@ -28,10 +28,10 @@ local colors = {
         },
 
         Background = {
-            Soild = {
+            Solid = {
                 Primary = HSLToColor(0, 0, 0.95),
-                Secondary = HSLToColor(0, 0, 0.95),
-                Tertiary = HSLToColor(0, 0, 0.95),
+                Secondary = HSLToColor(0, 0, 0.9),
+                Tertiary = HSLToColor(0, 0, 0.85),
             }
         },
 
@@ -58,7 +58,7 @@ local colors = {
                 Default = RiceUI.AlphaPercent(color_white, 0.7),
                 Secondary = RiceUI.AlphaPercent(HSLToColor(0, 0, 0.97), 0.5),
                 Tertiary = RiceUI.AlphaPercent(HSLToColor(0, 0, 0.97), 0.3),
-                Active = color_white
+                Active = color_white,
             },
 
             Accent = {
@@ -70,7 +70,7 @@ local colors = {
                 Critical = Color(196, 43, 28),
                 CriticalBackground = Color(253, 231, 233),
 
-                Success = Color(15, 123, 15),
+                Success = Color(40, 150, 40),
                 SuccessBackground = Color(223, 246, 221),
             }
         },
@@ -103,7 +103,7 @@ local colors = {
         },
 
         Background = {
-            Soild = {
+            Solid = {
                 Primary = Color(32, 32, 32),
                 Secondary = Color(28, 28, 28),
                 Tertiary = Color(40, 40, 40),
@@ -130,7 +130,7 @@ local colors = {
             },
 
             Control = {
-                Default = Color(40, 40, 40),
+                Default = Color(55, 55, 55),
                 Secondary = RiceUI.AlphaPercent(color_white, 0.02),
                 Tertiary = RiceUI.AlphaPercent(color_white, 0.01),
                 Active = RiceUI.AlphaPercent(Color(30, 30, 30), 0.7)
@@ -163,6 +163,7 @@ RiceUI.ThemeNT.DefineTheme("Modern", {
 
 local DEFAULT_BODY_BORDER_RADIUS = 8
 local DEFAULT_CONTROLL_BORDER_RADIUS = 4
+local CONTROLL_ARROWSIZE = RiceUI.Scale.Size(24)
 
 local point = Material("gui/point.png")
 local cross = Material("rl_icons/xmark.png")
@@ -172,6 +173,7 @@ local unit_1 = RiceUI.Scale.Size(1)
 local unit_2 = RiceUI.Scale.Size(2)
 local unit_4 = RiceUI.Scale.Size(4)
 local unit_8 = RiceUI.Scale.Size(8)
+local SIZE_12 = RiceUI.Scale.Size(12)
 
 
 local function drawControll(self, w, h, Color, Corner, borderRadius)
@@ -206,7 +208,7 @@ local themePanel = {
         local corner = style.Corner or {true, true, true, true}
 
         draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, ColorAlpha(color_black, 100), unpack(corner))
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Active"), unpack(corner))
     end,
 
     ShadowExpensive = function(self, w, h, style)
@@ -221,7 +223,7 @@ local themePanel = {
         draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS - unit_2, x + unit_2, y + unit_2, w - unit_2 * 2, h  - unit_2 * 2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
         RiceUI.Render.EndShadow(unpack( table.Add(shadowData, {0, startY, ScrW(), sizeH}) ))
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Control", "Active"), unpack(corner))
     end,
 
     Acrylic = function(self, w, h, style)
@@ -324,11 +326,20 @@ registerClass("Modern", "Frame",{
     end,
 })
 
-registerClass("Modern", "NoDraw",{
-    Default = function(self, w, h, style) end,
-    Custom = function(self, w, h, style)
-        style.Draw(self, w, h, style)
-    end
+registerClass("Modern", "Spacer",{
+    Default = function(self, w, h, style)
+        local size = style.Size or RICEUI_SIZE_2
+
+        surface.SetDrawColor(self:RiceUI_GetColor("Fill", "Control", "Default"))
+        surface.DrawRect(0, 0, size, h)
+    end,
+
+    Horizontal = function(self, w, h, style)
+        local size = style.Size or RICEUI_SIZE_2
+
+        surface.SetDrawColor(self:RiceUI_GetColor("Fill", "Control", "Default"))
+        surface.DrawRect(0, 0, w, size)
+    end,
 })
 
 registerClass("Modern", "Button", {
@@ -336,7 +347,7 @@ registerClass("Modern", "Button", {
         local textColor = self:RiceUI_GetColor("Text", "Primary")
 
         if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
-        if self:IsDown() then color = self:RiceUI_GetColor("Text", "Tertiary") end
+        if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
 
         drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
         draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -363,7 +374,7 @@ registerClass("Modern", "Button", {
         local textColor = self:RiceUI_GetColor("Text", "Primary")
 
         if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
-        if self:IsDown() then color = self:RiceUI_GetColor("Text", "Tertiary") end
+        if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
 
         drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
         draw.SimpleText(self.Text, getFont(self:GetFont()), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -407,7 +418,7 @@ registerClass("Modern", "Button", {
 
     AccentTyped = function(self, w, h, style)
         local textColor = self:RiceUI_GetColor("Text", "OnAccent", "Primary")
-        local color = self:RiceUI_GetColor("Fill", "Accent", style.AccentType or "Accent")
+        local color = self:RiceUI_GetColor("Fill", "Accent", style.AccentType or "Primary")
 
         if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "OnAccent", "Secondary") end
         if self:IsDown() then
@@ -418,6 +429,56 @@ registerClass("Modern", "Button", {
         drawControll_NoOutline(self, w, h, color, style.Corner)
         draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end,
+
+    ImageFilled = function(self, w, h, style)
+        local color = style.Color or color_white
+        local bgcolor = self:RiceUI_GetColor("Text", "Primary")
+        local alpha = RiceUI.HoverAlpha(self, 20)
+
+        drawControll_NoOutline(self, w, h, ColorAlpha(bgcolor, alpha * 0.05), style.Corner)
+
+        local sizeMuti = RICEUI_SIZE_16
+
+        if self:IsDown() then
+            sizeMuti = RiceUI.Scale.Size(20)
+        end
+
+        surface.SetDrawColor(color)
+        surface.SetMaterial(style.Image)
+        surface.DrawTexturedRect(sizeMuti, sizeMuti, w - sizeMuti * 2, h - sizeMuti * 2)
+    end,
+
+    ComboChoice = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
+        local bgcolor = self:RiceUI_GetColor("Text", "Primary")
+        local alpha = RiceUI.HoverAlpha(self, 20)
+
+        if self.Selected then alpha = 255 end
+
+        if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
+        if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
+
+        drawControll_NoOutline(self, w, h, ColorAlpha(bgcolor, alpha * 0.05), style.Corner)
+
+        if self.Selected then
+            draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, RICEUI_SIZE_4, RICEUI_SIZE_4, RICEUI_SIZE_4, h - RICEUI_SIZE_8, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+        end
+
+        draw.SimpleText(self.Text, getFont(self:GetFont()), SIZE_12, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    end,
+
+    ScrollPanelGrip = function(self, w, h, style)
+        local scrollPanel = self:GetParent()
+        if not scrollPanel.ShowGripBar then return end
+        if not scrollPanel:GetScrollable() then return end
+
+        local color = ColorAlpha(self:RiceUI_GetColor("Text", "Disable"), 200)
+
+        local fraction = scrollPanel:GetScroll() / scrollPanel:GetCanvasTall()
+        local height = h * h / scrollPanel:GetCanvasTall() - RICEUI_SIZE_16
+
+        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, RICEUI_SIZE_8 + h * fraction, w / 2, height, color)
+    end
 })
 
 registerClass("Modern", "Entry", {
@@ -459,13 +520,76 @@ registerClass("Modern", "Entry", {
             surface.DrawRect(unit_8 + len, 4, 1, h - 8)
         end]]
 
-        self:DrawTextEntryText( textColor, self:GetHighlightColor(), self:GetCursorColor() )
+        if self:GetText() ~= "" then
+            self:DrawTextEntryText( textColor, self:GetHighlightColor(), self:GetCursorColor() )
+        else
+            draw.SimpleText(self:GetPlaceholderText(), self:GetFont(), unit_4, h / 2, self:RiceUI_GetColor("Text", "Disable"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        end
     end,
+})
+
+registerClass("Modern", "RL_NumberWang", {
+    Default = function(self, w, h, style)
+        local statusColor = self:RiceUI_GetColor("Text", "Disable")
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
+        local hasFocus = self:HasFocus()
+
+        if hasFocus then statusColor = self:RiceUI_GetColor("Fill", "Accent", "Primary") end
+
+        RiceLib.Render.StartStencil()
+
+        surface.SetDrawColor(255, 255, 255)
+        surface.DrawRect(0, 0, w, h - unit_2)
+
+        render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+        render.SetStencilFailOperation(STENCIL_KEEP)
+
+        drawControll(self, w, h + unit_2, statusColor, style.Corner)
+
+        render.SetStencilCompareFunction(STENCIL_EQUAL)
+
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+
+        render.SetStencilEnable(false)
+
+        if hasFocus then
+            local len = unit_8
+
+            for i = 1, self:GetCaretPos() do
+                local w = RiceLib.VGUI.TextWide(self:GetFont(), utf8.sub(self:GetText(), i, i))
+
+                len = len + w
+            end
+            draw.SimpleText(self:GetText(), self:GetFont(), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+            surface.SetDrawColor(ColorAlpha(textColor, 255 * math.abs(math.sin(RealTime() * 4))) )
+            surface.DrawRect(len, RICEUI_SIZE_4, RICEUI_SIZE_2, h - RICEUI_SIZE_8)
+        else
+            draw.SimpleText(self:GetValue(), self:GetFont(), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        end
+    end,
+})
+
+registerClass("Modern", "ComboBox", {
+    Default = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
+
+        if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
+        if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
+
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+
+        draw.SimpleText(self.Text, getFont(self:GetFont()), SIZE_12, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+        surface.SetDrawColor(textColor)
+        surface.SetMaterial(point)
+        surface.DrawTexturedRect(w - h + CONTROLL_ARROWSIZE / 2, CONTROLL_ARROWSIZE / 2, h - CONTROLL_ARROWSIZE, h - CONTROLL_ARROWSIZE)
+    end
 })
 
 registerClass("Modern", "ProgressBar", {
     Default = function(self, w, h, style)
-        draw.RoundedBox(DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Text", "Disable"))
+        draw.RoundedBox(DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Background", "Solid", "Secondary"))
 
         draw.RoundedBox(DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w * self:GetSmoothFraction(), h, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
     end
@@ -510,4 +634,11 @@ registerClass("Modern", "RL_NumberCounter", {
             surface.DrawRect(w / 2 + len - textW / 2, 4, 1, h - 8)
         end
     end,
+})
+
+registerClass("Modern", "NoDraw",{
+    Default = function(self, w, h, style) end,
+    Custom = function(self, w, h, style)
+        style.Draw(self, w, h, style)
+    end
 })

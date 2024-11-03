@@ -350,7 +350,7 @@ end
 ]]--
 
 function tbl.OnLoaded()
-    RiceUI.Examples.Glass = {
+    local glass = {
         {type = "rl_frame",
             Text = "Example",
             Center = true,
@@ -539,9 +539,8 @@ function tbl.OnLoaded()
         }
     }
 
-    RiceUI.Examples.GlassBlack = table.Copy(RiceUI.Examples.Glass)
-
-    RiceUI.Examples.GlassBlack[1].Theme = {
+    local glassBlack = table.Copy(glass)
+    glassBlack[1].Theme = {
         ThemeName = "glass",
         ThemeType = "RL_Frame",
         Color = "black",
@@ -549,6 +548,9 @@ function tbl.OnLoaded()
 
         Blur = 5,
     }
+
+    RiceUI.Examples.Register("Glass", glass)
+    RiceUI.Examples.Register("GlassBlack", glassBlack)
 end
 
 return tbl

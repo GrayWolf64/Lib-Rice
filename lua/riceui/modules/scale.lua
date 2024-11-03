@@ -2,11 +2,17 @@ local ratio_w = ScrW() / 1920
 local ratio_h = ScrH() / 1080
 local scaleFactor = ratio_h
 
+local ENABLE_SCALING = true
+
 local function scale_pos(x, y)
+    if not ENABLE_SCALING then return x, y end
+
     return x * ratio_w, y * ratio_h
 end
 
 local function scale_pos_single(xory, ratio)
+    if not ENABLE_SCALING then return xory end
+
     return xory * ratio
 end
 
@@ -19,8 +25,9 @@ local function scale_pos_y(y)
 end
 
 local function size(w, h)
-    if not h then return w * scaleFactor end
+    if not ENABLE_SCALING then return w, h end
 
+    if not h then return w * scaleFactor end
     return w * scaleFactor, h * scaleFactor
 end
 
@@ -34,7 +41,11 @@ RiceUI.Scale = {
     PosX = scale_pos_x,
     PosY = scale_pos_y,
 
-    Size = size
+    Size = size,
+
+    EnableScaling = function(enable)
+        ENABLE_SCALING = enable
+    end
 }
 
 RICEUI_SIZE_2 = size(2)

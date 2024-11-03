@@ -20,7 +20,9 @@ RiceUI.DefineWidget("labeled_switch", function(data, parent, root)
                 w = data.SwitchW,
 
                 Value = data.Value,
-                OnValueChanged = data.OnValueChanged
+                OnValueChanged = function(self, val)
+                    data.OnValueChanged(self:GetParent(), val)
+                end
             }
         }
     })

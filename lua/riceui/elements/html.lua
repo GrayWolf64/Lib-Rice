@@ -14,8 +14,6 @@ function Element.Create(data,parent)
     if data.HTML ~= nil then panel:SetHTML(data.HTML) end
     if data.URL ~= nil then panel:SetURL(data.URL) end
 
-    panel.ProcessID = "HTML"
-
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
     return panel

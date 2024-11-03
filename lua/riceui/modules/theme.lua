@@ -9,7 +9,7 @@ local parama_blacklist = parama_blacklist or {}
 
 local apply_theme_nt
 
-function get_theme(name) return themes[name] end
+local function get_theme(name) return themes[name] end
 
 function RiceUI.GetColor(tab, self, name, default)
     name = name or ""
@@ -20,28 +20,28 @@ end
 
 local function match_color(str) return str:match"^[a-zA-Z]*" end
 
-function get_color_base(tab, self, name, default)
+local function get_color_base(tab, self, name, default)
     name = name or ""
     default = default or "white"
-    color = match_color(self.Theme.Color or "white")
+    local color = match_color(self.Theme.Color or "white")
 
     return self.Theme["Raw" .. name .. "Color"] or tab[name .. "Color"][color] or tab[name .. "Color"][default]
 end
 
 function RiceUI.GetShadowAlpha(tab, self)
-    color = match_color(self.Theme.Color or "white")
+    local color = match_color(self.Theme.Color or "white")
 
     return self.Theme.ShadowAlpha or tab.ShadowAlpha[color] or 50
 end
 
-function refresh_theme(self)
+local function refresh_theme(self)
     local theme = self.Theme
     if theme.ThemeName == nil then return end
 
     self.Paint = get_theme(theme.ThemeName)[theme.ThemeType]
 end
 
-function do_theme_process(self)
+local function do_theme_process(self)
     local process_set = theme_processes[self.ProcessID]
 
     if process_set == nil then return end
@@ -49,7 +49,7 @@ function do_theme_process(self)
     for _, v in ipairs(process_set) do v(self) end
 end
 
-function apply_theme(self, theme)
+local function apply_theme(self, theme)
     if self.NoGTheme then return end
     if self.ThemeNT ~= nil and self.ThemeNT.Theme ~= nil then
         apply_theme_nt(self)
@@ -158,40 +158,48 @@ RiceUI.ReloadThemes = reload_themes
 -- MARK: ThemeNT
 -- ThemeNT
 
-function apply_theme_nt(panel, themeData)
-    if panel.NoGTheme then return end
-
+function apply_theme_nt(panel, inputTheme)
     if not panel.ThemeNT then
         panel.ThemeNT = {}
     end
 
     local theme = panel.ThemeNT
-    theme = RiceLib.table.Inherit(theme, themeData or {}, _, {
-        Class = 1,
-        Style = 1,
-        StyleSheet = 1,
-    })
+    if inputTheme then
+        theme = RiceLib.table.Inherit(panel.ThemeNT, inputTheme, {
+            Color = not theme.NoColorOverride
+        }, {
+            Class = true,
+            Style = true,
+            StyleSheet = true,
+        })
+    end
 
-    themeData = themeData or theme
+    inputTheme = inputTheme or theme
 
     local themeTable = themes_nt[theme.Theme]
     if not themeTable then
-        if theme.Theme ~= nil then
-            RiceLib.Error(string.format("Theme %s does not exists!", theme.Theme) ,"RiceUI ThemeNT")
-        end
+        RiceLib.Error(Format("Theme %s does not exists!", theme.Theme), "RiceUI ThemeNT")
 
         return
     end
 
     panel.IsThemeNT = true
-    panel.ThemeNT_Color = themeData.Color
+    panel.ThemeNT_Color = inputTheme.Color
 
-    local class = theme.Class or (panel.Theme or {ThemeType = nil}).ThemeType or panel.ProcessID
+    local class = theme.Class
+    if not class then
+        class = (panel.Theme or {ThemeType = nil}).ThemeType or panel.ProcessID
+
+        theme.Class = class
+    end
+
     local paintFunction = themeTable.Classes[class][theme.Style]
     if paintFunction then
+        if not theme.StyleSheet then theme.StyleSheet = {} end
+
         panel.RiceUI_ThemeNT_Paint = paintFunction
         panel.Paint = function(self, w, h)
-            self:RiceUI_ThemeNT_Paint(w, h, theme.StyleSheet or {})
+            self:RiceUI_ThemeNT_Paint(w, h, theme.StyleSheet)
         end
     end
 
@@ -201,7 +209,7 @@ function apply_theme_nt(panel, themeData)
 
     if theme.IgnoreChildren then return end
     for _, child in ipairs(panel:GetChildren()) do
-        apply_theme_nt(child, themeData)
+        apply_theme_nt(child, inputTheme)
     end
 end
 
@@ -238,15 +246,18 @@ local function define_theme(theme, themeTable)
 
     themes_nt[theme] = themeTable
 end
+
 local function register_class(theme, class, data)
+    data = table.Copy(data)
+
     if not data or not data.Default then
-        RiceLib.Error(string.format("Theme %s Class %s is missing Default style!", theme, class), "RiceUI ThemeNT")
+        RiceLib.Error(Format("Theme %s Class %s is missing Default style!", theme, class), "RiceUI ThemeNT")
 
         return
     end
 
     if not themes_nt[theme] then
-        RiceLib.Error(string.format("Theme %s is not defined!", theme), "RiceUI ThemeNT")
+        RiceLib.Error(Format("Theme %s is not defined!", theme), "RiceUI ThemeNT")
 
         return
     end
@@ -254,7 +265,15 @@ local function register_class(theme, class, data)
     themes_nt[theme].Classes[class] = setmetatable(data, {
         __index = function(themeTable, style)
             if style ~= nil then
-                RiceLib.Warn(string.format("Theme %s Class %s is missing Style %s, using Default", theme, class, style), "RiceUI ThemeNT")
+                local baseTheme = themes_nt[theme].Base
+
+                RiceLib.Warn(Format("Theme %s Class %s is missing Style %s, fallback to Theme %s", theme, class, style, baseTheme), "RiceUI ThemeNT")
+
+                local baseThemeStyle = themes_nt[baseTheme]
+
+                if baseThemeStyle and baseThemeStyle.Classes[class] then
+                    return baseThemeStyle.Classes[class][style]
+                end
             end
 
             return themeTable.Default
@@ -267,7 +286,7 @@ local function reload_themes_nt()
         local path = "riceui/theme/" .. dir
 
         if not file.Exists(path .. "/main.lua", "LUA") then
-            RiceLib.Error(string.format("Theme at %s is missing main file!", path), "RiceUI ThemeNT")
+            RiceLib.Error(Format("Theme at %s is missing main file!", path), "RiceUI ThemeNT")
 
             return
         end
@@ -278,10 +297,27 @@ local function reload_themes_nt()
     end)
 end
 
+local DARKMODE = RiceLib.Config.Define("ricelib", "ThemeNT_DarkMode", {
+    Type = "Bool",
+    Default = false,
+    Category = "Visual",
+    DisplayName = "Darkmode"
+})
+
 RiceUI.ThemeNT = {
     DefineTheme = define_theme,
     ApplyTheme = apply_theme_nt,
     RegisterClass = register_class,
+
+    IsDarkMode = function()
+        return DARKMODE:GetValue()
+    end,
+
+    DefaultThemeColor = function()
+        if DARKMODE:GetValue() then return "black" end
+
+        return "white"
+    end
 }
 
 reload_themes_nt()

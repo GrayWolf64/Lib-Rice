@@ -70,7 +70,7 @@ function tbl.Panel(pnl,w,h)
     surface.SetDrawColor(RiceUI.GetColor(tbl,pnl))
     surface.DrawRect(0,0,w,h)
 
-    if pnl:GetParent():GetClassName() != "CGModBase" then
+    if pnl:GetParent():GetClassName() ~= "CGModBase" then
         surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"Outline"))
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
@@ -83,7 +83,7 @@ function tbl.RL_Frame(pnl,w,h)
     surface.SetDrawColor(RiceUI.GetColor(tbl,pnl))
     surface.DrawRect(0,pnl.Title:GetTall()+10,w,h)
 
-    if pnl:GetParent():GetClassName() != "CGModBase" then
+    if pnl:GetParent():GetClassName() ~= "CGModBase" then
         DisableClipping(true)
 
         surface.SetDrawColor(RiceUI.GetColor(tbl,pnl,"Outline"))

@@ -30,7 +30,7 @@ function Element.Create(data, parent, root)
 
                     if self.Image then
                         if not self.Material then
-                            local material = Material(self.Image)
+                            local material = Material(self.Image, "smooth")
 
                             if not material:IsError() then
                                 self.Material = material
@@ -49,11 +49,18 @@ function Element.Create(data, parent, root)
                         -- todo
                     end
 
-                    draw.RoundedBox(RICEUI_SIZE_6, 0, 0, w, h, color_white)
-                    draw.SimpleText(self.Text, "RiceUI_M_24", w / 2, h / 2, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    if not self.Material or self.Material:IsError() then
+                        draw.RoundedBox(RICEUI_SIZE_6, 0, 0, w, h, color_white)
+                        draw.SimpleText(self.Text, "RiceUI_M_24", w / 2, h / 2, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    end
                 end
             }
-        }
+        },
+
+        SetImage = function(self, image)
+            self.Material = nil
+            self.Image = image
+        end
     }, parent, root)
 
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))

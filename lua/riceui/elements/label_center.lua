@@ -20,7 +20,7 @@ function Element.Create(data, parent)
     local panel = vgui.Create("DPanel", parent)
     panel:SetPos(RiceLib.hudScale(data.x, data.y))
     panel:SetSize(RiceLib.hudScale(data.w, data.h))
-    panel.NoGTheme = true
+    panel.ProcessID = "Label"
 
     if data.AutoSize then
         panel:SetTall(RiceLib.VGUI.TextHeight(data.Font, data.Text))
@@ -49,7 +49,6 @@ function Element.Create(data, parent)
         --RiceUI.Render.DrawIndicator(w, h)
     end
 
-    panel.ProcessID = "Label"
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
 
     return panel

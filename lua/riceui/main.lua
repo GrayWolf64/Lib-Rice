@@ -255,6 +255,7 @@ concommand.Add("riceui_debugoverlay", function()
             if not panel:IsHovered() then continue end
 
             draw.SimpleText(string.format("%s %s %s", x, y, panel.ID or ""), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(string.format("%s %s", w, h), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 
             surface.SetDrawColor(ColorAlpha(color, 50))
             surface.DrawRect(x, y, w, h)

@@ -36,7 +36,7 @@ function Element.Create(data, parent, root)
         self.SmoothFraction = RiceUI.Smooth(self.SmoothController, self.Fraction)
     end
 
-    function panel:SetFraction(fraction) self.Fraction = fraction end
+    function panel:SetFraction(fraction) self.Fraction = math.min(fraction, 1) end
     function panel:GetFraction() return self.Fraction end
     function panel:GetSmoothFraction() return self.SmoothFraction end
 

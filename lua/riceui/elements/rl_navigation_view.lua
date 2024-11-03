@@ -30,7 +30,7 @@ function Element.Create(data, parent)
         end,
 
         children = {
-            {type = "scrollpanel", ID = "NavigationBar", Dock = LEFT, w = data.NavigationBarSize,
+            {type = "rl_scrollpanel", ID = "NavigationBar", Dock = LEFT, w = data.NavigationBarSize,
                 ClearSelection = function(self)
                     for _, pnl in pairs(self.riceui_elements or {}) do
                         if pnl.ClearSelection == nil then continue end
@@ -41,48 +41,10 @@ function Element.Create(data, parent)
             },
 
             {type = "rl_panel", ID = "NavigationPanel", Dock = FILL,
-                Theme = {ThemeType = "Layer"},
-
-                SwitchNavPage = function(self, pageName)
-                    self:GetParent():SwitchNavPage(pageName)
-                end,
-
-                SetNavPage = function(self, pageName, page)
-                    self:GetParent():SetNavPage(pageName, page)
-                end,
-
-                GetNavPage = function(self, pageName)
-                    self:GetParent():GetNavPage(pageName)
-                end,
-
-                IsPageValid = function(self, pageName)
-                    return self:GetParent():IsPageValid(pageName)
-                end,
+                Theme = {ThemeType = "Layer"}
             }
         }
     }, parent)
-
-    function panel:SwitchNavPage(pageName)
-        for _, page in pairs(self.Pages) do
-            page:SetVisible(false)
-        end
-
-        if not IsValid(self.Pages[pageName]) then return end
-        self.Pages[pageName]:SetVisible(true)
-        self.CurrentPage = pageName
-    end
-
-    function panel:SetNavPage(pageName, page)
-        self.Pages[pageName] = page
-    end
-
-    function panel:GetNavPage()
-        return self.CurrentPage
-    end
-
-    function panel:IsPageValid(pageName)
-        return IsValid(self.Pages[pageName])
-    end
 
     local function createCategoryButtons(data, parent, bar, panel)
         for _, choice in ipairs(data[3]) do
@@ -182,7 +144,7 @@ function Element.Create(data, parent)
         end,
     }
 
-    function panel:CreateNavigation()
+    function panel:BuildNavigationView()
         for _, data in ipairs(data.Choice) do
             local pnl = choiceType[data[1]](data, self:GetElement("NavigationBar"), self:GetElement("NavigationPanel"))
 
@@ -191,7 +153,7 @@ function Element.Create(data, parent)
     end
 
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
-    panel:CreateNavigation()
+    panel:BuildNavigationView()
 
     return panel
 end
