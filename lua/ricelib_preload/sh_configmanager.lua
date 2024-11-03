@@ -26,289 +26,228 @@ function RiceLib.Config.LoadConfig(Config, Name, default)
     end
 end
 
-function RiceLib.Config.SaveConfig(Config, Name, tbl)
-    dir = "ricelib/settings/" .. Config .. "/" .. Name .. ".json"
+local function saveConfig(config, name, tbl)
+    local dir = "ricelib/settings/" .. config .. "/" .. name .. ".json"
+
     file.Write(dir, util.TableToJSON(tbl, true))
 end
+RiceLib.Config.SaveConfig = saveConfig
 
 -- key based config
-local ConfigTable = RiceLib.Config.LoadConfig("ricelib", "config_manager", {})
-
-function set(NameSpace, Key, Value)
-    ConfigTable[NameSpace] = ConfigTable[NameSpace] or {}
-    ConfigTable[NameSpace][Key] = Value
-    RiceLib.Config.SaveConfig("ricelib", "config_manager", ConfigTable)
-end
-
-function get(NameSpace, Key)
-    if NameSpace == nil or Key == nil then return end
-
-    ConfigTable[NameSpace] = ConfigTable[NameSpace] or {}
-
-    return ConfigTable[NameSpace][Key]
-end
-
+local configTable = {}
 local configEntrys = {}
+local configCategorys = {}
+local nameSpaceInfos = {}
+
+local function loadConfig()
+    for _, file in ipairs(RiceLib.FS.GetAll("ricelib/settings/ricelib", "DATA")) do
+        local nameSpace = string.StripExtension(file)
+
+        configTable[nameSpace] = RiceLib.Config.LoadConfig("ricelib", nameSpace, {})
+    end
+end
+
+local function checkAdminLevel(ply, levelNeeded)
+    if ply:IsSuperAdmin() then
+        return true
+    end
+
+    if ply:IsAdmin() then
+        return levelNeeded == 1
+    end
+
+    return levelNeeded == 0
+end
+
+local function sendSharedConfig(nameSpace, key, value, info)
+    if CLIENT then
+        if not checkAdminLevel(LocalPlayer(), info.AdminLevel) then return end
+
+        RiceLib.Net.Send{
+            NameSpace = "RiceLib_ConfigManager",
+            Command = "SetSharedConfig",
+            Data = {nameSpace, key, value}
+        }
+
+        return
+    end
+
+    RiceLib.Net.Send{
+        NameSpace = "RiceLib_ConfigManager",
+        Command = "SetSharedConfig",
+        Data = {nameSpace, key, value}
+    }
+end
+
+local function set(nameSpace, key, value, noNetwork)
+    nameSpace = string.lower(nameSpace)
+
+    configTable[nameSpace] = configTable[nameSpace] or {}
+    configTable[nameSpace][key] = value
+
+    RiceLib.Config.SaveConfig("ricelib", nameSpace, configTable[nameSpace])
+
+    if noNetwork then return end
+    if not configEntrys[nameSpace] then return end
+    if not configEntrys[nameSpace][key] then return end
+
+    local info = configEntrys[nameSpace][key]
+
+    if info.Shared then
+        sendSharedConfig(nameSpace, key, value, info)
+    end
+end
+
+local function getEntryInfo(nameSpace, key)
+    if not configEntrys[nameSpace] then return end
+
+    return configEntrys[nameSpace][key]
+end
+
+local function get(nameSpace, Key)
+    if nameSpace == nil or Key == nil then return end
+    nameSpace = string.lower(nameSpace)
+
+    configTable[nameSpace] = configTable[nameSpace] or {}
+    
+    local value = configTable[nameSpace][Key]
+    if not value then
+        local default = (getEntryInfo(nameSpace, Key) or {}).Default
+
+        if default then
+            set(nameSpace, Key, default)
+
+            value = default
+        end
+    end
+
+    return value
+end
+
 local baseEntryInfo = {
     Type = "Number",
     Default = 0,
+    Category = "DefaultCategory",
+    DisplayName = "UnknownSetting",
 
-    -- Post to Server when change in Client
-    AutoPost = false,
+    Min = 0,
+    Max = math.huge,
 
+    -- Make client config value avaliable for server, cannot be use with Shared
+    TellServer = false,
+
+    -- Make this config be shared across server and client, cannot be use with TellServer
+    Shared = false,
+
+    -- Admin level needed to change Shared config
     -- 0 Anyone
     -- 1 Admin
     -- 2 SuperAdmin
     AdminLevel = 1,
 
-    Server = false,
-    Client = true
+    -- Make config avaliable in config manager
+    UseGUI = true,
+
+    GetValue = function(self)
+        return get(self.NameSpace, self.Key)
+    end,
+
+    SetValue = function(self, value)
+        return set(self.NameSpace, self.Key, value)
+    end,
 }
 
-local function defineEntry(entryInfo)
-    local nameSpace = entryInfo.Namespace
-    local key = entryInfo.Key
+local baseNameSpaceInfo = {
+    DisplayName = "Unknown",
+    Author = "Unknown"
+}
 
-    if not configEntrys[nameSpace] then configEntrys[nameSpace] = {} end
+function RiceLib.Config.DefineNameSpace(nameSpace, info)
+    nameSpaceInfos[nameSpace] = RiceLib.table.InheritCopy(info, baseNameSpaceInfo)
+end
+RiceLib.Config.DefineNameSpace("ricelib", {
+    DisplayName = "RiceLib",
+    Author = "Rice"
+})
 
-    configEntrys[nameSpace][key] = RiceLib.table.InheritCopy(entryInfo, baseEntryInfo)
-
-    if not ConfigTable[nameSpace][key] then
-        if CLIENT and not entryInfo.Client then return end
-        if SERVER and not entryInfo.Server then return end
-
-        set(nameSpace, key, entryInfo.Default)
-    end
+function RiceLib.Config.GetNameSpaceInfo(nameSpace)
+    return nameSpaceInfos[nameSpace]
 end
 
-RiceLib.Config.All = ConfigTable
+function RiceLib.Config.Define(nameSpace, key, info)
+    if not configEntrys[nameSpace] then configEntrys[nameSpace] = {} end
+
+    info = RiceLib.table.InheritCopy(info, baseEntryInfo)
+    info.NameSpace = nameSpace
+    info.Key = key
+    configEntrys[nameSpace][key] = info
+
+    if not configCategorys[nameSpace] then configCategorys[nameSpace] = {} end
+    if not table.HasValue(configCategorys[nameSpace], info.Category) then
+        table.insert(configCategorys[nameSpace], info.Category)
+    end
+
+    if not configTable[nameSpace] then configTable[nameSpace] = {} end
+    if not configTable[nameSpace][key] then
+        set(nameSpace, key, info.Default, true)
+    end
+
+    return info
+end
+
+function RiceLib.Config.GetEntry(nameSpace, key)
+    return configEntrys[nameSpace][key]
+end
+
+function RiceLib.Config.GetEntrys()
+    return configEntrys
+end
+
+function RiceLib.Config.GetEntrysInCategory(nameSpace, category)
+    local entrys = {}
+
+    for key, info in pairs(configEntrys[nameSpace]) do
+        if info.Category ~= category then continue end
+
+        entrys[key] = info
+    end
+
+    return entrys
+end
+
+function RiceLib.Config.GetCategorys(nameSpace)
+    return configCategorys[nameSpace]
+end
+
+RiceLib.Config.All = configTable
 RiceLib.Config.Set = set
 RiceLib.Config.Get = get
 
-if SERVER then
-    util.AddNetworkString("RL_Config_Command")
-    RiceLib.Net.RegisterCommandReceiver("RL_Config_Command", {})
-else
-    RiceLib.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
+loadConfig()
 
-    RiceLib.Config.ConfigMenu = RiceLib.Config.ConfigMenu or {}
-
-    function RiceLib.Config.GetForNavgationView()
-        tbl = {}
-
-        for category, data in pairs(RiceLib.Config.ConfigMenu) do
-            if data[1] == "Page" then
-                table.insert(tbl, {"Page", category, data[2]})
-
-                continue
-            end
-
-            local choice = {}
-
-            for name, func in pairs(data) do
-                table.insert(choice, {name, func})
-            end
-
-            table.insert(tbl, {"Category", category, choice})
-        end
-
-        return tbl
+concommand.Add("ricelib_configmanaer_load", loadConfig)
+concommand.Add("ricelib_configmanaer_save", function()
+    for nameSpace, config in pairs(configTable) do
+        saveConfig(nameSpace, config)
     end
+end)
+concommand.Add("ricelib_configmanaer_dump", function()
+    print("config:")
+    PrintTable(configTable)
 
-    local choiceBuilders = {
-        Bool = function(data, pnl)
-            RiceUI.SimpleCreate({type = "rl_panel",
-                UseNewTheme = true,
-                Theme = {
-                    ThemeName = "modern",
-                    ThemeType = "NoDraw"
-                },
+    print("configEntrys:")
+    PrintTable(configEntrys)
+end)
 
-                Dock = TOP,
-                Margin = {16,16,16,0},
-                h = 32,
+RiceLib.Net.RegisterReceiver("RiceLib_ConfigManager", {
+    SetSharedConfig = function(data, ply)
+        local nameSpace, key, value = unpack(data)
 
-                children = {
-                    {type = "label", Text = data.DisplayText, Dock = LEFT},
-                    {type = "switch",
-                        Dock = RIGHT,
-                        w = 65,
+        if not configEntrys[nameSpace] then return end
+        if not configEntrys[nameSpace][key] then return end
 
-                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
+        if SERVER and not checkAdminLevel(ply, configEntrys[nameSpace][key].AdminLevel)then return end
 
-                        OnValueChanged = function(self, val)
-                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
-
-                            if data.OnValueChange ~= nil then data.OnValueChange(val) end
-                        end
-                    }
-                }
-            }, pnl)
-        end,
-
-        String = function(data, pnl)
-            RiceUI.SimpleCreate({type = "rl_panel",
-                UseNewTheme = true,
-                Theme = {
-                    ThemeName = "modern",
-                    ThemeType = "NoDraw"
-                },
-
-                Dock = TOP,
-                Margin = {16,16,16,0},
-                h = 32,
-
-                children = {
-                    {type = "label", Text = data[2], Dock = LEFT},
-                    {type = "entry",
-                        Dock = RIGHT,
-                        w = 400,
-
-                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
-
-                        OnValueChanged = function(self, val)
-                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
-
-                            if data.OnValueChange ~= nil then data.OnValueChange(val) end
-                        end
-                    }
-                }
-            }, pnl)
-        end,
-
-        Number = function(data, pnl)
-            RiceUI.SimpleCreate({type = "rl_panel",
-                UseNewTheme = true,
-                Theme = {
-                    ThemeName = "modern",
-                    ThemeType = "NoDraw"
-                },
-
-                Dock = TOP,
-                Margin = {16,16,16,0},
-                h = 32,
-
-                children = {
-                    {type = "label", Text = data[2], Dock = LEFT},
-                    {type = "rl_numberwang",
-                        Dock = RIGHT,
-                        w = 200,
-
-                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
-
-                        OnValueChanged = function(self, val)
-                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
-
-                            if data.OnValueChange ~= nil then data.OnValueChange(val) end
-                        end
-                    }
-                }
-            }, pnl)
-        end,
-
-        Slider = function(data, pnl)
-            RiceUI.SimpleCreate({type = "rl_panel",
-                UseNewTheme = true,
-                Theme = {
-                    ThemeName = "modern",
-                    ThemeType = "NoDraw"
-                },
-
-                Dock = TOP,
-                Margin = {16,16,16,0},
-                h = 32,
-
-                children = {
-                    {type = "label", Text = data[2], Dock = LEFT},
-                    {type = "slider",
-                        Dock = RIGHT,
-                        w = 200,
-
-                        Value = RiceLib.Config.Get(data.NameSpace, data.Key),
-
-                        OnValueChanged = function(self, val)
-                            RiceLib.Config.Set(data.NameSpace, data.Key, val)
-
-                            if data.OnValueChange ~= nil then data.OnValueChange(val) end
-                        end
-                    }
-                }
-            }, pnl)
-        end,
-    }
-
-    function RiceLib.Config.RegisterConfig(category, name, choice)
-        local returnChoice = choice
-
-        if not isfunction(choice) then
-            returnChoice = function(pnl)
-                pnl:Clear()
-
-                for _, data in ipairs(choice) do
-                    choiceBuilders[ data[1] ]( data, pnl )
-                end
-            end
-        end
-
-        RiceLib.Config.ConfigMenu[category] = RiceLib.Config.ConfigMenu[category] or {}
-        RiceLib.Config.ConfigMenu[category][name] = returnChoice
+        set(nameSpace, key, value, CLIENT)
     end
-
-    function RiceLib.Config.RegisterConfig_SinglePage(name, choice)
-        local returnChoice = choice
-
-        if not isfunction(choice) then
-            returnChoice = function(pnl)
-                pnl:Clear()
-
-                for _, data in ipairs(choice) do
-                    choiceBuilders[ data[1] ]( data, pnl )
-                end
-            end
-        end
-
-        RiceLib.Config.ConfigMenu[name] = {"Page", returnChoice}
-    end
-
-    function RiceLib.Config.RegisterCustomPage(name, func)
-        RiceLib.Config.ConfigMenu[name] = {"Page", function(pnl)
-            func(pnl)
-
-            RiceUI.ApplyTheme(pnl)
-        end}
-    end
-
-    function RiceLib.Config.OpenMenu()
-        RiceLib.Config.MenuPanel = RiceUI.SimpleCreate({type = "rl_frame2",
-            Center = true,
-            Root = true,
-
-            Title = "控制中心",
-
-            ThemeNT = {
-                Theme = "Modern",
-                Class = "Frame",
-                Style = "Acrylic"
-            },
-
-            children = {
-                {type = "rl_navigation_view",
-                    Dock = TOP,
-                    h = 655,
-
-                    Choice = RiceLib.Config.GetForNavgationView()
-                }
-            },
-        })
-    end
-
-    concommand.Add("rl_config", RiceLib.Config.OpenMenu)
-
-    list.Set("DesktopWindows", "Lib-Rice ControllCenter", {
-        title = "控制中心",
-        icon = "data/ricelib/materials/rl_logo.png",
-        init = function()
-            RunConsoleCommand("rl_config")
-        end
-    })
-end
+})

@@ -60,6 +60,12 @@ RiceUI.Font.Register{
 }
 
 RiceUI.Font.Register{
+    CodeName = "VCRFixed",
+    FontName = "VCR OSD Mono",
+    Fixed = true
+}
+
+RiceUI.Font.Register{
     CodeName = "PoppinsMedium",
     FontName = "Poppins Medium"
 }

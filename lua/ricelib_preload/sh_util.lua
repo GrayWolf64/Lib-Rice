@@ -22,6 +22,21 @@ function RiceLib.Util.IsWeekend()
     return os.date"%w" == 0 or os.date"%w" == 6
 end
 
+function RiceLib.Util.GetClosestEntity(pos, entities)
+    local distance = math.huge
+    local winner
+
+    for _, ent in ipairs(entities) do
+        local dist = ent:GetPos():DistToSqr(pos)
+        if dist > distance then continue end
+
+        distance = dist
+        winner = ent
+    end
+
+    return winner
+end
+
 function RiceLib.RunFromTable(tbl, name, ...)
     return tbl[name](...)
 end

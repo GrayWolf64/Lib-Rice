@@ -1,6 +1,5 @@
 if SERVER then
     util.AddNetworkString("RiceLibNet")
-    util.AddNetworkString("RiceLibNetEntityCommand")
     util.AddNetworkString("RiceLibNetReponsive")
 end
 
@@ -27,28 +26,6 @@ local function sendCommand(netID, command, data, player)
 
     net.Broadcast()
 end
-
-local function sendEntityCommand(entity, command, data, player)
-    if data == nil then return end
-    if data.CheckPlayerValid and player == nil then return end
-
-    net.Start("RiceLibNetEntityCommand", data.Unreliable)
-    net.WriteEntity(entity)
-    net.WriteString(command)
-    net.WriteTable(data)
-
-    if CLIENT then net.SendToServer() return end
-    if IsValid(player) then net.Send(player) return end
-
-    net.Broadcast()
-end
-
-net.Receive("RiceLibNetEntityCommand", function(_, player)
-    local ent = net.ReadEntity()
-    if ent.RiceLibNetEntityCommand == nil then return end
-
-    ent:RiceLibNetEntityCommand(net.ReadString(), net.ReadTable(), player)
-end)
 
 --- Responesive Networking
 -- @section ResponesiveNet
@@ -210,6 +187,25 @@ local function send(args)
     if CLIENT then net.SendToServer() return end
     net.Send(args.TargetPlayer or player.GetAll())
 end
+
+local function sendEntityCommand(entity, command, data, player)
+    if not IsValid(entity) then return end
+
+    send{
+        NameSpace = "RiceLibEntityCommand",
+        Command = "Send",
+        Data = {entity:EntIndex(), command, data},
+        TargetPlayer = player
+    }
+end
+
+Receivers.RiceLibEntityCommand = {
+    Send = function(data)
+        local ent, command, data = unpack(data)
+
+        Entity(ent):RiceLib_EntityNetCommand(command, data, ply)
+    end
+}
 
 net.Receive("RiceLibNet", function(len, ply)
     local nameSpace, command, data = parseMessage(net.ReadData(len), len)

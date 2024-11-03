@@ -115,10 +115,15 @@ local function round_vec(vec, dec)
     return vec
 end
 
+local function timedProgress(startTime, currentTime, duration)
+	return math.min(1, (currentTime - startTime) / duration)
+end
+
 RiceLib.math = {
 	CubicSmooth5 = CubicSmooth5,
 	CubicSmooth7 = CubicSmooth7,
 	Sin = sin,
 	Cos = cos,
-	RoundVector = round_vec
+	RoundVector = round_vec,
+	TimedProgress = timedProgress
 }
