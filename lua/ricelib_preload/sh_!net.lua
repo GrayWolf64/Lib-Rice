@@ -204,6 +204,7 @@ Receivers.RiceLibEntityCommand = {
         local ent, command, data = unpack(data)
         ent = Entity(ent)
 
+        if not IsValid(ent) then return end
         if not ent.RiceLib_EntityNetCommand then RiceLib.Error(Format("Entity: %s Don't have a RiceLib_EntityNetCommand function!"), ent) return end
         ent:RiceLib_EntityNetCommand(command, data, ply)
     end
