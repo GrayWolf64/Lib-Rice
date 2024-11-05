@@ -202,8 +202,10 @@ end
 Receivers.RiceLibEntityCommand = {
     Send = function(data)
         local ent, command, data = unpack(data)
+        ent = Entity(ent)
 
-        Entity(ent):RiceLib_EntityNetCommand(command, data, ply)
+        if not ent.RiceLib_EntityNetCommand then RiceLib.Error(Format("Entity: %s Don't have a RiceLib_EntityNetCommand function!"), ent) return end
+        ent:RiceLib_EntityNetCommand(command, data, ply)
     end
 }
 
