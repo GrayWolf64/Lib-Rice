@@ -115,8 +115,16 @@ local function round_vec(vec, dec)
     return vec
 end
 
-local function timedProgress(startTime, currentTime, duration)
-	return math.min(1, (currentTime - startTime) / duration)
+local function timedProgress(time, currentTime, duration, isEndTime)
+	local fraction
+
+	if isEndTime then
+		fraction = (time - currentTime)
+	else
+		fraction = (currentTime - time)
+	end
+
+	return math.Clamp(fraction / duration, 0, 1)
 end
 
 RiceLib.math = {

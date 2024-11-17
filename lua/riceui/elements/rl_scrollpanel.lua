@@ -134,7 +134,12 @@ function Element.Create(data, parent)
         ScrollEase = 0.3,
 
         OnMouseWheeled = function(self, delta)
-            self:AddScroll(-delta * self.ScrollSpeed)
+            local speed = self.ScrollSpeed
+
+            if input.IsShiftDown() then return end
+            if input.IsKeyDown(KEY_LALT) then speed = speed * 2 end
+
+            self:AddScroll(-delta * speed)
         end,
 
         OnCreated = function(self)

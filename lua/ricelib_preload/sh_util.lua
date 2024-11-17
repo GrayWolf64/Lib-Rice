@@ -27,6 +27,8 @@ function RiceLib.Util.GetClosestEntity(pos, entities)
     local winner
 
     for _, ent in ipairs(entities) do
+        if not IsValid(ent) then continue end
+
         local dist = ent:GetPos():DistToSqr(pos)
         if dist > distance then continue end
 

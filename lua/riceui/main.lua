@@ -276,7 +276,7 @@ concommand.Add("riceui_debugoverlay", function()
         surface.DrawLine(x, 0, x, ScrH())
         surface.DrawLine(0, y, ScrW(), y)
 
-        draw.SimpleText(string.format("%s %s", x, y), "RiceUI_24", x + 16, y + 16, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(string.format("%s %s", x, y), "RiceUI_24", x + 16, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
 
         if wireframe_x > 0 then
             local w = -(wireframe_x - x)

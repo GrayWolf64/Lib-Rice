@@ -1,6 +1,43 @@
 RiceLib.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
 RiceLib.Config.ConfigMenu = RiceLib.Config.ConfigMenu or {}
 
+local function createConfigEntry(entry, parent)
+    local control = RiceUI.SimpleCreate({type = "rl_panel",
+        Dock = TOP,
+        Margin = {16, 16, 16, 0},
+        h = 32,
+
+        ThemeNT = {
+            Class = "NoDraw"
+        },
+
+        ConfigEntry = entry,
+
+        children = {
+            {type = "label",
+                Dock = LEFT,
+
+                Text = entry.DisplayName
+            },
+
+            {type = "rl_numberwang",
+                Dock = RIGHT,
+                w = 196,
+
+                Min = entry.Min,
+                Max = entry.Max,
+                Dec = entry.Dec,
+                Step = entry.Step,
+
+                Value = entry:GetValue(),
+                OnValueChanged = function(self, val)
+                    entry:SetValue(val)
+                end
+            }
+        }
+    }, parent)
+end
+
 local function buildConfigEntrys(panel, nameSpace, category)
     local pageName = Format("%s_%s", nameSpace, category)
 
@@ -10,7 +47,7 @@ local function buildConfigEntrys(panel, nameSpace, category)
         return
     end
 
-    local page = RiceUI.SimpleCreate({type = "rl_panel",
+    local page = RiceUI.SimpleCreate({type = "rl_scrollpanel",
         Dock = FILL,
 
         ThemeNT = {
@@ -20,43 +57,62 @@ local function buildConfigEntrys(panel, nameSpace, category)
     panel:RegisterPage(pageName, page)
     panel:SwitchPage(pageName)
 
+    local subCategorys = {}
     for key, info in SortedPairs(RiceLib.Config.GetEntrysInCategory(nameSpace, category)) do
         local configEntry = RiceLib.Config.GetEntry(nameSpace, info.Key)
 
-        local control = RiceUI.SimpleCreate({type = "rl_panel",
-            Dock = TOP,
-            Margin = {16, 16, 16, 0},
-            h = 32,
+        local subCategory = configEntry.SubCategory
+        if subCategory then
+            if not subCategorys[subCategory] then
+                subCategorys[subCategory] = {}
+            end
 
-            ThemeNT = {
-                Class = "NoDraw"
-            },
+            table.insert(subCategorys[subCategory], {nameSpace, info.Key})
 
-            ConfigEntry = configEntry,
+            continue
+        end
 
-            children = {
-                {type = "label",
-                    Dock = LEFT,
+        createConfigEntry(configEntry, page)
+    end
 
-                    Text = info.DisplayName
+    local Spacers = {}
+    for subCategory, infos in SortedPairs(subCategorys) do
+        local spacer = Spacers[subCategory]
+
+        if not spacer then
+            spacer = RiceUI.SimpleCreate({type = "rl_panel",
+                Dock = TOP,
+                Margin = {0, 16, 0, 0},
+
+                ThemeNT = {
+                    Class = "NoDraw"
                 },
 
-                {type = "rl_numberwang",
-                    Dock = RIGHT,
-                    w = 196,
+                children = {
+                    {type = "rl_button",
+                        Dock = TOP,
+                        Margin = {12, 0, 16, 0},
+                        h = 32,
 
-                    Min = info.Min,
-                    Max = info.Max,
-                    Dec = info.Dec,
-                    Step = info.Step,
+                        ThemeNT = {
+                            Style = "ComboChoice"
+                        },
 
-                    Value = configEntry:GetValue(),
-                    OnValueChanged = function(self, val)
-                        configEntry:SetValue(val)
-                    end
+                        Selected = true,
+                        Text = subCategory
+                    }
                 }
-            }
-        }, page)
+            }, page)
+        end
+
+        for _, info in SortedPairsByMemberValue(infos, 2) do
+            local nameSpace, key = unpack(info)
+            local configEntry = RiceLib.Config.GetEntry(nameSpace, key)
+
+            createConfigEntry(configEntry, spacer)
+        end
+
+        spacer:FitContents_Vertical()
     end
 
     RiceUI.ApplyTheme(panel)
