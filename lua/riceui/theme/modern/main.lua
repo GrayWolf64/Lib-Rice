@@ -330,14 +330,14 @@ registerClass("Modern", "Spacer",{
     Default = function(self, w, h, style)
         local size = style.Size or RICEUI_SIZE_2
 
-        surface.SetDrawColor(self:RiceUI_GetColor("Fill", "Control", "Default"))
+        surface.SetDrawColor(self:RiceUI_GetColor("Text", "Primary"))
         surface.DrawRect(0, 0, size, h)
     end,
 
     Horizontal = function(self, w, h, style)
         local size = style.Size or RICEUI_SIZE_2
 
-        surface.SetDrawColor(self:RiceUI_GetColor("Fill", "Control", "Default"))
+        surface.SetDrawColor(self:RiceUI_GetColor("Text", "Primary"))
         surface.DrawRect(0, 0, w, size)
     end,
 })
@@ -385,6 +385,17 @@ registerClass("Modern", "Button", {
         local textColor = self:RiceUI_GetColor("Text", "Primary")
 
         drawControll_NoOutline(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)), style.Corner)
+
+        if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
+        if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
+
+        draw.SimpleText(self.Text, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end,
+
+    TransparentHighlight = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
+
+        drawControll_NoOutline(self, w, h, ColorAlpha(textColor, RiceUI.HoverAlpha(self, 20) * 0.2), style.Corner)
 
         if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
         if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end

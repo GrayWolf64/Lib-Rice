@@ -11,7 +11,7 @@ function Element.Create(data, parent, root)
         w = 500,
         h = 300,
 
-        Text = ""
+        Stretch = RICELIB_IMAGE_STRETCH_UNIFORMFILL
     })
 
     local panel = RiceUI.SimpleCreate({type = "rl_button",
@@ -20,6 +20,8 @@ function Element.Create(data, parent, root)
         y = data.y,
         w = data.w,
         h = data.h,
+
+        Text = "",
 
         ThemeNT = {
             Class = "NoDraw",
@@ -38,8 +40,8 @@ function Element.Create(data, parent, root)
                         end
 
                         if not self.Material:IsError() then
-                            surface.SetMaterial(self.Material)
-                            surface.DrawTexturedRect(0, 0, w, h)
+                            local x, y = self:LocalToScreen()
+                            RiceLib.Draw.Image(0, 0, w, h, self.Material, color_white, self.Stretch, _, false)
 
                             return
                         end

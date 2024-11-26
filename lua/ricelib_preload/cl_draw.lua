@@ -146,10 +146,113 @@ local function drawLinearGradient(x, y, w, h, stops, is_horizontal)
 	mesh.End()
 end
 
+RICELIB_IMAGE_STRETCH_NONE = 0
+RICELIB_IMAGE_STRETCH_FILL = 1
+RICELIB_IMAGE_STRETCH_UNIFORM = 2
+RICELIB_IMAGE_STRETCH_UNIFORMCENTER = 3
+RICELIB_IMAGE_STRETCH_UNIFORMFILL = 4
+local ImageCache = {}
+
+local function drawImage(x, y, w, h, material, color, stretch, drawMarker, enableClipping)
+	if not material then return end
+
+	if isstring(material) then
+		if ImageCache[material] then
+			material = ImageCache[material]
+		else
+			ImageCache[material] = Material(material, "smooth")
+			material = ImageCache[material]
+		end
+	end
+
+	color = color or color_white
+	stretch = stretch or RICELIB_IMAGE_STRETCH_NONE
+
+	surface.SetDrawColor(color)
+
+	local image_width = material:Width()
+	local image_height = material:Height()
+
+	local stretch_direction = 0
+	if image_height > image_width then
+		stretch_direction = 1
+	end
+
+	surface.SetMaterial(material)
+
+	if drawMarker then
+		surface.DrawOutlinedRect(x, y, w, h, 1)
+	end
+
+	if stretch == RICELIB_IMAGE_STRETCH_NONE then
+		if enableClipping then render.SetScissorRect( x, y, x + w, y + h, true ) end
+		surface.DrawTexturedRect(x, y, image_width, image_height)
+		render.SetScissorRect( 0, 0, 0, 0, false )
+
+		return
+	end
+
+	if stretch == RICELIB_IMAGE_STRETCH_FILL then
+		surface.DrawTexturedRect(x, y, w, h)
+
+		return
+	end
+
+	if stretch == RICELIB_IMAGE_STRETCH_UNIFORM then
+		local ratio = image_height / image_width
+		local render_width = w
+		local render_height = w * ratio
+
+		if stretch_direction == 1 then
+			render_height = h
+			render_width = w * image_width / image_height
+		end
+
+		surface.DrawTexturedRect(x, y, render_width, render_height)
+
+		return
+	end
+
+	if stretch == RICELIB_IMAGE_STRETCH_UNIFORMCENTER then
+		local render_width = w
+		local render_height = w * (image_height / 2 / image_width)
+
+		if stretch_direction == 1 then
+			render_width = w * (image_width / (image_height / 2))
+			render_height = h
+		end
+
+		surface.DrawTexturedRectRotated(x + w / 2, y + h / 2, render_width, render_height, 0)
+
+		return
+	end
+
+	if stretch == RICELIB_IMAGE_STRETCH_UNIFORMFILL then
+		local render_width = image_width * (h / (image_width / 2))
+		local render_height = h
+
+		if render_width < w then
+			stretch_direction = 1
+		end
+
+		if stretch_direction == 1 then
+			render_height = h * (w / render_width)
+			render_width = w
+		end
+
+		if enableClipping then render.SetScissorRect( x, y, x + w, y + h, true ) end
+		surface.DrawTexturedRectRotated(x + w / 2, y + h / 2, render_width, render_height, 0)
+		render.SetScissorRect( 0, 0, 0, 0, false )
+
+		return
+	end
+end
+
 RiceLib.Draw = {
 	Circle = draw_circle,
 	TexturedCircle = draw_textured_circle,
 	RoundedBox = draw_rounded_box,
 	RoundedBoxOutlined = drawRoundedBoxOutlined,
-	LinearGradient = drawLinearGradient
+	LinearGradient = drawLinearGradient,
+	Image = drawImage
 }
