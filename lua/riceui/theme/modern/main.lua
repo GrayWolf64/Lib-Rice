@@ -130,7 +130,7 @@ local colors = {
             },
 
             Control = {
-                Default = Color(55, 55, 55),
+                Default = Color(45, 45, 45),
                 Secondary = RiceUI.AlphaPercent(color_white, 0.02),
                 Tertiary = RiceUI.AlphaPercent(color_white, 0.01),
                 Active = RiceUI.AlphaPercent(Color(30, 30, 30), 0.7)
@@ -208,7 +208,7 @@ local themePanel = {
         local corner = style.Corner or {true, true, true, true}
 
         draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, ColorAlpha(color_black, 100), unpack(corner))
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Active"), unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
     end,
 
     ShadowExpensive = function(self, w, h, style)
@@ -223,7 +223,7 @@ local themePanel = {
         draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS - unit_2, x + unit_2, y + unit_2, w - unit_2 * 2, h  - unit_2 * 2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
         RiceUI.Render.EndShadow(unpack( table.Add(shadowData, {0, startY, ScrW(), sizeH}) ))
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Control", "Active"), unpack(corner))
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
     end,
 
     Acrylic = function(self, w, h, style)
@@ -254,6 +254,13 @@ local themePanel = {
 
     Layer = function(self, w, h, style)
         local color = self:RiceUI_GetColor("Fill", "Layer")
+        local corner = style.Corner or {true, true, true, true}
+
+        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
+    end,
+
+    LayerSolid = function(self, w, h, style)
+        local color = self:RiceUI_GetColor("Background", "Solid", "Primary")
         local corner = style.Corner or {true, true, true, true}
 
         draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))

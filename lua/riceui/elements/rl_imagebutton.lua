@@ -11,6 +11,8 @@ function Element.Create(data, parent, root)
         w = 500,
         h = 300,
 
+        Color = color_white,
+
         Stretch = RICELIB_IMAGE_STRETCH_UNIFORMFILL
     })
 
@@ -28,20 +30,18 @@ function Element.Create(data, parent, root)
             Style = "Custom",
             StyleSheet = {
                 Draw = function(self, w, h)
-                    surface.SetDrawColor(255, 255, 255)
-
                     if self.Image then
                         if not self.Material then
                             local material = Material(self.Image, "smooth")
 
-                            if not material:IsError() then
+                            if material and not material:IsError() then
                                 self.Material = material
                             end
                         end
 
-                        if not self.Material:IsError() then
+                        if self.Material and not self.Material:IsError() then
                             local x, y = self:LocalToScreen()
-                            RiceLib.Draw.Image(0, 0, w, h, self.Material, color_white, self.Stretch, _, false)
+                            RiceLib.Draw.Image(0, 0, w, h, self.Material, self.Color, self.Stretch, _, false)
 
                             return
                         end
