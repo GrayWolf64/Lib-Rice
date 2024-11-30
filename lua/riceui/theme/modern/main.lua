@@ -496,7 +496,26 @@ registerClass("Modern", "Button", {
         local height = h * h / scrollPanel:GetCanvasTall() - RICEUI_SIZE_16
 
         draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, RICEUI_SIZE_8 + h * fraction, w / 2, height, color)
-    end
+    end,
+
+    Keybinder = function(self, w, h, style)
+        local textColor = self:RiceUI_GetColor("Text", "Primary")
+        local displayText
+
+        if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
+        if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
+
+        if self:GetValue() then
+            displayText = string.upper(input.GetKeyName(self:GetValue()))
+        end
+
+        if self.KeyTrapping then
+            displayText = "等待按键"
+        end
+
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
+        draw.SimpleText(displayText, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end,
 })
 
 registerClass("Modern", "Entry", {

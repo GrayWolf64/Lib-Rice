@@ -2,39 +2,9 @@ RiceLib.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd
 RiceLib.Config.ConfigMenu = RiceLib.Config.ConfigMenu or {}
 
 local function createConfigEntry(entry, parent)
-    local control = RiceUI.SimpleCreate({type = "rl_panel",
-        Dock = TOP,
-        Margin = {16, 16, 16, 0},
-        h = 32,
-
-        ThemeNT = {
-            Class = "NoDraw"
-        },
-
-        ConfigEntry = entry,
-
-        children = {
-            {type = "label",
-                Dock = LEFT,
-
-                Text = entry.DisplayName
-            },
-
-            {type = "rl_numberwang",
-                Dock = RIGHT,
-                w = 196,
-
-                Min = entry.Min,
-                Max = entry.Max,
-                Dec = entry.Dec,
-                Step = entry.Step,
-
-                Value = entry:GetValue(),
-                OnValueChanged = function(self, val)
-                    entry:SetValue(val)
-                end
-            }
-        }
+    local control = RiceUI.SimpleCreate({
+        widget = Format("RiceLib_ConfigManager_%s", entry.Type),
+        Entry = entry
     }, parent)
 end
 
