@@ -236,10 +236,26 @@ RiceLib.Net = {
     SendEntityCommand = sendEntityCommand,
 
     Responsive = responsive,
-    RegisterResponsiveReceiver = function(nameSpace, commands) ResponesiveCommmands[nameSpace] = commands end,
+    RegisterResponsiveReceiver = function(nameSpace, commands)
+        if ResponesiveCommmands[nameSpace] then
+            table.Merge(ResponesiveCommmands[nameSpace], commands)
+
+            return
+        end
+
+        ResponesiveCommmands[nameSpace] = commands
+    end,
 
     Send = send,
-    RegisterReceiver = function(nameSpace, commands) Receivers[nameSpace] = commands end,
+    RegisterReceiver = function(nameSpace, commands)
+        if Receivers[nameSpace] then
+            table.Merge(Receivers[nameSpace], commands)
+
+            return
+        end
+
+        Receivers[nameSpace] = commands
+    end,
 }
 
 if CLIENT then
