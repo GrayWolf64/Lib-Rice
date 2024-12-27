@@ -254,8 +254,8 @@ concommand.Add("riceui_debugoverlay", function()
 
             if not panel:IsHovered() then continue end
 
-            draw.SimpleText(string.format("%s %s %s", x, y, panel.ID or ""), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
-            draw.SimpleText(string.format("%s %s", w, h), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleTextOutlined(string.format("%s %s %s", x, y, panel.ID or ""), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, color_black)
+            draw.SimpleTextOutlined(string.format("%s %s", w, h), "RiceUI_24", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, color_black)
 
             surface.SetDrawColor(ColorAlpha(color, 50))
             surface.DrawRect(x, y, w, h)
@@ -276,7 +276,7 @@ concommand.Add("riceui_debugoverlay", function()
         surface.DrawLine(x, 0, x, ScrH())
         surface.DrawLine(0, y, ScrW(), y)
 
-        draw.SimpleText(string.format("%s %s", x, y), "RiceUI_24", x + 16, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+        draw.SimpleTextOutlined(string.format("%s %s", x, y), "RiceUI_24", x + 16, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, color_black)
 
         if wireframe_x > 0 then
             local w = -(wireframe_x - x)
@@ -285,7 +285,7 @@ concommand.Add("riceui_debugoverlay", function()
             surface.SetDrawColor(0, 0, 255)
             surface.DrawOutlinedRect(wireframe_x, wireframe_y, w, h, 1)
 
-            draw.SimpleText(string.format("%s %s", w, h), "RiceUI_24", x + 16, y + 32, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleTextOutlined(string.format("%s %s", w, h), "RiceUI_24", x + 16, y + 32, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, color_black)
         end
     end)
 end)

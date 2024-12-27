@@ -324,7 +324,7 @@ registerClass("Modern", "Frame",{
         local thickness = RiceLib.hudScaleY(3)
 
         DisableClipping(true)
-        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Fill", "Layer"))
+        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Stroke", "Frame"))
         DisableClipping(false)
 
         render.SetStencilEnable(false)

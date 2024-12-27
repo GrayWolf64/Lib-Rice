@@ -267,7 +267,7 @@ local function register_class(theme, class, data)
             if style ~= nil then
                 local baseTheme = themes_nt[theme].Base
 
-                RiceLib.Warn(Format("Theme %s Class %s is missing Style %s, fallback to Theme %s", theme, class, style, baseTheme), "RiceUI ThemeNT")
+                --RiceLib.Warn(Format("Theme %s Class %s is missing Style %s, fallback to Theme %s", theme, class, style, baseTheme), "RiceUI ThemeNT")
 
                 local baseThemeStyle = themes_nt[baseTheme]
 

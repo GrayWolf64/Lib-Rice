@@ -157,6 +157,7 @@ RiceUI.DefineUniProcess("ConVar", {
 
     Switch = function(panel, data)
         local convar = GetConVar(data)
+        if not convar then return end
 
         function panel:OnValueChanged(val)
             local num = 0

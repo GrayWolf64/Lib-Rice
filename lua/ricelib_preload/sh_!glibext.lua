@@ -127,11 +127,16 @@ local function timedProgress(time, currentTime, duration, isEndTime)
 	return math.Clamp(fraction / duration, 0, 1)
 end
 
+local function math_inrage(input, min, max)
+	return min <= input and max >= input
+end
+
 RiceLib.math = {
 	CubicSmooth5 = CubicSmooth5,
 	CubicSmooth7 = CubicSmooth7,
 	Sin = sin,
 	Cos = cos,
 	RoundVector = round_vec,
-	TimedProgress = timedProgress
+	TimedProgress = timedProgress,
+	InRange = math_inrage
 }
