@@ -42,26 +42,35 @@ end
 -- @lfunction add_file
 -- @param file_name File name with extension
 -- @param dir Directory where file lies
+local prefixLoaders = {
+    sv_ = function(fullPath)
+        if CLIENT then return end
+
+        include(fullPath)
+    end,
+
+    cl_ = function(fullPath)
+        if SERVER then
+            AddCSLuaFile(fullPath)
+
+            return
+        end
+
+        include(fullPath)
+    end,
+}
 local function add_file(file_name, dir)
-    dir = dir .. file_name
-    local do_nothing = function() return end
+    local fullPath = dir .. file_name
 
-    local handlers = setmetatable({
-        sv_ = {
-            [true]  = function() include(dir) end, [false] = do_nothing,
-            final = do_nothing},
-        sh_ = {
-            [true]  = function() AddCSLuaFile(dir) end, [false] = do_nothing,
-            final   = function() include(dir) end},
-        cl_ = {
-            [true]  = function() AddCSLuaFile(dir) end, [false] = function() include(dir) end,
-            final   = do_nothing}
-    }, {__index = function()
-        return function() AddCSLuaFile(dir); include(dir) end
-    end})
+    local loader = prefixLoaders[string.Left(file_name, 3)]
+    if loader then
+        loader(fullPath)
 
-    local handler = handlers[file_name:Left(3)]
-    if istable(handler) then handler[SERVER](); handler.final() else handler() end
+        return
+    end
+
+    AddCSLuaFile(fullPath)
+    include(fullPath)
 end
 
 --- Apply Function 1 to every file name(arg) in a folder(dir) modified by its Argument Modifier 1 orderly,
@@ -162,8 +171,25 @@ RiceLib.FS.GetDir  = get_all_dirs
 
 -- Hook: RiceLibClientReady, which has a `ply` param
 -- Not recommended. Please seek for other alternatives
-if SERVER then util.AddNetworkString("ricelib_clientready")net.Receive("ricelib_clientready",function(_,b)hook.Run("RiceLibClientReady",b)end)
-else local function c()net.Start("ricelib_clientready")net.SendToServer()end;hook.Add("InitPostEntity","RiceLibClientReady",c)concommand.Add("ricelib_simulate_clientready",function(b)if not b:IsAdmin()then return end;c()end)end
+if SERVER then
+    util.AddNetworkString("ricelib_clientready")
+
+    net.Receive("ricelib_clientready", function(_, b)
+        hook.Run("RiceLibClientReady", b)
+    end)
+else
+    local function c()
+        net.Start("ricelib_clientready")
+        net.SendToServer()
+    end
+
+    hook.Add("InitPostEntity", "RiceLibClientReady", c)
+
+    concommand.Add("ricelib_simulate_clientready", function(b)
+        if not b:IsAdmin() then return end
+        c()
+    end)
+end
 
 RiceLib.AddFileAs  = add_file
 RiceLib.IncludeDir = include_dir

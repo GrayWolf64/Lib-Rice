@@ -50,7 +50,7 @@ end
 local function parseResponsiveMessage(Raw, len)
     local data = utilJSONToTable(utilDecompress(Raw, len))
 
-    return data.NameSpace, data.Command, data.Data or {}, data.SessionKey, data.IsRespone
+    return data.NameSpace, data.Command, data.Data, data.SessionKey, data.IsRespone
 end
 
 local ResponesiveReceivers = {}
@@ -109,10 +109,13 @@ net.Receive("RiceLibNetReponsive", function(len, ply)
         return
     end
 
+    local respone = func(data, ply)
+    if not respone then return end
+
     sendRespone({
         NameSpace = nameSpace,
         Command = command,
-        Data = func(data, ply),
+        Data = respone,
         SessionKey = sessionKey,
         TargetPlayer = ply
     })

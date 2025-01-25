@@ -1,4 +1,3 @@
-RiceLib.URLMaterial.Create("rl_logo", "https://sv.wolf109909.top:62500/f/ede41dd0da3e4c4dbb3d/?dl=1")
 RiceLib.Config.ConfigMenu = RiceLib.Config.ConfigMenu or {}
 
 local function createConfigEntry(entry, parent)
@@ -348,7 +347,7 @@ concommand.Add("rl_config", RiceLib.Config.OpenMenu)
 
 list.Set("DesktopWindows", "Lib-Rice ControllCenter", {
     title = "控制中心",
-    icon = "data/ricelib/materials/rl_logo.png",
+    icon = "rl_icons/ricelib_controlcenter.png",
     init = function()
         RunConsoleCommand("rl_config")
     end

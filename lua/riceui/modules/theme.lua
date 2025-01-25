@@ -293,7 +293,7 @@ local function reload_themes_nt()
 
         include(path .. "/main.lua")
 
-        RiceLib.IncludeDir(path .. "classes")
+        RiceLib.IncludeDir(path .. "/classes")
     end)
 end
 

@@ -228,7 +228,8 @@ local function drawImage(x, y, w, h, material, color, stretch, drawMarker, enabl
 	end
 
 	if stretch == RICELIB_IMAGE_STRETCH_UNIFORMFILL then
-		local render_width = image_width * (h / (image_width / 2))
+		local ratio = (h / (image_width))
+		local render_width = image_width * ratio
 		local render_height = h
 
 		if render_width < w then
@@ -236,7 +237,8 @@ local function drawImage(x, y, w, h, material, color, stretch, drawMarker, enabl
 		end
 
 		if stretch_direction == 1 then
-			render_height = h * (w / render_width)
+			ratio = (w / render_width)
+			render_height = h * ratio
 			render_width = w
 		end
 
@@ -244,7 +246,7 @@ local function drawImage(x, y, w, h, material, color, stretch, drawMarker, enabl
 		surface.DrawTexturedRectRotated(x + w / 2, y + h / 2, render_width, render_height, 0)
 		render.SetScissorRect( 0, 0, 0, 0, false )
 
-		return
+		return ratio
 	end
 end
 

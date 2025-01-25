@@ -200,38 +200,42 @@ local themePanel = {
     Default = function(self, w, h, style)
         local corner = style.Corner or {true, true, true, true}
         local color = style.Color or self:RiceUI_GetColor("Fill", "Control", "Default")
+        local radius = style.Radius or DEFAULT_BODY_BORDER_RADIUS
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
+        draw.RoundedBoxEx(radius, 0, 0, w, h, color, unpack(corner))
     end,
 
     Shadow = function(self, w, h, style)
         local corner = style.Corner or {true, true, true, true}
+        local radius = style.Radius or DEFAULT_BODY_BORDER_RADIUS
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, ColorAlpha(color_black, 100), unpack(corner))
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
+        draw.RoundedBoxEx(radius or style.Radius, 0, 0, w, h, ColorAlpha(color_black, 100), unpack(corner))
+        draw.RoundedBoxEx(radius or style.Radius, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
     end,
 
     ShadowExpensive = function(self, w, h, style)
         local corner = style.Corner or {true, true, true, true}
         local shadowData = table.Copy(style.Shadow) or {1, 1, 1, 150, 20, 1}
+        local radius = style.Radius or DEFAULT_BODY_BORDER_RADIUS
 
         local x, y = self:LocalToScreen()
         local parent = self:GetParent()
         local _shadowOnly, startY = parent:LocalToScreen()
         local _, sizeH = parent:GetSize()
         RiceUI.Render.StartShadow()
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS - unit_2, x + unit_2, y + unit_2, w - unit_2 * 2, h  - unit_2 * 2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
+        draw.RoundedBoxEx(radius - unit_2, x + unit_2, y + unit_2, w - unit_2 * 2, h  - unit_2 * 2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
         RiceUI.Render.EndShadow(unpack( table.Add(shadowData, {0, startY, ScrW(), sizeH}) ))
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
+        draw.RoundedBoxEx(radius, 0, 0, w, h, style.Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
     end,
 
     Acrylic = function(self, w, h, style)
         local blur = style.Blur or 8
+        local radius = style.Radius or DEFAULT_BODY_BORDER_RADIUS
 
         RiceLib.Render.StartStencil()
 
-        RiceLib.Draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color_white)
+        RiceLib.Draw.RoundedBox(radius, 0, 0, w, h, color_white)
 
         render.SetStencilCompareFunction(STENCIL_EQUAL)
         render.SetStencilFailOperation(STENCIL_KEEP)
@@ -245,25 +249,29 @@ local themePanel = {
         render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
         render.SetStencilFailOperation(STENCIL_ZERO)
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Frame"), true, true, true, true)
+        draw.RoundedBoxEx(radius, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Frame"), true, true, true, true)
 
         render.SetStencilEnable(false)
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame", "Acrylic"), true, true, true, true)
+        draw.RoundedBoxEx(radius, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame", "Acrylic"), true, true, true, true)
     end,
 
     Layer = function(self, w, h, style)
         local color = self:RiceUI_GetColor("Fill", "Layer")
         local corner = style.Corner or {true, true, true, true}
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
+        draw.RoundedBoxEx(style.Radius or DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
     end,
 
     LayerSolid = function(self, w, h, style)
         local color = self:RiceUI_GetColor("Background", "Solid", "Primary")
         local corner = style.Corner or {true, true, true, true}
 
-        draw.RoundedBoxEx(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
+        draw.RoundedBoxEx(style.Radius or DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color, unpack(corner))
+    end,
+
+    Control = function(self, w, h, style)
+        drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner, style.Radius)
     end
 }
 
