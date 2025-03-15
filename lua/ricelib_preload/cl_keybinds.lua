@@ -1,8 +1,11 @@
+RiceLib.Cache.Keybinds = RiceLib.Cache.Keybinds or {}
+RiceLib.Cache.KeybindLookups = RiceLib.Cache.KeybindLookups or {}
+RiceLib.Cache.KeybindFunctions = RiceLib.Cache.KeybindFunctions or {}
 RiceLib.Keybinds = {}
 
-local Keybinds = {}
-local KeybindLookups = {}
-local KeybindFunctions = {}
+local Keybinds = RiceLib.Cache.Keybinds
+local KeybindLookups = RiceLib.Cache.KeybindLookups
+local KeybindFunctions = RiceLib.Cache.KeybindFunctions
 
 function RiceLib.Keybinds.Register(id, func)
     KeybindFunctions[id] = func

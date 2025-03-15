@@ -36,6 +36,37 @@ end)
 
 local DEFAULT_EASEFUNCTION = math.ease.OutExpo
 
+local animationMeta = {}
+animationMeta.__index = {}
+
+
+local function createAnimation(self, animationObject)
+    RiceLib.table.Inherit(animationObject, {
+        Time = RiceUI.Animation.GetTime("Normal"),
+        Delay = 0,
+        EaseFunction = DEFAULT_EASEFUNCTION,
+
+        Initialize = function() end,
+        Think = function() end,
+        Callback = function() end,
+    })
+
+    setmetatable(animationObject, animationMeta)
+
+    animationObject:Initialize()
+
+    local anim = self:NewAnimation(animationObject.Time, animationObject.Delay, 1, animationObject.Callback)
+    animationObject.AnimationData = anim
+
+    anim.Think = animationObject.Think
+
+    if animationObject.ID then
+        if not self.RiceUI_Animations then self.RiceUI_Animations = {} end
+
+        self.RiceUI_Animations[args.ID] = anim
+    end
+end
+
 local function moveTo(self, args)
     RiceLib.table.Inherit(args, {
         Time = RiceUI.Animation.GetTime("Normal"),
@@ -104,3 +135,4 @@ end
 
 RiceUI.DefineMixin("RiceUI_MoveTo", moveTo)
 RiceUI.DefineMixin("RiceUI_SizeTo", sizeTo)
+RiceUI.DefineMixin("RiceUI_CreateAnimation", createAnimation)

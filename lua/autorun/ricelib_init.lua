@@ -10,6 +10,7 @@ if SERVER then resource.AddWorkshop"2829757059" end
 RiceLib           = RiceLib or {}
 RiceLib.VGUI      = RiceLib.VGUI or {}
 RiceLib.VGUI.Anim = RiceLib.VGUI.Anim or {}
+RiceLib.Cache = RiceLib.Cache or {}
 
 --- Makes a log function
 -- @lfunction mklogfunc

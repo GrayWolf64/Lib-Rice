@@ -184,7 +184,7 @@ function apply_theme_nt(panel, inputTheme)
     end
 
     panel.IsThemeNT = true
-    panel.ThemeNT_Color = inputTheme.Color
+    panel.ThemeNT_Color = theme.Color
 
     local class = theme.Class
     if not class then

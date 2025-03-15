@@ -109,7 +109,7 @@ local function get(nameSpace, Key)
     nameSpace = string.lower(nameSpace)
 
     configTable[nameSpace] = configTable[nameSpace] or {}
-    
+
     local value = configTable[nameSpace][Key]
     if not value then
         local default = (getEntryInfo(nameSpace, Key) or {}).Default

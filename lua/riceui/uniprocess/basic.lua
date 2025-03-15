@@ -141,6 +141,12 @@ RiceUI.DefineUniProcess("OffsetProfile", function(panel, data)
     local x, y = RiceLib.hudOffset(100, 100, data)
     if not RiceLib.UI.ValidOffset(data) then return end
 
+    if panel.DoOffsetProfile then
+        panel:DoOffsetProfile(x, y)
+
+        return
+    end
+
     panel:SetPos(x, y)
 end)
 

@@ -20,6 +20,7 @@ function Element.Create(data,parent)
     panel:SetText("")
     panel:SetCursor("sizeall")
     panel:SetMouseInputEnabled(true)
+    panel.CenterOffset = false
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))
 
@@ -61,7 +62,12 @@ function Element.Create(data,parent)
         if not (onChat or (RiceUI.RootName == panel.RootName)) then return end
 
         if code == MOUSE_RIGHT then
-            parent:SetPos(RiceLib.hudScale(self.DefaultX, self.DefaultY))
+            local x, y = RiceLib.hudScale(self.DefaultX, self.DefaultY)
+            if parent.DoResetOffsetProfile then
+                parent:DoResetOffsetProfile(x, y)
+            else
+                parent:SetPos(x, y)
+            end
 
             RiceLib.ClearHUDOffset(self.Profile)
             self:OnClearHUDOffset()
@@ -81,7 +87,15 @@ function Element.Create(data,parent)
         self.Dragging = nil
         self:MouseCapture( false )
 
-        RiceLib.UpdateHUDOffset(self.Profile, parent:GetX(), parent:GetY())
+        local parent = self:GetParent()
+        local x, y = parent:GetPos()
+
+        if self.CenterOffset then
+            x = x + parent:GetWide() / 2
+            y = y + parent:GetTall() / 2
+        end
+
+        RiceLib.UpdateHUDOffset(self.Profile, x, y)
     end
 
     return panel

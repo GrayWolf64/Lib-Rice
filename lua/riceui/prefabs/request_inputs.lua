@@ -564,3 +564,17 @@ RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent)
         }
     }, parent)
 end)
+
+RiceUI.DefineWidget("RiceUI_Inputs", function(data, parent)
+    RiceLib.table.Inherit(data, {
+        Title = "请输入",
+        Text = "请输入",
+
+        OnConfirm = function() end,
+        OnCancel = function() end,
+    })
+
+    local popup = RiceUI.SimpleCreate({
+
+    }, parent)
+end)

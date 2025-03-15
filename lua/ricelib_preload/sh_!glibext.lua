@@ -48,12 +48,43 @@ local function remove_by_val(t, value)
 	end
 end
 
+-- DEPRECATED
 RiceLib.table = {
 	Inherit = inherit,
 	InheritCopy = inherit_copy,
 	GetByString = get_by_str,
-	RemoveByValue = remove_by_val
+    RemoveByValue = remove_by_val
 }
+
+RiceLib.Table = RiceLib.table
+
+local function traversNextTable(root, path, operationPaths, createIfNotExist)
+    local nextPath = table.remove(operationPaths, 1)
+
+    if not root[path] then
+        if createIfNotExist then
+            root[path] = {}
+        else
+            return root, path
+        end
+    end
+
+    if not nextPath then
+        return root[path], path, root
+    end
+
+    return traversNextTable(root[path], nextPath, operationPaths, createIfNotExist)
+end
+
+function RiceLib.Table.Travers(root, path, createIfNotExist, separator)
+    root = root or _G
+    separator = separator or "/"
+
+    local paths = path:Split(separator)
+    local operationPaths = table.Copy(paths)
+
+    return traversNextTable(root, table.remove(operationPaths, 1), operationPaths, createIfNotExist)
+end
 
 local function CubicSmooth5(input, store)
     store = store or {}
