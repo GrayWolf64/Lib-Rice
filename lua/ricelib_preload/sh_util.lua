@@ -39,6 +39,10 @@ function RiceLib.Util.GetClosestEntity(pos, entities)
     return winner
 end
 
+function RiceLib.Util.UniqueID()
+    return util.SHA256(SysTime())
+end
+
 function RiceLib.RunFromTable(tbl, name, ...)
     return tbl[name](...)
 end

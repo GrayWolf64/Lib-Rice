@@ -8,14 +8,15 @@ local downloading = Material("vgui/alpha-back.vmt", "smooth")
 local downloadFailed = Material("vgui/avatar_default.vmt", "smooth")
 function RiceLib.URLMaterial.Get(id, url, expire, callback)
     local hash = util.SHA256(url)
-    local fileExists = file.Exists(materialsPath .. hash .. ".png", "DATA")
+    local filePath = materialsPath .. hash .. ".png"
+    local fileExists = file.Exists(filePath, "DATA")
 
     if cache[id] and fileExists then
         return cache[id]
     end
 
-    if fileExists then
-        cache[id] = Material("data/" .. materialsPath .. hash .. ".png", "smooth")
+    if fileExists and os.time() - file.Time(filePath, "DATA") < 3600 then
+        cache[id] = Material("data/" .. filePath, "smooth")
 
         return cache[id]
     end

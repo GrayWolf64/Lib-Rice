@@ -67,8 +67,7 @@ function Element.Create(data, parent, root)
                 },
 
                 DoClick = function(pnl)
-                    self.Text = option[1]
-                    self:SetValue(option[2], true)
+                    self:SetValue(option[2], true, option[1])
                     self.Menu:Remove()
                 end
             }, menu, menu)
@@ -108,10 +107,22 @@ function Element.Create(data, parent, root)
         return self.Font
     end
 
-    function panel:SetValue(value, select)
+    function panel:SetValue(value, select, name)
         self.Selected = value
 
         self:OnValueChanged(value)
+
+        if name then
+            self.Text = name
+        else
+            for _, option in ipairs(self.Options) do
+                if option[2] == value then
+                    self.Text = option[1]
+
+                    break
+                end
+            end
+        end
 
         if select then
             self:OnSelected(self.Text, value)
