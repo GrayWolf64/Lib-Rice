@@ -9,7 +9,7 @@ function Element.Create(data,parent)
     end
 
     function panel:DoClick()
-        gui.OpenURL("https://steamcommunity.com/profiles/" .. self.ply:SteamID64())
+        self.ply:ShowProfile()
     end
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))

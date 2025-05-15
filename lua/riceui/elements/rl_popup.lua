@@ -21,6 +21,10 @@ function Element.Create(data,parent)
     end
 
     function panel:DoRemove()
+        if not IsValid(self) then
+            self:Remove()
+        end
+
         self:RiceUI_SizeTo{
             H = 0,
             Time = RiceUI.Animation.GetTime("Fast"),

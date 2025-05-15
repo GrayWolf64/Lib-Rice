@@ -24,11 +24,15 @@ local function scale_pos_y(y)
     return scale_pos_single(y, ratio_h)
 end
 
-local function size(w, h)
-    if not ENABLE_SCALING then return w, h end
+local function size(...)
+    if not ENABLE_SCALING then return ... end
 
-    if not h then return w * scaleFactor end
-    return w * scaleFactor, h * scaleFactor
+    local values = {...}
+    for index, val in ipairs(values) do
+        values[index] = val * scaleFactor
+    end
+
+    return unpack(values)
 end
 
 

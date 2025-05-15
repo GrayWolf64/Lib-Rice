@@ -524,6 +524,9 @@ registerClass("Modern", "Button", {
         drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
         draw.SimpleText(displayText, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end,
+
+    NumberWang_Button = function()
+    end,
 })
 
 registerClass("Modern", "Entry", {

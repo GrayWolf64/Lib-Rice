@@ -105,11 +105,11 @@ function Element.Create(data, parent)
     function panel:OnChange()
         local val = self:GetFloat() or 0
 
-        self:SetValue(math.Clamp(math.Round(val, self.Dec) or 0, self.Min, self.Max))
+        self:SetValue(math.Clamp(math.Round(val, self.Dec or 0), self.Min, self.Max))
     end
 
     function panel:SetValue(val)
-        self.Value = math.Clamp(math.Round(val, self.Dec), self.Min, self.Max)
+        self.Value = math.Clamp(math.Round(val or 0, self.Dec or 0), self.Min, self.Max)
 
         self:OnValueChanged(val)
     end

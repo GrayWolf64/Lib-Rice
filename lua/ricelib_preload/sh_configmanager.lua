@@ -2,7 +2,7 @@ RiceLib.Config = RiceLib.Config or {}
 
 file.CreateDir"ricelib/settings"
 
--- file based config
+-- MARK: file based config
 function RiceLib.Config.LoadConfig(Config, Name, default)
     local root = "ricelib/settings/" .. Config
     local dir = root .. "/" .. Name .. ".json"
@@ -96,6 +96,8 @@ local function set(nameSpace, key, value, noNetwork)
     if info.Shared then
         sendSharedConfig(nameSpace, key, value, info)
     end
+
+    hook.Run("RiceLib_ConfigManager_ValueChanged", nameSpace, key, value)
 end
 
 local function getEntryInfo(nameSpace, key)
@@ -111,7 +113,7 @@ local function get(nameSpace, Key)
     configTable[nameSpace] = configTable[nameSpace] or {}
 
     local value = configTable[nameSpace][Key]
-    if not value then
+    if value == nil then
         local default = (getEntryInfo(nameSpace, Key) or {}).Default
 
         if default then
@@ -188,7 +190,7 @@ function RiceLib.Config.Define(nameSpace, key, info)
     end
 
     if not configTable[nameSpace] then configTable[nameSpace] = {} end
-    if not configTable[nameSpace][key] then
+    if configTable[nameSpace][key] == nil then
         set(nameSpace, key, info.Default, true)
     end
 
@@ -223,6 +225,102 @@ RiceLib.Config.All = configTable
 RiceLib.Config.Set = set
 RiceLib.Config.Get = get
 
+-- MARK: File based Tree config
+
+local nodeMeta = {}
+nodeMeta.__index = nodeMeta
+
+function nodeMeta:Initialize(path, isRoot)
+    self.Path = path
+    self.FileName = ""
+    self.Children = {}
+    self.Values = {}
+    self.IsRoot = isRoot or false
+
+    if not isRoot then return end
+
+    self.Structure = RiceLib.Config.LoadConfig("ricelib/config_tree", path, {})
+    self.NodeLookupTable = {}
+end
+
+function nodeMeta:GetRoot()
+    if self.Parent then
+        return self.Parent:GetRoot()
+    end
+
+    return self
+end
+
+function nodeMeta:GetFilePath()
+    return Format("%s/%s", string.TrimRight(self.Path, "/"), self.FileName)
+end
+
+function nodeMeta:UpdateStructure()
+    local root = self:GetRoot()
+    local structure = root.Structure
+
+    RiceLib.Table.Travers(structure, self:GetFilePath(), true)
+    RiceLib.Config.SaveConfig("ricelib/config_tree", root.Path, structure)
+end
+
+function nodeMeta:LoadStructure(nodes)
+    if not nodes then
+        _, nodes = next(self.Structure)
+    end
+
+    for nodeID, children in pairs(nodes) do
+        self:NewNode(nodeID, true)
+    end
+end
+
+function nodeMeta:Load()
+    self.Values = RiceLib.Config.LoadConfig("ricelib/config_tree_data/" .. self:GetFilePath(), self.FileName, {})
+end
+
+function nodeMeta:Save()
+    RiceLib.Config.SaveConfig("ricelib/config_tree_data/" .. self:GetFilePath(), self.FileName, self.Values)
+end
+
+function nodeMeta:NewNode(name, noUpdate)
+    local node = {}
+    setmetatable(node, nodeMeta)
+    node:Initialize()
+
+    local path = self:GetFilePath()
+    if self.IsRoot then
+        path = self.Path
+    end
+
+    node.Path = path
+    node.FileName = name
+    node.Parent = self
+
+    if not noUpdate then
+        node:UpdateStructure()
+    end
+
+    self:GetRoot().NodeLookupTable[node:GetFilePath()] = node
+
+    node:Load()
+
+    self.Children[name] = node
+
+    return node
+end
+
+function nodeMeta:GetNode(path)
+    return self.NodeLookupTable[Format("%s/%s", self.Path, path)]
+end
+
+function RiceLib.Config.CreateTree(root)
+    local node = {}
+    setmetatable(node, nodeMeta)
+    node:Initialize(root, true)
+    node.IsRoot = true
+
+    return node
+end
+
 loadConfig()
 
 concommand.Add("ricelib_configmanaer_load", loadConfig)
@@ -246,7 +344,7 @@ RiceLib.Net.RegisterReceiver("RiceLib_ConfigManager", {
         if not configEntrys[nameSpace] then return end
         if not configEntrys[nameSpace][key] then return end
 
-        if SERVER and not checkAdminLevel(ply, configEntrys[nameSpace][key].AdminLevel)then return end
+        if SERVER and not checkAdminLevel(ply, configEntrys[nameSpace][key].AdminLevel) then return end
 
         set(nameSpace, key, value, CLIENT)
     end

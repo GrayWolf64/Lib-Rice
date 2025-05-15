@@ -44,7 +44,10 @@ function Element.Create(data, parent)
             color = self:RiceUI_GetColor("Text", "Primary")
         end
 
-        draw.DrawText(self.Text, RiceUI.Font.Get(self.Font), w / 2, 0, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        local font = RiceUI.Font.Get(self.Font)
+        local textHeight = RiceLib.VGUI.TextHeight(font, self.Text)
+
+        draw.DrawText(self.Text, font, w / 2, h / 2 - textHeight / 2, color, TEXT_ALIGN_CENTER)
 
         --RiceUI.Render.DrawIndicator(w, h)
     end
