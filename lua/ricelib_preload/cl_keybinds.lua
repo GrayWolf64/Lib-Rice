@@ -80,12 +80,14 @@ local function triggerKeybinds(key, pressed)
 end
 
 hook.Add("PlayerButtonDown", "RiceLib_Keybind", function(_, key)
+    if not IsFirstTimePredicted() then return end
     if not Keybinds[key] then return end
 
     triggerKeybinds(key, true)
 end)
 
 hook.Add("PlayerButtonUp", "RiceLib_Keybind", function(_, key)
+    if not IsFirstTimePredicted() then return end
     if not Keybinds[key] then return end
 
     triggerKeybinds(key, false)
