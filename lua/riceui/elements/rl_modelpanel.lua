@@ -10,16 +10,24 @@ function Element.Create(data, parent)
         y = 16,
         w = 512,
         h = 384,
+
+        CamAngle = Angle( 45, 0, 0 ),
+        CamPos = Angle( 45, 0, 0 ):Forward() * -50
     })
 
-    local panel = vgui.Create("DAdjustableModelPanel", parent)
+    local panel
+    if data.Static then
+        panel = vgui.Create("DModelPanel", parent)
+    else
+        panel = vgui.Create("DAdjustableModelPanel", parent)
+    end
+
     panel:SetPos(RiceLib.hudScale(data.x, data.y))
     panel:SetSize(RiceLib.hudScale(data.w, data.h))
     if data.Model then panel:SetModel(data.Model) end
 
-    local angle = Angle( 45, 0, 0 )
-    panel:SetLookAng( angle )
-    panel:SetCamPos( Vector( 0, 0, 0 ) + angle:Forward() * -50 )
+    panel:SetLookAng( data.CamAngle )
+    panel:SetCamPos( data.CamPos )
 
     RiceUI.MergeData(panel, RiceUI.ProcessData(data))
 

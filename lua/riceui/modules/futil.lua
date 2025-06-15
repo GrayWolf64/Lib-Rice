@@ -101,3 +101,8 @@ function RiceUI.GetWebImage(url, httpFunc)
         end)
     end
 end
+
+function RiceUI.EnableClick(panel)
+    panel:MakePopup()
+    panel:SetKeyboardInputEnabled(false)
+end

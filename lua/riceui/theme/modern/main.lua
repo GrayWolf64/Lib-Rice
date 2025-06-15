@@ -74,6 +74,10 @@ local colors = {
                 SuccessBackground = Color(223, 246, 221),
             }
         },
+
+        Shadow = {
+            Control = Color(0, 0, 0, 100)
+        }
     },
 
     black = {
@@ -149,6 +153,10 @@ local colors = {
                 SuccessBackground = Color(57, 61, 27),
             }
         },
+
+        Shadow = {
+            Control = Color(0, 0, 0, 100)
+        }
     }
 }
 
@@ -209,7 +217,7 @@ local themePanel = {
         local corner = style.Corner or {true, true, true, true}
         local radius = style.Radius or DEFAULT_BODY_BORDER_RADIUS
 
-        draw.RoundedBoxEx(radius or style.Radius, 0, 0, w, h, ColorAlpha(color_black, 100), unpack(corner))
+        draw.RoundedBoxEx((radius or style.Radius) + unit_2, 0, unit_2, w, h, self:RiceUI_GetColor("Shadow", "Control"), unpack(corner))
         draw.RoundedBoxEx(radius or style.Radius, 0, 0, w, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(corner))
     end,
 
@@ -525,7 +533,16 @@ registerClass("Modern", "Button", {
         draw.SimpleText(displayText, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end,
 
-    NumberWang_Button = function()
+    NumberWang_Button = function(self, w, h, style)
+        surface.SetDrawColor(self:RiceUI_GetColor("Text", "Primary"))
+        surface.SetMaterial(point)
+
+        local size = h / 2
+        if style.Scale then
+            size = RiceUI.Scale.Size(style.Scale)
+        end
+
+        surface.DrawTexturedRectRotated(w / 2, h / 2, size, size, self.Ang)
     end,
 })
 

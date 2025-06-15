@@ -1,19 +1,22 @@
-local mixins = mixins or {}
+RiceLib.Cache.RiceUI_Mixins = RiceLib.Cache.RiceUI_Mixins or {}
+local Mixins = RiceLib.Cache.RiceUI_Mixins
 
 function RiceUI.ApplyMixins(self)
-    for name, func in pairs(mixins) do
+    local panelTable = self:GetTable()
+
+    for name, func in pairs(Mixins) do
         if istable(func) then
             if func[self.ProcessID] then
-                self:GetTable()[name] = func
+                panelTable[name] = func
             end
         else
-            self:GetTable()[name] = func
+            panelTable[name] = func
         end
     end
 end
 
 function RiceUI.DefineMixin(name, data)
-    mixins[name] = data
+    Mixins[name] = data
 end
 
 RiceUI.DefineMixin("RiceUI_GetRoot", function(self)

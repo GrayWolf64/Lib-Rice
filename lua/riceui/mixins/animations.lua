@@ -80,10 +80,10 @@ local function moveTo(self, args)
     y = y or self:GetY()
 
     local anim = self:NewAnimation(args.Time, args.Delay, 1, args.Callback)
-    anim.StartPos = Vector(self:GetX(), self:GetY(), 0)
+    local startPos = Vector(self:GetX(), self:GetY(), 0)
     anim.Think = function(animData, panel, fraction)
         local easedFraction = args.EaseFunction(fraction)
-        local pos = LerpVector(easedFraction, animData.StartPos, Vector(x, y, 0))
+        local pos = LerpVector(easedFraction, startPos, Vector(x, y, 0))
         animData.EasedFraction = easedFraction
 
         panel:SetPos(pos.x, pos.y)
@@ -105,21 +105,17 @@ local function sizeTo(self, args)
     })
 
     local w, h = args.W or -1, args.H or - 1
+    if w < 0 then w = self:GetWide() end
+    if h < 0 then h = self:GetTall() end
 
     local anim = self:NewAnimation(args.Time, args.Delay, 1, args.Callback)
+    local startW, startH = self:GetSize()
+    local startSize = Vector( startW, startH, 0 )
+
     --anim.StartSize = Vector(self:GetWide(), self:GetTall(), 0)
     anim.Think = function(animData, panel, fraction)
-        if not anim.StartSize then
-            local startW, startH = panel:GetSize()
-
-            if w < 0 then w = self:GetWide() end
-            if h < 0 then h = self:GetTall() end
-
-            anim.StartSize = Vector( startW, startH, 0 )
-        end
-
         local easedFraction = args.EaseFunction(fraction)
-        local size = LerpVector(easedFraction, animData.StartSize, Vector(w, h, 0))
+        local size = LerpVector(easedFraction, startSize, Vector(w, h, 0))
         animData.EasedFraction = easedFraction
 
         panel:SetSize(size.x, size.y)
@@ -133,6 +129,31 @@ local function sizeTo(self, args)
     end
 end
 
+local function alphaTo(self, args)
+    RiceLib.table.Inherit(args, {
+        Time = RiceUI.Animation.GetTime("Normal"),
+        Delay = 0,
+        EaseFunction = DEFAULT_EASEFUNCTION,
+    })
+
+    local anim = self:NewAnimation(args.Time, args.Delay, 1, args.Callback)
+    local startValue = self:GetAlpha()
+    local endValue = args.Alpha
+    anim.Think = function(animData, panel, fraction)
+        local easedFraction = args.EaseFunction(fraction)
+        animData.EasedFraction = easedFraction
+
+        panel:SetAlpha(Lerp(easedFraction, startValue, endValue))
+    end
+
+    if args.ID then
+        if not self.RiceUI_Animations then self.RiceUI_Animations = {} end
+
+        self.RiceUI_Animations[args.ID] = anim
+    end
+end
+
 RiceUI.DefineMixin("RiceUI_MoveTo", moveTo)
 RiceUI.DefineMixin("RiceUI_SizeTo", sizeTo)
+RiceUI.DefineMixin("RiceUI_AlphaTo", alphaTo)
 RiceUI.DefineMixin("RiceUI_CreateAnimation", createAnimation)

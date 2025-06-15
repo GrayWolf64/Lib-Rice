@@ -240,7 +240,7 @@ concommand.Add("riceui_debugoverlay", function()
     hook.Add("PostRenderVGUI", "RiceUI_Debugoverlay", function()
         for _, panel in pairs(instances) do
             if not IsValid(panel) then continue end
-            if not panel:RiceUI_GetRoot():IsVisible() then continue end
+            if not panel:RiceUI_GetRoot():IsVisible() or not panel:GetParent():IsVisible() or not panel:IsVisible() then continue end
 
             local x, y = panel:LocalToScreen()
             local w, h = panel:GetSize()

@@ -469,7 +469,7 @@ function RiceUI.Prefab.Confirm(args)
     })
 end
 
-RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent)
+--[[RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent)
     RiceLib.table.Inherit(data, {
         Title = "确认",
         Text = "确定进行此操作吗？",
@@ -486,7 +486,8 @@ RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent)
 
     local wide = math.max(500,RiceLib.VGUI.TextWide("RiceUI_36", data.Text))
 
-    return RiceUI.SimpleCreate({type = "rl_panel",
+    local popupPanel
+    popupPanel = RiceUI.SimpleCreate({type = "rl_panel",
         w = wide,
         h = 230,
 
@@ -540,7 +541,7 @@ RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent)
                         Theme = {ThemeType = "Button_Accent"},
 
                         DoClick = function(self)
-                            data.OnConfirm(self:RiceUI_GetRootPanel())
+                            data.OnConfirm(popupPanel)
                         end
                     },
 
@@ -556,14 +557,16 @@ RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent)
                         Theme = {ThemeType = "Button_NT"},
 
                         DoClick = function(self)
-                            data.OnCancel(self:RiceUI_GetRootPanel())
+                            data.OnCancel(popupPanel)
                         end
                     },
                 }
             }
         }
     }, parent)
-end)
+
+    return popupPanel
+end)]]
 
 RiceUI.DefineWidget("RiceUI_Inputs", function(data, parent)
     RiceLib.table.Inherit(data, {

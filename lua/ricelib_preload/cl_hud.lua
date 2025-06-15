@@ -22,7 +22,8 @@ function RL_hudScaleX(x) return x * ratio_w end
 function RL_hudScaleY(y) return y * ratio_h end
 
 -- scale profiles are not for HUD coordinates, and reading file is performance heavy
-local function hud_scale(x, y)
+-- Deprecated
+--[[local function hud_scale(x, y)
     return x * ratio_w, y * ratio_h
 end
 
@@ -36,6 +37,28 @@ end
 
 local function hud_scale_y(y, profile)
     return hud_scale_single(y, ratio_h)
+end]]
+
+local hud_scale
+local hud_scale_x
+local hud_scale_y
+
+function hud_scale(...)
+    hud_scale = RiceUI.Scale.Size
+
+    return hud_scale(...)
+end
+
+function hud_scale_x(...)
+    hud_scale_x = RiceUI.Scale.PosX
+
+    return hud_scale_x(...)
+end
+
+function hud_scale_y(...)
+    hud_scale_y = RiceUI.Scale.PosY
+
+    return hud_scale_y(...)
 end
 
 local function hud_offset(x, y, profile)

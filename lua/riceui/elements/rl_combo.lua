@@ -1,4 +1,6 @@
-local Element = {}
+
+
+print(1)local Element = {}
 
 Element.Editor = {
     Category = "input"
@@ -101,6 +103,10 @@ function Element.Create(data, parent, root)
         if not self.Options then self.Options = {} end
 
         table.insert(self.Options, {name, value})
+
+        if self.Selected and value == self.Selected then
+            self.Text = name
+        end
     end
 
     function panel:GetFont()
@@ -115,6 +121,8 @@ function Element.Create(data, parent, root)
         if name then
             self.Text = name
         else
+            if not self.Options then return end
+
             for _, option in ipairs(self.Options) do
                 if option[2] == value then
                     self.Text = option[1]

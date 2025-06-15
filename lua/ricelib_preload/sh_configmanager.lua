@@ -176,6 +176,9 @@ function RiceLib.Config.GetNameSpaceInfo(nameSpace)
     return nameSpaceInfos[nameSpace]
 end
 
+local ingoreTypes = {
+    FunctionEntry = true
+}
 function RiceLib.Config.Define(nameSpace, key, info)
     if not configEntrys[nameSpace] then configEntrys[nameSpace] = {} end
 
@@ -187,6 +190,10 @@ function RiceLib.Config.Define(nameSpace, key, info)
     if not configCategorys[nameSpace] then configCategorys[nameSpace] = {} end
     if not table.HasValue(configCategorys[nameSpace], info.Category) then
         table.insert(configCategorys[nameSpace], info.Category)
+    end
+
+    if ingoreTypes[info.Type] then
+        return info
     end
 
     if not configTable[nameSpace] then configTable[nameSpace] = {} end

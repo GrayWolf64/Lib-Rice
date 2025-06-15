@@ -161,6 +161,7 @@ local function drawImage(x, y, w, h, material, color, stretch, drawMarker, enabl
 			material = ImageCache[material]
 		else
 			ImageCache[material] = Material(material, "smooth")
+
 			material = ImageCache[material]
 		end
 	end

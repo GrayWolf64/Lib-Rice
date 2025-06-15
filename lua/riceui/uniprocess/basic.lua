@@ -18,7 +18,9 @@ RiceUI.DefineUniProcess("ZPos", function(panel, data)
     panel:SetZPos(data)
 end)
 
-RiceUI.DefineUniProcess("Root", function(panel)
+RiceUI.DefineUniProcess("Root", function(panel, data)
+    if not data then return end
+
     panel:MakePopup()
 end)
 
@@ -134,6 +136,10 @@ RiceUI.DefineUniProcess("Value", {
     RL_NumberCounter = function(panel, data)
         panel:SetValue(data)
         panel:SetText(data)
+    end,
+
+    ComboBox = function(panel, data)
+        panel:SetValue(data)
     end
 })
 
