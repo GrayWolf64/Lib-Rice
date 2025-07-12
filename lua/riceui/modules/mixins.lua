@@ -41,11 +41,23 @@ RiceUI.DefineMixin("GetElement", function(self, element)
     return self.riceui_elements[element]
 end)
 
-local function getColorOverride(args, color)
-    for _, path in ipairs(args) do
-        if color[path] == nil then return end
+local function getColorOverride(args, color, useColorScheme, colorTheme)
+    if useColorScheme then
+        color = color[colorTheme]
 
-        color = color[path]
+        if color == nil then return end
+
+        for _, path in ipairs(args) do
+            if color[path] == nil then return end
+
+            color = color[path]
+        end
+    else
+        for _, path in ipairs(args) do
+            if color[path] == nil then return end
+
+            color = color[path]
+        end
     end
 
     return color
@@ -59,13 +71,13 @@ RiceUI.DefineMixin("RiceUI_GetColor", function(self, ...)
 
     local colorTheme = "white"
     if self.IsThemeNT then
+        colorTheme = self.ThemeNT_Color or "white"
+
         if self.ThemeNT.ColorOverrides then
-            local colorOverride = getColorOverride(args, self.ThemeNT.ColorOverrides)
+            local colorOverride = getColorOverride(args, self.ThemeNT.ColorOverrides, self.ThemeNT.ColorOverridesUseScheme, colorTheme)
 
             if colorOverride then return colorOverride end
         end
-
-        colorTheme = self.ThemeNT_Color or "white"
     else
         colorTheme = self.Theme.Color or "white"
     end

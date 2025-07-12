@@ -34,6 +34,8 @@ function Element.Create(data, parent)
         UseNewTheme = true,
         Theme = data.Theme,
 
+        ProcessID = "RL_NumberWang",
+
         children = {
             {type = "rl_button",
                 Dock = LEFT,

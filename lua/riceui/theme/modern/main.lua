@@ -307,26 +307,29 @@ registerClass("Modern", "Frame",{
     end,
 
     Acrylic = function(self, w, h, style)
+        local blur = style.Blur or 8
+        local radius = style.Radius or DEFAULT_BODY_BORDER_RADIUS
+
         RiceLib.Render.StartStencil()
 
-        RiceLib.Draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, color_white)
+        RiceLib.Draw.RoundedBox(radius, 0, 0, w, h, color_white)
 
         render.SetStencilCompareFunction(STENCIL_EQUAL)
         render.SetStencilFailOperation(STENCIL_KEEP)
 
-        RiceLib.VGUI.blurPanel(self, 8)
+        RiceLib.VGUI.blurPanel(self, blur)
 
         render.SetStencilCompareFunction(STENCIL_INVERT)
 
         local thickness = RiceLib.hudScaleY(2)
 
         DisableClipping(true)
-        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Stroke", "Frame"))
+        draw.RoundedBox(radius, -thickness, -thickness, w + thickness * 2, h + thickness * 2, self:RiceUI_GetColor("Stroke", "Frame"))
         DisableClipping(false)
 
         render.SetStencilEnable(false)
 
-        draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame", "Acrylic"))
+        draw.RoundedBox(radius, 0, 0, w, h, self:RiceUI_GetColor("Fill", "Frame", "Acrylic"))
     end,
 
     Transparent = function(self, w, h, style)

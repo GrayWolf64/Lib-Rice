@@ -35,6 +35,8 @@ function RiceUI.SimpleCreate(data, parent, root)
     local panel = elements[data.type].Create(data, parent)
     panel.RiceUI_Root = root
 
+    instances[#instances + 1] = panel
+
     root = root or panel
 
     RiceUI.DoProcess(panel, root)
@@ -56,8 +58,6 @@ function RiceUI.SimpleCreate(data, parent, root)
         root.riceui_elements = root.riceui_elements or {}
         root.riceui_elements[data.ID] = panel
     end
-
-    instances[#instances + 1] = panel
 
     return panel
 end
