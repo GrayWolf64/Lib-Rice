@@ -1,101 +1,134 @@
 RiceLib.Cache.Keybinds = RiceLib.Cache.Keybinds or {}
-RiceLib.Cache.KeybindLookups = RiceLib.Cache.KeybindLookups or {}
-RiceLib.Cache.KeybindFunctions = RiceLib.Cache.KeybindFunctions or {}
+RiceLib.Cache.KeybindRegistrations = RiceLib.Cache.KeybindRegistrations or {}
+RiceLib.Cache.KeybindLookup = RiceLib.Cache.KeybindLookup or {}
+
 RiceLib.Keybinds = {}
 
+local KeybindRegistrations = RiceLib.Cache.KeybindRegistrations
 local Keybinds = RiceLib.Cache.Keybinds
-local KeybindLookups = RiceLib.Cache.KeybindLookups
-local KeybindFunctions = RiceLib.Cache.KeybindFunctions
+local KeybindLookup = RiceLib.Cache.KeybindLookup
 
-function RiceLib.Keybinds.Register(id, func)
-    KeybindFunctions[id] = func
+local baseKeyBindInfo = {
+    DisplayName = "按键绑定",
+    Category = "RiceLib",
+}
+
+local keybindMeta = {}
+keybindMeta.__index = keybindMeta
+
+function keybindMeta:OnPressed()
+    print("Im Being Pressed! ID:" .. self.ID)
 end
 
-function RiceLib.Keybinds.SetKey(func, key)
-    RiceLib.Keybinds.Remove(KeybindLookups[func], func)
-    RiceLib.Keybinds.Add(key, func)
+function keybindMeta:OnReleased()
+    print("Im Being Released! ID:" .. self.ID)
 end
 
-function RiceLib.Keybinds.Add(key, func)
-    if not Keybinds[key] then
-        Keybinds[key] = {}
-    end
-
-    KeybindLookups[func] = key
-    table.insert(Keybinds[key], func)
-
-    RiceLib.Config.SaveConfig("ricelib", "keybinds", Keybinds)
+function keybindMeta:GetKey()
+    return Keybinds[self.ID]
 end
 
-function RiceLib.Keybinds.Remove(key, func)
-    if not Keybinds[key] then return end
-
-    KeybindLookups[func] = nil
-
-    table.RemoveByValue(Keybinds[key], func)
-
-    if table.IsEmpty(Keybinds[key]) then
-        Keybinds[key] = nil
-    end
-
-    RiceLib.Config.SaveConfig("ricelib", "keybinds", Keybinds)
+function keybindMeta:GetKeyName()
+    return input.GetKeyName(Keybinds[self.ID])
 end
 
-function RiceLib.Keybinds.GetKey(functionName)
-    return KeybindLookups[functionName]
-end
+local function buildKeybindLookup()
+    KeybindLookup = {}
 
-local function load()
-    if not RiceLib.Config then return end
-
-    Keybinds =  RiceLib.Config.LoadConfig("ricelib", "keybinds", {})
-
-    for key, functions in pairs(Keybinds) do
-        for _, func in ipairs(functions) do
-            KeybindLookups[func] = key
-        end
-    end
-end
-
-load()
-hook.Add("InitPostEntity", "RiceLib_LoadKeybind", load)
-
-local function triggerKeybinds(key, pressed)
-    for _, func in ipairs(Keybinds[key]) do
-        if string.Left(func, 1) == "+" then
-            if not pressed then
-                func = string.Replace(func, "+", "-")
-            end
-
-            RunConsoleCommand(func)
-
-            continue
+    for id, key in pairs(Keybinds) do
+        if not KeybindLookup[key] then
+            KeybindLookup[key] = {}
         end
 
-        local registerdFunction = KeybindFunctions[func]
-        if not registerdFunction then return end
-
-        registerdFunction(pressed)
+        table.insert(KeybindLookup[key], KeybindRegistrations[id])
     end
 end
 
-hook.Add("PlayerButtonDown", "RiceLib_Keybind", function(_, key)
+function RiceLib.Keybinds.Register(id, info)
+    local keybindInfo = RiceLib.table.InheritCopy(info, baseKeyBindInfo)
+    keybindInfo.ID = id
+    setmetatable(keybindInfo, keybindMeta)
+
+    if keybindInfo.DefaultKey and not Keybinds[id] then
+        RiceLib.Keybinds.SetKey(id, keybindInfo.DefaultKey)
+    end
+
+    KeybindRegistrations[id] = keybindInfo
+
+    buildKeybindLookup()
+
+    return keybindInfo
+end
+
+function RiceLib.Keybinds.SetKey(id, key)
+    if isstring(key) then
+        key = input.GetKeyCode(key)
+    end
+
+    Keybinds[id] = key
+    RiceLib.Config.SaveConfig("ricelib", "keybinds", Keybinds)
+
+    buildKeybindLookup()
+end
+
+function RiceLib.Keybinds.GetKeybindRegistrations(id)
+    if id then
+        return KeybindRegistrations[id]
+    end
+
+    return KeybindRegistrations
+end
+
+function RiceLib.Keybinds.GetKeybinds(id)
+    if id then
+        return Keybinds[id]
+    end
+
+    return Keybinds
+end
+
+local function loadKeybinds()
+    Keybinds = RiceLib.Config.LoadConfig("ricelib", "keybinds", {})
+
+    buildKeybindLookup()
+end
+
+hook.Add("PlayerButtonDown", "RiceLib_Keybind", function(_, button)
     if not IsFirstTimePredicted() then return end
-    if not Keybinds[key] then return end
+    if not KeybindLookup[button] then return end
 
-    triggerKeybinds(key, true)
+    for _, keybindObject in ipairs(KeybindLookup[button]) do
+        keybindObject:OnPressed()
+    end
 end)
 
-hook.Add("PlayerButtonUp", "RiceLib_Keybind", function(_, key)
+hook.Add("PlayerButtonUp", "RiceLib_Keybind", function(_, button)
     if not IsFirstTimePredicted() then return end
-    if not Keybinds[key] then return end
+    if not KeybindLookup[button] then return end
 
-    triggerKeybinds(key, false)
+    for _, keybindObject in ipairs(KeybindLookup[button]) do
+        keybindObject:OnReleased()
+    end
 end)
 
 concommand.Add("ricelib_keybind_dump", function()
-    print("Keybinds:")
+    print("keybinds")
     PrintTable(Keybinds)
-    print("\nKeybindLookups:")
-    PrintTable(KeybindLookups)
+
+    print("lookup")
+    PrintTable(KeybindLookup)
 end)
+
+concommand.Add("ricelib_keybind_dump_registrations", function()
+    PrintTable(KeybindRegistrations)
+end)
+
+concommand.Add("ricelib_keybind_reload", function()
+    loadKeybinds()
+end)
+
+RiceLib.Keybinds.Register("ricelib_test", {
+    DisplayName = "测试按键",
+})
+
+loadKeybinds()

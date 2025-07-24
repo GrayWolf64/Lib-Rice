@@ -12,23 +12,56 @@ RiceLib.VGUI      = RiceLib.VGUI or {}
 RiceLib.VGUI.Anim = RiceLib.VGUI.Anim or {}
 RiceLib.Cache = RiceLib.Cache or {}
 
+RICELIB_LOGLEVEL_INFO = 0
+RICELIB_LOGLEVEL_WARN = 1
+RICELIB_LOGLEVEL_ERROR = 2
+
+RiceLib.LogLevel = RICELIB_LOGLEVEL_ERROR
+
 --- Makes a log function
 -- @lfunction mklogfunc
 -- @param color_msg Customize output function's log msg color
 -- @return function log function
-local function mklogfunc(color_msg)
-    return function(msg, name)
-        if msg:StartsWith"#" then msg = language.GetPhrase(msg:sub(2)) or msg end
 
-        MsgC(Either(SERVER, Color(64, 158, 255), Color(255, 255, 150)),
-            "[" .. (name or "RiceLib") .. "] ", color_msg, msg .. "\n")
+local logLevelColors = {
+    [RICELIB_LOGLEVEL_INFO] = Color(100, 255, 100),
+    [RICELIB_LOGLEVEL_WARN] = Color(255, 255, 100),
+    [RICELIB_LOGLEVEL_ERROR] = Color(255, 100, 100)
+}
+
+local logLevelText = {
+    [RICELIB_LOGLEVEL_INFO] = "[INFO]",
+    [RICELIB_LOGLEVEL_WARN] = "[WARN]",
+    [RICELIB_LOGLEVEL_ERROR] = "[ERROR]"
+}
+
+local color_server = Color(64, 158, 255)
+local color_client = Color(255, 255, 150)
+
+file.CreateDir("ricelib/logs")
+
+local function mklogfunc(logLevel)
+    return function(message, name)
+        if message:StartsWith"#" then message = language.GetPhrase(message:sub(2)) or message end
+
+        local header = "[" .. (name or "RiceLib") .. "]"
+        local fullMessage = logLevelText[logLevel] .. " " .. message
+
+        MsgC(Either(SERVER, color_server, color_client), header, logLevelColors[logLevel], fullMessage, "\n")
+
+        if RiceLib.LogLevel > logLevel then return end
+
+        local fileName = os.date("%Y_%d_%m.txt")
+        local time = "[" .. os.date("%H:%M:%S") .. "]"
+        local logMessage = logLevelText[logLevel] .. time .. " " .. message
+
+        file.Append("ricelib/logs/" .. fileName, header .. logMessage .. "\n")
     end
 end
 
-local message = mklogfunc(Color(0, 255, 0))
-RiceLib.Warn  = mklogfunc(Color(255, 150, 0))
-RiceLib.Error = mklogfunc(Color(255, 75, 75))
-RiceLib.Info  = message
+RiceLib.Info  = mklogfunc(RICELIB_LOGLEVEL_INFO)
+RiceLib.Warn  = mklogfunc(RICELIB_LOGLEVEL_WARN)
+RiceLib.Error = mklogfunc(RICELIB_LOGLEVEL_ERROR)
 
 --- Checks if a string is properly ended with '/'
 -- @lfunction check_slash

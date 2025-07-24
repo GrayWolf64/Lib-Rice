@@ -26,6 +26,10 @@ function Element.Create(data,parent)
         panel:SetAutoStretchVertical(true)
     end
 
+    if panel.Alignment then
+        panel:SetContentAlignment(panel.Alignment)
+    end
+
     return panel
 end
 

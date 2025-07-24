@@ -37,7 +37,7 @@ function Add(ents, color, mode)
     local t = {
         [ENTS] = ents,
         [COLOR] = color,
-        [MODE] = mode || OUTLINE_MODE_BOTH
+        [MODE] = mode or OUTLINE_MODE_BOTH
     }
 
     ListSize = ListSize + 1

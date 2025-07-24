@@ -32,7 +32,7 @@ function Element.Create(data, parent, root)
             self.KeyTrapping = true
         end,
 
-        Command = data.Command,
+        KeybindID = data.KeybindID,
 
         Think = function(self)
             if not input.IsKeyTrapping() then return end
@@ -44,8 +44,8 @@ function Element.Create(data, parent, root)
                 self.KeyTrapping = false
                 self.Value = key
 
-                if self.Command then
-                    RiceLib.Keybinds.SetKey(self.Command, key)
+                if self.KeybindID then
+                    RiceLib.Keybinds.SetKey(self.KeybindID, key)
                 end
 
                 self:OnValueChanged(key)
