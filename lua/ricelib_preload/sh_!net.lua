@@ -183,6 +183,14 @@ local function parseMessage(Raw, len)
     return data.NameSpace, data.Command, data.Data or {}
 end
 
+---@class NetCommand
+---@field NameSpace string
+---@field Command string
+---@field Data? any
+---@field TargetPlayer? Player
+---@field Unreliable? boolean
+
+---@param args NetCommand
 local function send(args)
     net.Start("RiceLibNet", args.Unreliable)
     net.WriteData(createMessage(args.NameSpace, args.Command, args.Data))

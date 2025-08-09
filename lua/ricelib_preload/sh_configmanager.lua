@@ -179,6 +179,12 @@ end
 local ingoreTypes = {
     FunctionEntry = true
 }
+
+---comment
+---@param nameSpace string
+---@param key string
+---@param info table
+---@return table
 function RiceLib.Config.Define(nameSpace, key, info)
     if not configEntrys[nameSpace] then configEntrys[nameSpace] = {} end
 

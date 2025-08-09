@@ -59,6 +59,28 @@ local function registerFont(data)
     end
 end
 
+RiceLib.VGUI.RegisterFont_New = registerFont
+
+RiceUI.Font = {
+    Get = getFont,
+    Register = registerFont,
+}
+
+function RiceUI.Font.RegisterManually(fontName, fontFileName, size, addData)
+    addData = addData or {}
+
+    local base = mkFontData(fontFileName, size, 500)
+    local fontData = RiceLib.table.Inherit(base, addData)
+    local fontNameIndex = fontName
+
+    if addData.Debug then
+        print(size, fontData.size, fontNameIndex)
+        print(fontName, fontFileName)
+    end
+
+    FontCaches[fontNameIndex] = fontData
+end
+
 concommand.Add("riceui_fontcaches", function()
     PrintTable(FontCaches)
 end)
@@ -69,10 +91,3 @@ concommand.Add("riceui_fontcaches_simple", function()
 
     PrintTable(fonts)
 end)
-
-RiceUI.Font = {
-    Get = getFont,
-    Register = registerFont
-}
-
-RiceLib.VGUI.RegisterFont_New = registerFont

@@ -77,6 +77,13 @@ RiceUI.Font.Register{
     EnableCaching = true
 }
 
+RiceUI.Font.Register{
+    CodeName = "UniFontFixed",
+    FontName = "Unifont",
+    EnableCaching = true,
+    Fixed = true
+}
+
 RiceLib.VGUI.RegisterColorTheme("Dark1", {Color(40, 40, 40, 255), Color(60, 60, 60, 255), Color(250, 250, 250), Color(60, 60, 60)})
 RiceLib.VGUI.RegisterColorTheme("Dark2", {Color(50, 50, 50, 255), Color(70, 70, 70, 255), Color(250, 250, 250), Color(70, 70, 70)})
 RiceLib.VGUI.RegisterColorTheme("Dark3", {Color(60, 60, 60, 255), Color(80, 80, 80, 255), Color(250, 250, 250), Color(80, 80, 80)})

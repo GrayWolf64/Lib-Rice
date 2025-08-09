@@ -1,7 +1,6 @@
 RiceUI          = RiceUI or {}
 RiceUI.RootName = "main"
 
-
 local elements = {}
 local widgets = {}
 local instances = {}
@@ -23,9 +22,11 @@ RiceUI.CreateWidget = createWidget
 
 RiceLib.IncludeDir("riceui/widgets")
 
-
---- Create UI Elements
--- @section CreateElement
+---Create UI Elements
+---@param data table
+---@param parent? DPanel
+---@param root? DPanel
+---@return DPanel|nil
 function RiceUI.SimpleCreate(data, parent, root)
     if data.widget then return createWidget(data, parent, root) end
 
@@ -62,6 +63,11 @@ function RiceUI.SimpleCreate(data, parent, root)
     return panel
 end
 
+---Create UI Elements
+---@param tab table
+---@param parent? DPanel
+---@param root? DPanel
+---@return table
 function RiceUI.Create(tab, parent, root)
     local _insts = {}
 
@@ -222,7 +228,7 @@ concommand.Add("riceui_debugoverlay", function()
 
     local wireframe_x, wireframe_y = 0, 0
     local pressed = false
-    hook.Add("Think", "RiceUI_Debugoverlay_CaptureMouse", function(cmd, x, y)
+    hook.Add("Think", "RiceUI_Debugoverlay_CaptureMouse", function()
         if input.IsMouseDown(MOUSE_LEFT) then
             if not pressed then
                 wireframe_x, wireframe_y = input.GetCursorPos()

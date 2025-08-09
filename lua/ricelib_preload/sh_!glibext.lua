@@ -2,7 +2,14 @@
 local pairs         = pairs
 local ipairs        = ipairs
 local t_remove_by_v = table.RemoveByValue
+local split = string.Split
 
+---Inherit a table, when the key of t is empty, use the value in base
+---@param t table
+---@param base table
+---@param override? table
+---@param blacklist? table
+---@return table
 local function inherit(t, base, override, blacklist)
 	override  = override or {}
 	blacklist = blacklist or {}
@@ -22,14 +29,23 @@ local function inherit(t, base, override, blacklist)
 	return t
 end
 
+---Inherit a table, when the key of t is empty, use the value in base, this will use a copy of t
+---@param t table
+---@param base table
+---@param override? table
+---@param blacklist? table
+---@return table
 local function inherit_copy(t, base, override, blacklist)
 	return inherit(table.Copy(t), table.Copy(base), override, blacklist)
 end
 
-local function get_by_str(str)
+---return a value in the global environment by using format like "home.room.bed"
+---@param path string
+---@return table
+local function get_by_str(path)
 	local t = _G
 
-	for _, v in ipairs(str:Split(".")) do
+	for _, v in ipairs(split(path, ".")) do
 		t = t[v]
 	end
 
@@ -76,11 +92,17 @@ local function traversNextTable(root, path, operationPaths, createIfNotExist)
     return traversNextTable(root[path], nextPath, operationPaths, createIfNotExist)
 end
 
+---Travers a table like a folder, when createIfNotExist is true, it will create a table when the next path is nil
+---@param root table
+---@param path string
+---@param createIfNotExist? boolean
+---@param separator? string
+---@return table
 function RiceLib.Table.Travers(root, path, createIfNotExist, separator)
     root = root or _G
     separator = separator or "/"
 
-    local paths = path:Split(separator)
+    local paths = split(path, separator)
     local operationPaths = table.Copy(paths)
 
     return traversNextTable(root, table.remove(operationPaths, 1), operationPaths, createIfNotExist)
@@ -162,6 +184,7 @@ local function math_inrage(input, min, max)
 	return min <= input and max >= input
 end
 
+-- DEPRECATED
 RiceLib.math = {
 	CubicSmooth5 = CubicSmooth5,
 	CubicSmooth7 = CubicSmooth7,
@@ -171,3 +194,5 @@ RiceLib.math = {
 	TimedProgress = timedProgress,
 	InRange = math_inrage
 }
+
+RiceLib.Math = RiceLib.math

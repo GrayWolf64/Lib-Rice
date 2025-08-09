@@ -55,3 +55,11 @@ RiceUI.DefineMixin("GetPage", function(self, pageName)
     if not self.RiceUI_Pages then return end
     return self.RiceUI_Pages[pageName]
 end)
+
+RiceUI.DefineMixin("GetCurrentPage", function(self, pageName)
+    return self.RiceUI_Pages[RiceUI_CurrentPage]
+end)
+
+RiceUI.DefineMixin("GetCurrentPageName", function(self, pageName)
+    return self.RiceUI_CurrentPage
+end)

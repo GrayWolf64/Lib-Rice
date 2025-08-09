@@ -356,14 +356,14 @@ registerClass("Modern", "Spacer",{
     Default = function(self, w, h, style)
         local size = style.Size or RICEUI_SIZE_2
 
-        surface.SetDrawColor(self:RiceUI_GetColor("Text", "Primary"))
+        surface.SetDrawColor(self:RiceUI_GetColor("Text", "Secondary"))
         surface.DrawRect(0, 0, size, h)
     end,
 
     Horizontal = function(self, w, h, style)
         local size = style.Size or RICEUI_SIZE_2
 
-        surface.SetDrawColor(self:RiceUI_GetColor("Text", "Primary"))
+        surface.SetDrawColor(self:RiceUI_GetColor("Text", "Secondary"))
         surface.DrawRect(0, 0, w, size)
     end,
 })
