@@ -1,8 +1,10 @@
 RiceLib.Config = RiceLib.Config or {}
 
 file.CreateDir"ricelib/settings"
+file.CreateDir"ricelib/settings/ricelib"
 
 -- MARK: file based config
+---@return table Config
 function RiceLib.Config.LoadConfig(Config, Name, default)
     local root = "ricelib/settings/" .. Config
     local dir = root .. "/" .. Name .. ".json"
@@ -218,7 +220,10 @@ function RiceLib.Config.Define(nameSpace, key, info)
         return info
     end
 
-    if not configTable[nameSpace] then configTable[nameSpace] = {} end
+    if not configTable[nameSpace] then
+        configTable[nameSpace] = {}
+    end
+
     if configTable[nameSpace][key] == nil then
         set(nameSpace, key, info.Default, true)
     end
