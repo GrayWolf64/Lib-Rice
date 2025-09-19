@@ -13,7 +13,7 @@ RiceUI.DefineWidget("labeled_switch", function(data, parent, root)
                 Font = data.Font
             },
 
-            {type = "switch",
+            {type = "rl_switch",
                 ID = "Switch",
 
                 Dock = RIGHT,

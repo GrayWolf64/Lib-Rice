@@ -1,6 +1,4 @@
-
-
-print(1)local Element = {}
+local Element = {}
 
 Element.Editor = {
     Category = "input"
@@ -38,7 +36,6 @@ function Element.Create(data, parent, root)
         if not self.Options then return end
 
         local x, y = self:LocalToScreen()
-
         local menu = RiceUI.SimpleCreate({type = "rl_panel",
             Root = true,
 
@@ -51,7 +48,7 @@ function Element.Create(data, parent, root)
             x = x,
             y = y - RICEUI_SIZE_4,
             h = 0,
-        }, self, self)
+        })
 
         local row
         local selectedRow
@@ -94,7 +91,7 @@ function Element.Create(data, parent, root)
             Time = RiceUI.Animation.GetTime("Fast")
         }
 
-        RiceUI.ApplyTheme(self)
+        RiceUI.ThemeNT.ApplyTheme(menu, self.ThemeNT)
 
         self.Menu = menu
     end

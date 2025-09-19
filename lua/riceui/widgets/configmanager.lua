@@ -92,7 +92,7 @@ RiceUI.DefineWidget("RiceLib_ConfigManager_Bool", function(data, parent)
                 Text = entry.DisplayName
             },
 
-            {type = "switch",
+            {type = "rl_switch",
                 Dock = RIGHT,
                 w = 64,
 
@@ -107,10 +107,6 @@ end)
 
 RiceUI.DefineWidget("RiceLib_ConfigManager_Keybind", function(data, parent)
     local entry = data.Entry
-
-    if entry:GetValue() == 0 and RiceLib.Keybinds.GetKey(entry.Command) then
-        entry:SetValue(RiceLib.Keybinds.GetKey(entry.Command))
-    end
 
     return RiceUI.SimpleCreate({type = "rl_panel",
         Dock = TOP,
@@ -134,12 +130,9 @@ RiceUI.DefineWidget("RiceLib_ConfigManager_Keybind", function(data, parent)
                 Dock = RIGHT,
                 w = 64,
 
-                Command = entry.Command,
+                KeybindID = entry.KeybindID,
 
-                Value = entry:GetValue(),
-                OnValueChanged = function(self, val)
-                    entry:SetValue(val)
-                end
+                Value = RiceLib.Keybinds.GetKeybinds(entry.KeybindID)
             }
         }
     }, parent)

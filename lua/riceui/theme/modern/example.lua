@@ -71,6 +71,17 @@ RiceUI.Examples.Register("ModernNT", {
                         end
                     },
 
+                    {widget = "labeled_switch",
+                        Dock = TOP,
+                        Margin = {16, 16, 16, 0},
+                        h = 32,
+
+                        Text = "开关",
+
+                        OnValueChanged = function(self, val)
+                        end
+                    },
+
                     {type = "entry",
                         Dock = TOP,
                         Margin = {16, 16, 16, 0},
@@ -102,6 +113,31 @@ RiceUI.Examples.Register("ModernNT", {
                                 Dock = LEFT,
 
                                 Text = "多项选择",
+                                Font = "RiceUI_M_24",
+                            }
+                        }
+                    },
+
+                    {type = "rl_panel",
+                        Dock = TOP,
+                        Margin = {16, 16, 16, 0},
+                        h = 32,
+
+                        ThemeNT = {
+                            Class = "NoDraw"
+                        },
+
+                        children = {
+                            {type = "rl_slider",
+                                Dock = RIGHT,
+                                Margin = {0, 6, 0, 6},
+                                w = 128,
+                            },
+
+                            {type = "label",
+                                Dock = LEFT,
+
+                                Text = "滑动条",
                                 Font = "RiceUI_M_24",
                             }
                         }

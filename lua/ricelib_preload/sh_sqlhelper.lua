@@ -28,18 +28,33 @@ local function connnectValues(values)
     return string.sub(output, 3)
 end
 
+---@param tableName string
+---@param values table
+---@return boolean|table|nil
 local function createTable(tableName, values)
     return Query(Format("CREATE TABLE IF NOT EXISTS %s (%s);", tableName, connnectQuerys(values)))
 end
 
+---@param keys string
+---@param tableName string
+---@param condition string
+---@return boolean|table|nil
 local function select(keys, tableName, condition)
     return Query(Format("SELECT %s FROM %s %s;", keys, tableName, condition))
 end
 
+---@param keys string
+---@param tableName string
+---@param condition string
+---@return any
 local function selectValue(keys, tableName, condition)
     return QueryValue(Format("SELECT %s FROM %s %s;", keys, tableName, condition))
 end
 
+---@param tableName string
+---@param keys? table
+---@param values table
+---@return boolean|table|nil
 local function insert(tableName, keys, values)
     local query = Format("INSERT INTO %s VALUES(%s);", tableName, connnectValues(values))
 
@@ -54,6 +69,11 @@ local function delete(tableName, condition)
     Query(Format("DELETE FROM %s %s", tableName, condition))
 end
 
+---@param tableName string
+---@param keys string
+---@param value number|string
+---@param condition string
+---@return boolean|table|nil
 local function update(tableName, keys, value, condition)
     return Query(Format("UPDATE %s SET %s = %s %s", tableName, keys, value, condition))
 end

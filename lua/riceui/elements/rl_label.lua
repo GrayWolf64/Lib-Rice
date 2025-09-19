@@ -22,6 +22,7 @@ function Element.Create(data,parent)
     panel.DoubleClickTimer = 0
     panel.GThemeType = "Label"
     panel.ProcessID = "Label"
+    panel.Text = "Hello World!"
 
     function panel:DoClick()
     end
@@ -48,6 +49,10 @@ function Element.Create(data,parent)
         self.Depressed = true
 
         self:MouseCapture(true)
+    end
+
+    function panel:SetText(text)
+        self.Text = text
     end
 
     RiceUI.MergeData(panel,RiceUI.ProcessData(data))

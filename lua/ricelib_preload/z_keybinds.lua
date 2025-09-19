@@ -1,3 +1,5 @@
+if SERVER then return end
+
 RiceLib.Cache.Keybinds = RiceLib.Cache.Keybinds or {}
 RiceLib.Cache.KeybindRegistrations = RiceLib.Cache.KeybindRegistrations or {}
 RiceLib.Cache.KeybindLookup = RiceLib.Cache.KeybindLookup or {}
@@ -45,7 +47,7 @@ local function buildKeybindLookup()
 end
 
 function RiceLib.Keybinds.Register(id, info)
-    local keybindInfo = RiceLib.table.InheritCopy(info, baseKeyBindInfo)
+    local keybindInfo = RiceLib.Table.InheritCopy(info, baseKeyBindInfo)
     keybindInfo.ID = id
     setmetatable(keybindInfo, keybindMeta)
 
@@ -85,6 +87,12 @@ function RiceLib.Keybinds.GetKeybinds(id)
     end
 
     return Keybinds
+end
+
+function RiceLib.Keybinds.BindedToKey(id)
+    if Keybinds[id] then return true end
+
+    return false
 end
 
 local function loadKeybinds()

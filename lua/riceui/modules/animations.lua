@@ -143,5 +143,6 @@ RiceUI.Animation = {
     FadeInOut = fadeInOut,
 
     SetRate = setRate,
+    GetRate = function() return ANIMATION_RATE end,
     GetTime = getTime
 }

@@ -187,7 +187,7 @@ end
 ---@field NameSpace string
 ---@field Command string
 ---@field Data? any
----@field TargetPlayer? Player
+---@field TargetPlayer? Player|Entity
 ---@field Unreliable? boolean
 
 ---@param args NetCommand

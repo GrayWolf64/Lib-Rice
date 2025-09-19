@@ -33,11 +33,18 @@ local function saveConfig(config, name, tbl)
 end
 RiceLib.Config.SaveConfig = saveConfig
 
--- key based config
+-- MARK: Key based object config
 local configTable = {}
 local configEntrys = {}
 local configCategorys = {}
 local nameSpaceInfos = {}
+
+---@enum AdminLevel
+RiceLib.Config.AdminLevels = {
+    ADMINLEVEL_ANYONE = 0,
+    ADMINLEVEL_ADMIN = 1,
+    ADMINLEVEL_SUPERADMIN = 2
+}
 
 local function loadConfig()
     for _, file in ipairs(RiceLib.FS.GetAll("ricelib/settings/ricelib", "DATA")) do
@@ -126,6 +133,17 @@ local function get(nameSpace, Key)
     return value
 end
 
+---@class RiceLib_ConfigInfo
+---@field Type? string
+---@field Default? string
+---@field Category? string
+---@field DisplayName? string
+---@field Min? number
+---@field Max? number
+---@field TellServer? boolean Make client config value avaliable for server, cannot be use with Shared
+---@field Shared? boolean Make this config be shared across server and client, cannot be use with TellServer
+---@field AdminLevel? AdminLevel Admin level needed to change Shared config
+---@field UseGUI? boolean Make config avaliable in config manager
 local baseEntryInfo = {
     Type = "Number",
     Default = 0,
@@ -135,29 +153,25 @@ local baseEntryInfo = {
     Min = 0,
     Max = math.huge,
 
-    -- Make client config value avaliable for server, cannot be use with Shared
     TellServer = false,
-
-    -- Make this config be shared across server and client, cannot be use with TellServer
     Shared = false,
 
-    -- Admin level needed to change Shared config
-    -- 0 Anyone
-    -- 1 Admin
-    -- 2 SuperAdmin
     AdminLevel = 1,
 
-    -- Make config avaliable in config manager
     UseGUI = true,
-
-    GetValue = function(self)
-        return get(self.NameSpace, self.Key)
-    end,
-
-    SetValue = function(self, value)
-        return set(self.NameSpace, self.Key, value)
-    end,
 }
+
+---@class RiceLib_Config
+local configMeta = {}
+configMeta.__index = configMeta
+
+function configMeta:GetValue()
+    return get(self.NameSpace, self.Key)
+end
+
+function configMeta:SetValue(value)
+    return set(self.NameSpace, self.Key, value)
+end
 
 local baseNameSpaceInfo = {
     DisplayName = "Unknown",
@@ -183,8 +197,8 @@ local ingoreTypes = {
 ---comment
 ---@param nameSpace string
 ---@param key string
----@param info table
----@return table
+---@param info RiceLib_ConfigInfo
+---@return RiceLib_Config configObject
 function RiceLib.Config.Define(nameSpace, key, info)
     if not configEntrys[nameSpace] then configEntrys[nameSpace] = {} end
 
@@ -192,6 +206,8 @@ function RiceLib.Config.Define(nameSpace, key, info)
     info.NameSpace = nameSpace
     info.Key = key
     configEntrys[nameSpace][key] = info
+
+    setmetatable(info, configMeta)
 
     if not configCategorys[nameSpace] then configCategorys[nameSpace] = {} end
     if not table.HasValue(configCategorys[nameSpace], info.Category) then

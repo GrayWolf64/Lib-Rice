@@ -46,3 +46,26 @@ end
 function RiceLib.RunFromTable(tbl, name, ...)
     return tbl[name](...)
 end
+
+function RiceLib.Util.DynamicLight(index, pos, color, size, brightness, dietime, fadeoutTime, additionData)
+    local dlight = DynamicLight(index)
+
+    color = color or color_white
+    size = size or 512
+    brightness = brightness or 2
+    dietime = dietime or 1
+    fadeoutTime = fadeoutTime or 0.5
+
+    dlight.pos = pos
+    dlight.r = color.r
+    dlight.g = color.g
+    dlight.b = color.b
+    dlight.size = size
+    dlight.brightness = brightness
+    dlight.decay = 1000 / fadeoutTime
+    dlight.dietime = CurTime() + dietime
+
+    if additionData then
+        table.Merge(dlight, additionData)
+    end
+end
