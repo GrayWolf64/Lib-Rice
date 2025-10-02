@@ -250,3 +250,80 @@ RiceUI.Examples.Register("Widgets_Informations", {
         }
     }
 })
+
+local alerts = {}
+
+RiceUI.DefineWidget("RiceUI_CursorAlert", function(data, parent)
+    local x, y = input.GetCursorPos()
+
+    local alert = RiceUI.SimpleCreate({type = "rl_panel",
+        PaintManually = true,
+        h = 40,
+
+        UseNewTheme = true,
+        ThemeNT = {
+            Theme = "Modern",
+            Class = "Panel",
+            Style = "Acrylic",
+            StyleSheet = {
+                Blur = 3,
+            }
+        },
+
+        ShouldRemove = SysTime() + 2,
+
+        Think = function(self)
+            if self.ShouldRemove and SysTime() > self.ShouldRemove then
+                self:RiceUI_AlphaTo{
+                    Alpha = 0,
+                    Time = RiceUI.Animation.GetTime("Normal"),
+
+                    Callback = function()
+                        if IsValid(self) then
+                            self:Remove()
+                        end
+                    end
+                }
+            end
+        end,
+
+        children = {
+            {type = "label",
+                x = 16,
+                y = 8,
+                h = 24,
+
+                Text = data.Text or "!",
+                Font = "RiceUI_24",
+            }
+        }
+    })
+
+    alert:FitContents_Horizontal(RICEUI_SIZE_16)
+
+    surface.PlaySound("glide/ui/radar_alert.wav")
+
+    table.insert(alerts, alert)
+end)
+
+hook.Add("PostRenderVGUI", "RiceUI_CursorAlert_Think", function()
+    local x, y = input.GetCursorPos()
+    local height = RiceUI.Scale.Size(48)
+
+    for index, alert in ipairs(alerts) do
+        if not IsValid(alert) then
+            table.remove(alerts, index)
+
+            break
+        else
+            local scale = 1
+            local prevAlert = alerts[index - 1]
+
+            if IsValid(prevAlert) then
+                scale = prevAlert:GetAlpha() / 255
+            end
+
+            alert:PaintAt(x - alert:GetWide() / 2, y - height * scale - (index - 1) * height + RICEUI_SIZE_8)
+        end
+    end
+end)

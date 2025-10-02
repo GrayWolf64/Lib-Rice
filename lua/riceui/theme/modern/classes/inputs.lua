@@ -21,18 +21,22 @@ local function drawControll(self, w, h, Color, Corner, borderRadius)
 
     local x, y = self:LocalToScreen()
 
-    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Control", "Default"), unpack(Corner))
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h,
+        self:RiceUI_GetColor("Stroke", "Control", "Default"), unpack(Corner))
     render.SetScissorRect(x, y + h - unit_1, x + w, y + h, true)
-    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, self:RiceUI_GetColor("Stroke", "Control", "Secondary"), unpack(Corner))
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h,
+        self:RiceUI_GetColor("Stroke", "Control", "Secondary"), unpack(Corner))
     render.SetScissorRect(0, 0, 0, 0, false)
 
-    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, unit_1, unit_1, w - unit_1 * 2, h - unit_1 * 2, Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(Corner))
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, unit_1, unit_1, w - unit_1 * 2, h - unit_1 * 2,
+        Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(Corner))
 end
 
 local function drawControll_NoOutline(self, w, h, Color, Corner, borderRadius)
     local Corner = Corner or {true, true, true, true}
 
-    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h, Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(Corner))
+    draw.RoundedBoxEx(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, 0, 0, w, h,
+        Color or self:RiceUI_GetColor("Fill", "Control", "Default"), unpack(Corner))
 end
 
 registerClass("Modern", "Button", {
@@ -60,7 +64,8 @@ registerClass("Modern", "Button", {
             draw.RoundedBox(8, 0, h / 4, RiceLib.hudScaleX(4), h / 2, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
         end
 
-        draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.Text, self:GetFont(), RiceLib.hudScaleX(10), h / 2, textColor, TEXT_ALIGN_LEFT,
+            TEXT_ALIGN_CENTER)
     end,
 
     TextLeft = function(self, w, h, style)
@@ -99,7 +104,8 @@ registerClass("Modern", "Button", {
     Close = function(self, w, h, style)
         local color = self:RiceUI_GetColor("Fill", "Accent", "Critical")
 
-        drawControll_NoOutline(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)), {false, true, false, false}, DEFAULT_BODY_BORDER_RADIUS)
+        drawControll_NoOutline(self, w, h, ColorAlpha(color, RiceUI.HoverAlpha(self, 20)), {false, true, false, false},
+            DEFAULT_BODY_BORDER_RADIUS)
 
         surface.SetDrawColor(self:RiceUI_GetColor("Text", "Primary"))
         surface.SetMaterial(cross)
@@ -165,7 +171,8 @@ registerClass("Modern", "Button", {
         drawControll_NoOutline(self, w, h, ColorAlpha(bgcolor, alpha * 0.05), style.Corner)
 
         if self.Selected then
-            draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, RICEUI_SIZE_4, RICEUI_SIZE_4, RICEUI_SIZE_4, h - RICEUI_SIZE_8, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+            draw.RoundedBox(DEFAULT_BODY_BORDER_RADIUS, RICEUI_SIZE_4, RICEUI_SIZE_4, RICEUI_SIZE_4, h - RICEUI_SIZE_8,
+                self:RiceUI_GetColor("Fill", "Accent", "Primary"))
         end
 
         draw.SimpleText(self.Text, getFont(self:GetFont()), SIZE_12, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -186,12 +193,12 @@ registerClass("Modern", "Button", {
 
     Keybinder = function(self, w, h, style)
         local textColor = self:RiceUI_GetColor("Text", "Primary")
-        local displayText
+        local displayText = "无"
 
         if self:IsHovered() then textColor = self:RiceUI_GetColor("Text", "Secondary") end
         if self:IsDown() then textColor = self:RiceUI_GetColor("Text", "Tertiary") end
 
-        if self:GetValue() then
+        if self:GetValue() and self:GetValue() > 0 then
             displayText = string.upper(input.GetKeyName(self:GetValue()))
         end
 
@@ -200,7 +207,8 @@ registerClass("Modern", "Button", {
         end
 
         drawControll(self, w, h, self:RiceUI_GetColor("Fill", "Control", "Default"), style.Corner)
-        draw.SimpleText(displayText, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(displayText, getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER,
+            TEXT_ALIGN_CENTER)
     end,
 
     NumberWang_Button = function(self, w, h, style)
@@ -216,7 +224,7 @@ registerClass("Modern", "Button", {
     end,
 })
 
-registerClass("Modern", "Switch",{
+registerClass("Modern", "Switch", {
     Default = function(self, w, h, style)
         local raduis = h / 2 - RICEUI_SIZE_4
         local fraction = math.ease.InOutExpo(self.AnimationFraction)
@@ -235,10 +243,13 @@ registerClass("Modern", "Switch",{
 
         render.SetStencilEnable(false)
 
-        draw.RoundedBox(h, 0, 0, w, h, Color(0, 0, 0, 0):Lerp(self:RiceUI_GetColor("Fill", "Accent", "Primary"), fraction))
+        draw.RoundedBox(h, 0, 0, w, h,
+            Color(0, 0, 0, 0):Lerp(self:RiceUI_GetColor("Fill", "Accent", "Primary"), fraction))
 
         local pos = raduis + RICEUI_SIZE_4 + fraction * (w - raduis * 2 - RICEUI_SIZE_8)
-        drawCircle(pos, h / 2, raduis, 32, self:RiceUI_GetColor("Fill", "Control", "Switch"):Lerp(self:RiceUI_GetColor("Fill", "Card", "Primary"), fraction))
+        drawCircle(pos, h / 2, raduis, 32,
+            self:RiceUI_GetColor("Fill", "Control", "Switch"):Lerp(self:RiceUI_GetColor("Fill", "Card", "Primary"),
+                fraction))
     end,
 })
 
@@ -282,9 +293,15 @@ registerClass("Modern", "Entry", {
         end]]
 
         if self:GetText() ~= "" then
-            self:DrawTextEntryText( textColor, self:GetHighlightColor(), self:GetCursorColor() )
+            self:DrawTextEntryText(textColor, self:GetHighlightColor(), self:GetCursorColor())
         else
-            draw.SimpleText(self:GetPlaceholderText(), self:GetFont(), unit_4, h / 2, self:RiceUI_GetColor("Text", "Disable"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            if self:IsMultiline() then
+                draw.SimpleText(self:GetPlaceholderText(), self:GetFont(), unit_4, unit_4,
+                    self:RiceUI_GetColor("Text", "Disable"), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            else
+                draw.SimpleText(self:GetPlaceholderText(), self:GetFont(), unit_4, h / 2,
+                    self:RiceUI_GetColor("Text", "Disable"), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
         end
     end,
 })
@@ -323,7 +340,7 @@ registerClass("Modern", "RL_NumberWang", {
             end
             draw.SimpleText(self:GetText(), self:GetFont(), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
-            surface.SetDrawColor(ColorAlpha(textColor, 255 * math.abs(math.sin(RealTime() * 4))) )
+            surface.SetDrawColor(ColorAlpha(textColor, 255 * math.abs(math.sin(RealTime() * 4))))
             surface.DrawRect(len, RICEUI_SIZE_4, RICEUI_SIZE_2, h - RICEUI_SIZE_8)
         else
             draw.SimpleText(self:GetValue(), self:GetFont(), unit_8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -344,7 +361,8 @@ registerClass("Modern", "ComboBox", {
 
         surface.SetDrawColor(textColor)
         surface.SetMaterial(point)
-        surface.DrawTexturedRect(w - h + CONTROLL_ARROWSIZE / 2, CONTROLL_ARROWSIZE / 2, h - CONTROLL_ARROWSIZE, h - CONTROLL_ARROWSIZE)
+        surface.DrawTexturedRect(w - h + CONTROLL_ARROWSIZE / 2, CONTROLL_ARROWSIZE / 2, h - CONTROLL_ARROWSIZE,
+            h - CONTROLL_ARROWSIZE)
     end
 })
 
@@ -372,7 +390,8 @@ registerClass("Modern", "RL_NumberCounter", {
 
         render.SetStencilEnable(false)
 
-        draw.SimpleText(self:GetValue(), getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self:GetValue(), getFont(self:GetFont()), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER,
+            TEXT_ALIGN_CENTER)
 
         if hasFocus then
             surface.SetDrawColor(ColorAlpha(textColor, 255 * math.abs(math.sin(SysTime() * 6 % 360))))
@@ -396,7 +415,8 @@ registerClass("Modern", "Slider", {
         local barRaduis = h / 4
 
         draw.RoundedBox(h, 0, barRaduis + barRaduis / 2, w, barRaduis, self:RiceUI_GetColor("Text", "Disable"))
-        draw.RoundedBox(h, 0, barRaduis + barRaduis / 2, w * fraction, barRaduis, self:RiceUI_GetColor("Fill", "Accent", "Primary"))
+        draw.RoundedBox(h, 0, barRaduis + barRaduis / 2, w * fraction, barRaduis,
+            self:RiceUI_GetColor("Fill", "Accent", "Primary"))
 
         drawCircle(x, h / 2, h / 2, 32, self:RiceUI_GetColor("Text", "Disable"))
         drawCircle(x, h / 2, h / 2 - unit_1, 32, self:RiceUI_GetColor("Fill", "Card", "Primary"))
@@ -414,10 +434,13 @@ registerClass("Modern", "Slider", {
 
             DisableClipping(true)
 
-            draw.RoundedBox(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, x - w / 2, -h, w, h, self:RiceUI_GetColor("Stroke", "Control", "Default"))
-            draw.RoundedBox(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, x + unit_1 - w / 2, -h + unit_1, w - unit_2, h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"))
+            draw.RoundedBox(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, x - w / 2, -h, w, h,
+                self:RiceUI_GetColor("Stroke", "Control", "Default"))
+            draw.RoundedBox(borderRadius or DEFAULT_CONTROLL_BORDER_RADIUS, x + unit_1 - w / 2, -h + unit_1, w - unit_2,
+                h - unit_2, self:RiceUI_GetColor("Fill", "Control", "Default"))
 
-            draw.SimpleText(text, font, x, 0, ColorAlpha(self:RiceUI_GetColor("Text", "Primary"), textAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(text, font, x, 0, ColorAlpha(self:RiceUI_GetColor("Text", "Primary"), textAlpha),
+                TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 
             DisableClipping(false)
         end

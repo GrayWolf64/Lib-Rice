@@ -1,4 +1,5 @@
 RiceLib.Config = RiceLib.Config or {}
+RiceLib.Cache.Config_ConfigTable = RiceLib.Cache.Config_ConfigTable or {}
 
 file.CreateDir"ricelib/settings"
 file.CreateDir"ricelib/settings/ricelib"
@@ -36,7 +37,8 @@ end
 RiceLib.Config.SaveConfig = saveConfig
 
 -- MARK: Key based object config
-local configTable = {}
+local configTable = RiceLib.Cache.Config_ConfigTable
+local configTypes = {}
 local configEntrys = {}
 local configCategorys = {}
 local nameSpaceInfos = {}
@@ -66,26 +68,6 @@ local function checkAdminLevel(ply, levelNeeded)
     end
 
     return levelNeeded == 0
-end
-
-local function sendSharedConfig(nameSpace, key, value, info)
-    if CLIENT then
-        if not checkAdminLevel(LocalPlayer(), info.AdminLevel) then return end
-
-        RiceLib.Net.Send{
-            NameSpace = "RiceLib_ConfigManager",
-            Command = "SetSharedConfig",
-            Data = {nameSpace, key, value}
-        }
-
-        return
-    end
-
-    RiceLib.Net.Send{
-        NameSpace = "RiceLib_ConfigManager",
-        Command = "SetSharedConfig",
-        Data = {nameSpace, key, value}
-    }
 end
 
 local function set(nameSpace, key, value, noNetwork)
@@ -135,6 +117,97 @@ local function get(nameSpace, Key)
     return value
 end
 
+-- MARK: Config Object Class
+---@class RiceLib_Config
+local configMeta = {}
+configMeta.__index = configMeta
+
+function configMeta:GetValue()
+    return self:GetInternal()
+end
+
+function configMeta:SetValue(value, noNetwork)
+    self:SetInternal(value, noNetwork)
+end
+
+function configMeta:GetInternal()
+    local nameSpace = self.NameSpace
+    local key = self.Key
+
+    if nameSpace == nil or key == nil then return end
+
+    configTable[nameSpace] = configTable[nameSpace] or {}
+
+    local value = configTable[nameSpace][key]
+    if value == nil then
+        local default = (getEntryInfo(nameSpace, key) or {}).Default
+
+        if default then
+            set(nameSpace, key, default)
+
+            value = default
+        end
+    end
+
+    return value
+end
+
+function configMeta:SetInternal(value, noNetwork)
+    local nameSpace = self.NameSpace
+    local key = self.Key
+
+    if nameSpace == nil or key == nil then return end
+
+    configTable[nameSpace] = configTable[nameSpace] or {}
+    configTable[nameSpace][key] = value
+
+    RiceLib.Config.SaveConfig("ricelib", nameSpace, configTable[nameSpace])
+
+    if noNetwork then return end
+    if self.Shared then
+        self:SendToServer()
+    end
+
+    hook.Run("RiceLib_ConfigManager_ValueChanged", nameSpace, key, value)
+end
+
+function configMeta:SendToServer()
+    local nameSpace = self.NameSpace
+    local key = self.Key
+    local value = self:GetValue()
+
+    if CLIENT then
+        if not checkAdminLevel(LocalPlayer(), self.AdminLevel) then return end
+
+        RiceLib.Net.Send{
+            NameSpace = "RiceLib_ConfigManager",
+            Command = "SetSharedConfig",
+            Data = {nameSpace, key, value}
+        }
+
+        return
+    end
+
+    RiceLib.Net.Send{
+        NameSpace = "RiceLib_ConfigManager",
+        Command = "SetSharedConfig",
+        Data = {nameSpace, key, value}
+    }
+end
+
+function RiceLib.Config.GetMetaTable()
+    return configMeta
+end
+
+function RiceLib.Config.RegisterConfigType(type, displayName, meta)
+    configTypes[type] = {
+        DisplayName = displayName,
+        MetaTable = meta or configMeta
+    }
+
+    PrintTable(configTypes)
+end
+
 ---@class RiceLib_ConfigInfo
 ---@field Type? string
 ---@field Default? string
@@ -163,26 +236,18 @@ local baseEntryInfo = {
     UseGUI = true,
 }
 
----@class RiceLib_Config
-local configMeta = {}
-configMeta.__index = configMeta
-
-function configMeta:GetValue()
-    return get(self.NameSpace, self.Key)
-end
-
-function configMeta:SetValue(value)
-    return set(self.NameSpace, self.Key, value)
-end
-
+---@class RiceLib_NameSpaceInfo
+---@field Author? string
 local baseNameSpaceInfo = {
     DisplayName = "Unknown",
     Author = "Unknown"
 }
 
+---@param info RiceLib_NameSpaceInfo
 function RiceLib.Config.DefineNameSpace(nameSpace, info)
     nameSpaceInfos[nameSpace] = RiceLib.table.InheritCopy(info, baseNameSpaceInfo)
 end
+
 RiceLib.Config.DefineNameSpace("ricelib", {
     DisplayName = "RiceLib",
     Author = "Rice"
@@ -209,6 +274,13 @@ function RiceLib.Config.Define(nameSpace, key, info)
     info.Key = key
     configEntrys[nameSpace][key] = info
 
+    local configMeta = configMeta
+    local typeInfo = configTypes[info.Type]
+    if typeInfo then
+        configMeta = typeInfo.MetaTable
+        info.TypeInfo = typeInfo
+    end
+
     setmetatable(info, configMeta)
 
     if not configCategorys[nameSpace] then configCategorys[nameSpace] = {} end
@@ -225,7 +297,7 @@ function RiceLib.Config.Define(nameSpace, key, info)
     end
 
     if configTable[nameSpace][key] == nil then
-        set(nameSpace, key, info.Default, true)
+        info:SetValue(info.Default, true)
     end
 
     return info

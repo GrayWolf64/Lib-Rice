@@ -112,6 +112,10 @@ local colors = {
                 Secondary = RiceUI.AlphaPercent(color_white, 0.02),
             },
 
+            Panel = {
+                Glass = ColorAlpha(color_black, 100),
+            },
+
             Frame = Color(50, 50, 50, 191)
         },
 
@@ -148,6 +152,10 @@ local colors = {
                 Tertiary = RiceUI.AlphaPercent(color_white, 0.01),
                 Active = RiceUI.AlphaPercent(Color(30, 30, 30), 0.7),
                 Switch = Color(200, 200, 200),
+            },
+
+            Panel = {
+                Glass = ColorAlpha(color_black, 200),
             },
 
             Accent = {

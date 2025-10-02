@@ -164,6 +164,9 @@ function apply_theme_nt(panel, inputTheme)
     end
 
     local theme = panel.ThemeNT
+
+    if theme.Skip then return end
+
     if inputTheme then
         theme = RiceLib.table.Inherit(panel.ThemeNT, inputTheme, {
             Color = not theme.NoColorOverride

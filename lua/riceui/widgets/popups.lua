@@ -115,13 +115,18 @@ RiceUI.DefineWidget("RiceUI_RequestInput", function(data, parent, root)
 end)
 
 RiceUI.DefineWidget("RiceUI_Confirm", function(data, parent, root)
+    local themeColor
+    if parent.ThemeNT then
+        themeColor = parent.ThemeNT.Color
+    end
+
     local data = RiceLib.Table.Inherit(data, {
         Title = "确认",
         Text = "请确认操作",
 
         Theme = "Modern",
         Style = "Acrylic",
-        Color = "black",
+        Color = data.Color or themeColor,
 
         w = 448,
 

@@ -11,12 +11,17 @@ local function buildConfigEntrys(panel, nameSpace, category)
     local pageName = Format("%s_%s", nameSpace, category)
 
     if panel:GetPage(pageName) then
-        panel:SwitchPage(pageName)
+        if input.IsShiftDown() then
+            panel:GetPage(pageName):Remove()
+        else
+            panel:SwitchPage(pageName)
 
-        return
+            return
+        end
     end
 
-    local page = RiceUI.SimpleCreate({type = "rl_scrollpanel",
+    local page = RiceUI.SimpleCreate({
+        type = "rl_scrollpanel",
         Dock = FILL,
 
         ThemeNT = {
@@ -49,7 +54,8 @@ local function buildConfigEntrys(panel, nameSpace, category)
         local spacer = Spacers[subCategory]
 
         if not spacer then
-            spacer = RiceUI.SimpleCreate({type = "rl_panel",
+            spacer = RiceUI.SimpleCreate({
+                type = "rl_panel",
                 Dock = TOP,
                 Margin = {0, 16, 0, 0},
 
@@ -58,7 +64,8 @@ local function buildConfigEntrys(panel, nameSpace, category)
                 },
 
                 children = {
-                    {type = "rl_button",
+                    {
+                        type = "rl_button",
                         Dock = TOP,
                         Margin = {12, 0, 16, 0},
                         h = 32,
@@ -125,7 +132,8 @@ end
 
 local choiceBuilders = {
     Bool = function(data, pnl)
-        RiceUI.SimpleCreate({type = "rl_panel",
+        RiceUI.SimpleCreate({
+            type = "rl_panel",
             UseNewTheme = true,
             Theme = {
                 ThemeName = "modern",
@@ -133,12 +141,13 @@ local choiceBuilders = {
             },
 
             Dock = TOP,
-            Margin = {16,16,16,0},
+            Margin = {16, 16, 16, 0},
             h = 32,
 
             children = {
                 {type = "label", Text = data.DisplayText, Dock = LEFT},
-                {type = "switch",
+                {
+                    type = "switch",
                     Dock = RIGHT,
                     w = 65,
 
@@ -155,7 +164,8 @@ local choiceBuilders = {
     end,
 
     String = function(data, pnl)
-        RiceUI.SimpleCreate({type = "rl_panel",
+        RiceUI.SimpleCreate({
+            type = "rl_panel",
             UseNewTheme = true,
             Theme = {
                 ThemeName = "modern",
@@ -163,12 +173,13 @@ local choiceBuilders = {
             },
 
             Dock = TOP,
-            Margin = {16,16,16,0},
+            Margin = {16, 16, 16, 0},
             h = 32,
 
             children = {
                 {type = "label", Text = data[2], Dock = LEFT},
-                {type = "entry",
+                {
+                    type = "entry",
                     Dock = RIGHT,
                     w = 400,
 
@@ -185,7 +196,8 @@ local choiceBuilders = {
     end,
 
     Number = function(data, pnl)
-        RiceUI.SimpleCreate({type = "rl_panel",
+        RiceUI.SimpleCreate({
+            type = "rl_panel",
             UseNewTheme = true,
             Theme = {
                 ThemeName = "modern",
@@ -193,12 +205,13 @@ local choiceBuilders = {
             },
 
             Dock = TOP,
-            Margin = {16,16,16,0},
+            Margin = {16, 16, 16, 0},
             h = 32,
 
             children = {
                 {type = "label", Text = data[2], Dock = LEFT},
-                {type = "rl_numberwang",
+                {
+                    type = "rl_numberwang",
                     Dock = RIGHT,
                     w = 200,
 
@@ -215,7 +228,8 @@ local choiceBuilders = {
     end,
 
     Slider = function(data, pnl)
-        RiceUI.SimpleCreate({type = "rl_panel",
+        RiceUI.SimpleCreate({
+            type = "rl_panel",
             UseNewTheme = true,
             Theme = {
                 ThemeName = "modern",
@@ -223,12 +237,13 @@ local choiceBuilders = {
             },
 
             Dock = TOP,
-            Margin = {16,16,16,0},
+            Margin = {16, 16, 16, 0},
             h = 32,
 
             children = {
                 {type = "label", Text = data[2], Dock = LEFT},
-                {type = "slider",
+                {
+                    type = "slider",
                     Dock = RIGHT,
                     w = 200,
 
@@ -258,7 +273,8 @@ function RiceLib.Config.RegisterConfig(category, name, choice)
                 return
             end
 
-            local panel = RiceUI.SimpleCreate({type = "rl_pane;",
+            local panel = RiceUI.SimpleCreate({
+                type = "rl_pane;",
                 Dock = FILL,
 
                 ThemeNT = {
@@ -267,7 +283,7 @@ function RiceLib.Config.RegisterConfig(category, name, choice)
             }, view)
 
             for _, data in ipairs(choice) do
-                choiceBuilders[ data[1] ]( data, panel )
+                choiceBuilders[data[1]](data, panel)
             end
 
             view:RegisterPage(name, panel)
@@ -290,7 +306,8 @@ function RiceLib.Config.RegisterConfig_SinglePage(name, choice)
                 return
             end
 
-            local panel = RiceUI.SimpleCreate({type = "rl_pane;",
+            local panel = RiceUI.SimpleCreate({
+                type = "rl_pane;",
                 Dock = FILL,
 
                 ThemeNT = {
@@ -300,7 +317,7 @@ function RiceLib.Config.RegisterConfig_SinglePage(name, choice)
             }, view)
 
             for _, data in ipairs(choice) do
-                choiceBuilders[ data[1] ]( data, panel )
+                choiceBuilders[data[1]](data, panel)
             end
 
             view:RegisterPage(name, panel)
@@ -320,7 +337,14 @@ function RiceLib.Config.RegisterCustomPage(name, func)
 end
 
 function RiceLib.Config.OpenMenu()
-    RiceLib.Config.MenuPanel = RiceUI.SimpleCreate({type = "rl_frame2",
+    local color = "white"
+
+    if RiceUI.ThemeNT.IsDarkMode() then
+        color = "black"
+    end
+
+    RiceLib.Config.MenuPanel = RiceUI.SimpleCreate({
+        type = "rl_frame2",
         Center = true,
         Root = true,
 
@@ -329,11 +353,13 @@ function RiceLib.Config.OpenMenu()
         ThemeNT = {
             Theme = "Modern",
             Class = "Frame",
-            Style = "Acrylic"
+            Style = "Acrylic",
+            Color = color
         },
 
         children = {
-            {type = "rl_navigation_view",
+            {
+                type = "rl_navigation_view",
                 Dock = TOP,
                 h = 655,
 
@@ -342,6 +368,22 @@ function RiceLib.Config.OpenMenu()
         },
     })
 end
+
+hook.Add("RiceLib_ConfigManager_ValueChanged", "RiceLib_ConfigMenu_Darkmode", function(nameSpace, key, value)
+    if nameSpace ~= "ricelib" then return end
+    if key ~= "ThemeNT_DarkMode" then return end
+    if not IsValid(RiceLib.Config.MenuPanel) then return end
+
+    local color = "white"
+
+    if RiceUI.ThemeNT.IsDarkMode() then
+        color = "black"
+    end
+
+    RiceLib.Config.MenuPanel.ThemeNT.Color = color
+
+    RiceUI.ThemeNT.ApplyTheme(RiceLib.Config.MenuPanel)
+end)
 
 concommand.Add("rl_config", RiceLib.Config.OpenMenu)
 

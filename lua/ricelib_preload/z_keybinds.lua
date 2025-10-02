@@ -10,11 +10,14 @@ local KeybindRegistrations = RiceLib.Cache.KeybindRegistrations
 local Keybinds = RiceLib.Cache.Keybinds
 local KeybindLookup = RiceLib.Cache.KeybindLookup
 
+---@class KeybindInfo
+---@field DefaultKey? string
 local baseKeyBindInfo = {
     DisplayName = "按键绑定",
     Category = "RiceLib",
 }
 
+---@class KeybindObject
 local keybindMeta = {}
 keybindMeta.__index = keybindMeta
 
@@ -26,10 +29,12 @@ function keybindMeta:OnReleased()
     print("Im Being Released! ID:" .. self.ID)
 end
 
+---@return number KeyCode
 function keybindMeta:GetKey()
     return Keybinds[self.ID]
 end
 
+---@return string KeyName
 function keybindMeta:GetKeyName()
     return input.GetKeyName(Keybinds[self.ID])
 end
@@ -46,7 +51,11 @@ local function buildKeybindLookup()
     end
 end
 
+---@param id string
+---@param info KeybindInfo
+---@return KeybindObject keybindInfo
 function RiceLib.Keybinds.Register(id, info)
+    ---@class KeybindObject
     local keybindInfo = RiceLib.Table.InheritCopy(info, baseKeyBindInfo)
     keybindInfo.ID = id
     setmetatable(keybindInfo, keybindMeta)
@@ -73,6 +82,7 @@ function RiceLib.Keybinds.SetKey(id, key)
     buildKeybindLookup()
 end
 
+---@return table KeybindRegistrations
 function RiceLib.Keybinds.GetKeybindRegistrations(id)
     if id then
         return KeybindRegistrations[id]
