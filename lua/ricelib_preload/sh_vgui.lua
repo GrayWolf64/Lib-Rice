@@ -2,19 +2,11 @@ RiceLib.VGUI = RiceLib.VGUI or {}
 
 local function reload_themes()
     local themes_folder = "ricelib_vgui_theme/"
-    local files = file.Find(themes_folder .. "*.lua", "LUA")
 
     if SERVER then
-        for _, v in ipairs(files) do AddCSLuaFile(themes_folder .. v) end
+        AddCSLuaFile(themes_folder .. "themes.lua")
     else
-        for _, v in ipairs(files) do
-            local name, theme = include(themes_folder .. v)
-            if not name or not theme then return end
-
-            RiceLib.VGUI.RegisterTheme(name, theme)
-
-            RiceLib.Info("Loaded " .. name, "RiceLib VGUI Theme")
-        end
+        include(themes_folder .. "themes.lua")
     end
 end
 
@@ -124,6 +116,7 @@ if CLIENT then
     RiceLib.VGUI.DM             = dock_margin
     RiceLib.VGUI.TextWide       = TextWide
     RiceLib.VGUI.TextHeight     = TextHeight
+
     RiceLib.VGUI.Theme          = RiceLib.VGUI.Theme or {}
     RiceLib.VGUI.ColorTheme     = RiceLib.VGUI.ColorTheme or {}
     RiceLib.VGUI.GlobalTheme    = RiceLib.VGUI.GlobalTheme or {}
