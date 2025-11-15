@@ -13,3 +13,12 @@ Try to make RiceLib an *Immediate Mode UI* library.
 3. `RiceLibClientReady` hook, please use it where it's
     actually needed. Don't just make others use your library
     when only a single hook is required from your library.
+4. `RiceLib.SQL` and *all* its related SQL functions.
+5. `RiceLib.VGUI.RegisterFontFixedAdv`,
+    `RiceLib.VGUI.RegisterFont`,
+    `RiceLib.VGUI.RegisterFontFixed`,
+    `RiceLib.VGUI.RegisterFontAdv` and all old font related functions.
+
+## Subsystems Improved
+
+...

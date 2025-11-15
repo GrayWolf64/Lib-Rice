@@ -1,8 +1,14 @@
-RiceLib.VGUI.RegisterFontAdv("OPlusSans 3.0", "OPSans_L")
-RiceLib.VGUI.RegisterFontAdv("OPlusSans 3.0 Medium", "OPSans")
-RiceLib.VGUI.RegisterFontAdv("Source Han Sans SC", "SourceHan")
-RiceLib.VGUI.RegisterFontAdv("OPlusSans 3.0 Medium", "OPPOSans")
-RiceLib.VGUI.RegisterFontFixed("OPlusSans 3.0 Medium", "OPPOSans_F")
+-- local function mkFontData(font, size, weight)
+--     return {
+--         font = font,
+--         size = size,
+--         weight = weight,
+--         antialias = true,
+--         additive = false,
+--         outline = false,
+--         extended = true
+--     }
+-- end
 
 RiceUI.Font.Register{
     CodeName = "RiceUI",
