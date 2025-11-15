@@ -1,0 +1,180 @@
+ImRiceUI = ImRiceUI or {}
+
+local GImRiceUI = nil
+
+local function ParseRGBA(str)
+    local r, g, b, a = str:match("ImVec4%(([%d%.]+)f?, ([%d%.]+)f?, ([%d%.]+)f?, ([%d%.]+)f?%)")
+    return {r = tonumber(r) * 255, g = tonumber(g) * 255, b = tonumber(b) * 255, a = tonumber(a) * 255}
+end
+
+local function ImHash(name)
+    if not GImRiceUI then return end
+
+    return string.format("Im_%s", string.sub(util.SHA256(name), 1, 16))
+end
+
+local StyleColorsDark = {
+    Text          = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
+    WindowBg      = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
+    Border        = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
+    TitleBgActive = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
+    MenuBarBg     = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)")
+}
+
+local StyleFontsDefault = {
+    TitleFont = "BudgetLabel"
+}
+
+local DefaultConfig = {
+    WindowSize = {w = 500, h = 480},
+    WindowPos = {x = 0, y = 0},
+
+    TitleHeight = 25,
+
+    WindowBorderWidth = 1,
+}
+
+local function CreateNewContext()
+    GImRiceUI = {
+        Style = {
+            Colors = StyleColorsDark,
+            Fonts = StyleFontsDefault
+        },
+        Config = DefaultConfig,
+        Initialized = true,
+
+        Windows = {},
+
+        MousePos = {x = 0, y = 0},
+        MouseX = gui.MouseX,
+        MouseY = gui.MouseY,
+        IsMouseDown = input.IsMouseDown,
+
+        DraggingWindow = nil,
+        DragOffset = {x = 0, y = 0}
+    }
+
+    return GImRiceUI
+end
+
+local draw_list = {}
+
+local function PushDrawCommand(draw_call, ...)
+    draw_list[#draw_list + 1] = {draw_call = draw_call, args = {...}}
+end
+
+local function ExecuteDrawCommands()
+    for _, cmd in ipairs(draw_list) do
+        cmd.draw_call(unpack(cmd.args))
+    end
+end
+
+local function CreateNewWindow(name)
+    if not GImRiceUI then return nil end
+
+    local window_id = ImHash(name)
+
+    if not GImRiceUI.Windows[window_id] then
+        GImRiceUI.Windows[window_id] = {
+            ID = window_id,
+            Name = name,
+            Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
+            Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
+        }
+    end
+
+    return window_id
+end
+
+local function RenderWindow(window)
+    if not window then return end
+
+    PushDrawCommand(surface.SetDrawColor, GImRiceUI.Style.Colors.WindowBg)
+    PushDrawCommand(surface.DrawRect, window.Pos.x, window.Pos.y,
+                    window.Size.w, window.Size.h)
+
+    PushDrawCommand(surface.SetDrawColor, GImRiceUI.Style.Colors.Border)
+    PushDrawCommand(surface.DrawOutlinedRect, window.Pos.x, window.Pos.y,
+                    window.Size.w, window.Size.h,
+                    GImRiceUI.Config.WindowBorderWidth)
+
+    PushDrawCommand(surface.SetDrawColor, GImRiceUI.Style.Colors.TitleBgActive)
+    PushDrawCommand(surface.DrawRect, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
+                    window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
+                    window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
+                    GImRiceUI.Config.TitleHeight)
+
+    PushDrawCommand(draw.DrawText, window.Name, GImRiceUI.Style.Fonts.TitleFont,
+                    window.Pos.x + GImRiceUI.Config.TitleHeight / 4, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
+                    GImRiceUI.Style.Colors.Text)
+end
+
+local function RegionHit(x, y, w, h)
+    if GImRiceUI.MousePos.x < x or
+        GImRiceUI.MousePos.y < y or
+        GImRiceUI.MousePos.x >= x + w or
+        GImRiceUI.MousePos.y >= y + h then
+
+        return false
+    end
+
+    return true
+end
+
+local function Begin(name)
+    if name == nil or name == "" then return end
+
+    local window_id = CreateNewWindow(name)
+    local window = GImRiceUI.Windows[window_id]
+
+    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
+
+    if left_mousedown and not GImRiceUI.DraggingWindow then
+        local title_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
+
+        if title_hit then
+            GImRiceUI.DraggingWindow = window_id
+            GImRiceUI.DragOffset = {
+                x = GImRiceUI.MousePos.x - window.Pos.x,
+                y = GImRiceUI.MousePos.y - window.Pos.y
+            }
+        end
+    end
+
+    if GImRiceUI.DraggingWindow == window_id and left_mousedown then
+        window.Pos.x = GImRiceUI.MousePos.x - GImRiceUI.DragOffset.x
+        window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.DragOffset.y
+    end
+
+    RenderWindow(window)
+end
+
+local function NewFrame()
+    if not GImRiceUI or not GImRiceUI.Initialized then return end
+
+    GImRiceUI.MousePos.x = GImRiceUI.MouseX()
+    GImRiceUI.MousePos.y = GImRiceUI.MouseY()
+
+    if GImRiceUI.DraggingWindow and not GImRiceUI.IsMouseDown(MOUSE_LEFT) then
+        GImRiceUI.DraggingWindow = nil
+    end
+
+    draw_list = {}
+end
+
+// test here
+
+CreateNewContext()
+
+hook.Add("PostRender", "ImRiceUI", function()
+    cam.Start2D()
+
+    NewFrame()
+
+    Begin("Hello World!")
+
+    ExecuteDrawCommands()
+
+    cam.End2D()
+end)
+

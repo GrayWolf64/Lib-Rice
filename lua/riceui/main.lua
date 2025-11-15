@@ -295,3 +295,5 @@ concommand.Add("riceui_debugoverlay", function()
         end
     end)
 end)
+
+include("riceui/imrui.lua")
