@@ -1,1 +1,12 @@
 # RiceLib
+
+## Primary Goal
+
+Try to make RiceLib an *Immediate Mode UI* library.
+
+## Parts Removed
+
+1. `RiceLib.PlayerRecord` and *all* its related SQL usage,
+    please make it a separate extension.
+2. `outline` module used to draw outline on an entity,
+    please use its original author's addon or make it a separate extension
