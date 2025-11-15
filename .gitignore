@@ -1,1 +1,5 @@
 /.vscode
+lua/luals
+
+.editorconfig
+.emmyrc.json
