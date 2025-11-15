@@ -144,15 +144,6 @@ RiceLib.IncludeDir = include_dir
 
 print"================ RiceLib ================"
 
-if SERVER then
-    util.AddNetworkString("ricelib_clientready")
-    net.Receive("ricelib_clientready", function(_, p) hook.Run("RiceLibClientReady", p) end)
-else
-    local function f() net.Start("ricelib_clientready") net.SendToServer() end
-    hook.Add("InitPostEntity", "RiceLibClientReady", f)
-    concommand.Add("ricelib_simulate_clientready", function(p) if p:IsAdmin() then f() end end)
-end
-
 RiceLib.IncludeDir"ricelib_preload"
 
 if CLIENT then

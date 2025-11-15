@@ -9,4 +9,6 @@ Try to make RiceLib an *Immediate Mode UI* library.
 1. `RiceLib.PlayerRecord` and *all* its related SQL usage,
     please make it a separate extension.
 2. `outline` module used to draw outline on an entity,
-    please use its original author's addon or make it a separate extension
+    please use its original author's addon or make it a separate extension.
+3. `RiceLibClientReady` hook, please use it where it's
+    actually needed.
