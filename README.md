@@ -11,4 +11,5 @@ Try to make RiceLib an *Immediate Mode UI* library.
 2. `outline` module used to draw outline on an entity,
     please use its original author's addon or make it a separate extension.
 3. `RiceLibClientReady` hook, please use it where it's
-    actually needed.
+    actually needed. Don't just make others use your library
+    when only a single hook is required from your library.
