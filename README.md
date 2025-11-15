@@ -18,6 +18,7 @@ Try to make RiceLib an *Immediate Mode UI* library.
     `RiceLib.VGUI.RegisterFont`,
     `RiceLib.VGUI.RegisterFontFixed`,
     `RiceLib.VGUI.RegisterFontAdv` and all old font related functions.
+6. `RiceLib.String` and *all* its member functions.
 
 ## Subsystems Improved
 
