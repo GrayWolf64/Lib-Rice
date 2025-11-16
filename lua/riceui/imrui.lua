@@ -2,6 +2,8 @@ ImRiceUI = ImRiceUI or {}
 
 local GImRiceUI = nil
 
+local GDummyPanel = nil
+
 local function ParseRGBA(str)
     local r, g, b, a = str:match("ImVec4%(([%d%.]+)f?, ([%d%.]+)f?, ([%d%.]+)f?, ([%d%.]+)f?%)")
     return {r = tonumber(r) * 255, g = tonumber(g) * 255, b = tonumber(b) * 255, a = tonumber(a) * 255}
@@ -17,6 +19,7 @@ local StyleColorsDark = {
     Text          = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
     WindowBg      = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
     Border        = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
+    TitleBg       = ParseRGBA("ImVec4(0.04f, 0.04f, 0.04f, 1.00f)"),
     TitleBgActive = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
     MenuBarBg     = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)")
 }
@@ -49,22 +52,38 @@ local function CreateNewContext()
         MouseX = gui.MouseX,
         MouseY = gui.MouseY,
         IsMouseDown = input.IsMouseDown,
+        WasLeftMouseDown = false,
 
-        DraggingWindow = nil,
-        DragOffset = {x = 0, y = 0}
+        MovingWindow = nil,
+        MovingWindowOffset = {x = 0, y = 0}
     }
+
+    hook.Add("PostGamemodeLoaded", "ImGDummyWindow", function()
+        GDummyPanel = vgui.Create("DFrame")
+        GDummyPanel:SetSize(ScrW(), ScrH())
+        GDummyPanel:SetDrawOnTop(true)
+        GDummyPanel:SetTitle("")
+        GDummyPanel:ShowCloseButton(false)
+        GDummyPanel:SetDraggable(false)
+        GDummyPanel:SetSizable(false)
+        GDummyPanel:SetScreenLock(true)
+        GDummyPanel:SetMouseInputEnabled(false)
+        GDummyPanel:SetKeyboardInputEnabled(false)
+
+        GDummyPanel.Paint = function() end
+    end)
 
     return GImRiceUI
 end
 
-local draw_list = {}
+local ImDrawList = {}
 
 local function PushDrawCommand(draw_call, ...)
-    draw_list[#draw_list + 1] = {draw_call = draw_call, args = {...}}
+    ImDrawList[#ImDrawList + 1] = {draw_call = draw_call, args = {...}}
 end
 
 local function ExecuteDrawCommands()
-    for _, cmd in ipairs(draw_list) do
+    for _, cmd in ipairs(ImDrawList) do
         cmd.draw_call(unpack(cmd.args))
     end
 end
@@ -128,25 +147,35 @@ local function Begin(name)
     local window = GImRiceUI.Windows[window_id]
 
     local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
+    local window_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
 
-    if left_mousedown and not GImRiceUI.DraggingWindow then
-        local title_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
-
-        if title_hit then
-            GImRiceUI.DraggingWindow = window_id
-            GImRiceUI.DragOffset = {
-                x = GImRiceUI.MousePos.x - window.Pos.x,
-                y = GImRiceUI.MousePos.y - window.Pos.y
-            }
-        end
+    if GDummyPanel and window_hit then
+        GDummyPanel:MakePopup()
     end
 
-    if GImRiceUI.DraggingWindow == window_id and left_mousedown then
-        window.Pos.x = GImRiceUI.MousePos.x - GImRiceUI.DragOffset.x
-        window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.DragOffset.y
+    local title_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
+
+    if title_hit and left_mousedown and
+        not GImRiceUI.MovingWindow and
+        not GImRiceUI.WasLeftMouseDown then
+
+        GImRiceUI.MovingWindow = window_id
+        GImRiceUI.MovingWindowOffset = {
+            x = GImRiceUI.MousePos.x - window.Pos.x,
+            y = GImRiceUI.MousePos.y - window.Pos.y
+        }
     end
+
+    if GImRiceUI.MovingWindow == window_id and left_mousedown then
+        window.Pos.x = GImRiceUI.MousePos.x - GImRiceUI.MovingWindowOffset.x
+        window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.MovingWindowOffset.y
+    end
+
+    GImRiceUI.WasLeftMouseDown = left_mousedown
 
     RenderWindow(window)
+
+    return true
 end
 
 local function NewFrame()
@@ -155,14 +184,18 @@ local function NewFrame()
     GImRiceUI.MousePos.x = GImRiceUI.MouseX()
     GImRiceUI.MousePos.y = GImRiceUI.MouseY()
 
-    if GImRiceUI.DraggingWindow and not GImRiceUI.IsMouseDown(MOUSE_LEFT) then
-        GImRiceUI.DraggingWindow = nil
+    if GImRiceUI.MovingWindow and not GImRiceUI.IsMouseDown(MOUSE_LEFT) then
+        GImRiceUI.MovingWindow = nil
     end
 
-    draw_list = {}
+    if GDummyPanel then
+        GDummyPanel:SetMouseInputEnabled(false)
+    end
+
+    ImDrawList = {}
 end
 
-// test here
+-- test here
 
 CreateNewContext()
 
@@ -172,9 +205,9 @@ hook.Add("PostRender", "ImRiceUI", function()
     NewFrame()
 
     Begin("Hello World!")
+    -- Begin("ImRiceUI Demo")
 
     ExecuteDrawCommands()
 
     cam.End2D()
 end)
-
