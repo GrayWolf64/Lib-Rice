@@ -1,5 +1,8 @@
 ImRiceUI = ImRiceUI or {}
 
+local remove_at = table.remove
+local insert_at = table.insert
+
 local GImRiceUI = nil
 
 local GDummyPanel = nil
@@ -46,6 +49,7 @@ local function CreateNewContext()
         Config = DefaultConfig,
         Initialized = true,
 
+        WindowStack = {},
         Windows = {},
 
         MousePos = {x = 0, y = 0},
@@ -53,6 +57,7 @@ local function CreateNewContext()
         MouseY = gui.MouseY,
         IsMouseDown = input.IsMouseDown,
         WasLeftMouseDown = false,
+        MousePressedThisFrame = false,
 
         MovingWindow = nil,
         MovingWindowOffset = {x = 0, y = 0},
@@ -76,16 +81,21 @@ local function CreateNewContext()
     return GImRiceUI
 end
 
+local function BringWindowToFront(window_id)
+    for i, id in ipairs(GImRiceUI.WindowStack) do
+        if id == window_id then
+            remove_at(GImRiceUI.WindowStack, i)
+            break
+        end
+    end
+
+    insert_at(GImRiceUI.WindowStack, window_id)
+end
+
 local ImDrawList = {}
 
 local function PushDrawCommand(draw_call, ...)
     ImDrawList[#ImDrawList + 1] = {draw_call = draw_call, args = {...}}
-end
-
-local function Render()
-    for _, cmd in ipairs(ImDrawList) do
-        cmd.draw_call(unpack(cmd.args))
-    end
 end
 
 local function CreateNewWindow(name)
@@ -135,6 +145,19 @@ local function RenderWindow(window)
                     GImRiceUI.Style.Colors.Text)
 end
 
+local function Render()
+    for _, window_id in ipairs(GImRiceUI.WindowStack) do
+        local window = GImRiceUI.Windows[window_id]
+        if window then
+            RenderWindow(window)
+        end
+    end
+
+    for _, cmd in ipairs(ImDrawList) do
+        cmd.draw_call(unpack(cmd.args))
+    end
+end
+
 local function RegionHit(x, y, w, h)
     if GImRiceUI.MousePos.x < x or
         GImRiceUI.MousePos.y < y or
@@ -167,11 +190,15 @@ local function Begin(name)
         GImRiceUI.HotID = nil
     end
 
+    if window_hit and GImRiceUI.MousePressedThisFrame then
+        GImRiceUI.ActiveID = window_id
+
+        BringWindowToFront(window_id)
+    end
+
     if title_hit and left_mousedown and
         (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window_id) and
         GImRiceUI.MousePressedThisFrame then
-
-        GImRiceUI.ActiveID = window_id
 
         GImRiceUI.MovingWindow = window_id
         GImRiceUI.MovingWindowOffset = {
@@ -185,7 +212,16 @@ local function Begin(name)
         window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
-    RenderWindow(window)
+    local in_stack = false
+    for _, id in ipairs(GImRiceUI.WindowStack) do
+        if id == window_id then
+            in_stack = true
+            break
+        end
+    end
+    if not in_stack then
+        table.insert(GImRiceUI.WindowStack, window_id)
+    end
 
     return true
 end
