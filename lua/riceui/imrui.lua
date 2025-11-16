@@ -74,7 +74,7 @@ local function CreateNewContext()
         GDummyPanel:SetTitle("")                GDummyPanel:SetSize(ScrW(), ScrH())
         GDummyPanel:ShowCloseButton(false)      GDummyPanel:SetDrawOnTop(true)
         GDummyPanel:SetDraggable(false)         GDummyPanel:SetSizable(false)
-        GDummyPanel:SetMouseInputEnabled(false) GDummyPanel:SetKeyboardInputEnabled(false)
+        GDummyPanel:SetMouseInputEnabled(false) -- GDummyPanel:SetKeyboardInputEnabled(false)
         GDummyPanel.Paint = function() end
     end)
 
@@ -96,6 +96,23 @@ local ImDrawList = {}
 
 local function PushDrawCommand(draw_call, ...)
     ImDrawList[#ImDrawList + 1] = {draw_call = draw_call, args = {...}}
+end
+
+local function AddRectFilled(color, x, y, w, h)
+    PushDrawCommand(surface.SetDrawColor, color)
+    PushDrawCommand(surface.DrawRect, x, y, w, h)
+end
+
+local function AddRectOutline(color, x, y, w, h, thickness)
+    PushDrawCommand(surface.SetDrawColor, color)
+    PushDrawCommand(surface.DrawOutlinedRect, x, y, w, h, thickness)
+end
+
+local function AddText(text, font, x, y, color)
+    PushDrawCommand(surface.SetTextPos, x, y)
+    PushDrawCommand(surface.SetFont, font)
+    PushDrawCommand(surface.SetDrawColor, color)
+    PushDrawCommand(surface.DrawText, text)
 end
 
 local function CreateNewWindow(name)
@@ -128,24 +145,24 @@ local function RenderWindow(window)
         title_color = GImRiceUI.Style.Colors.TitleBg
     end
 
-    PushDrawCommand(surface.SetDrawColor, GImRiceUI.Style.Colors.WindowBg)
-    PushDrawCommand(surface.DrawRect, window.Pos.x, window.Pos.y,
-                    window.Size.w, window.Size.h)
+    -- Window background
+    AddRectFilled(GImRiceUI.Style.Colors.WindowBg, window.Pos.x, window.Pos.y,
+        window.Size.w, window.Size.h)
 
-    PushDrawCommand(surface.SetDrawColor, GImRiceUI.Style.Colors.Border)
-    PushDrawCommand(surface.DrawOutlinedRect, window.Pos.x, window.Pos.y,
-                    window.Size.w, window.Size.h,
-                    GImRiceUI.Config.WindowBorderWidth)
+    -- RenderWindowOuterBorders
+    AddRectOutline(GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
+        window.Size.w, window.Size.h,GImRiceUI.Config.WindowBorderWidth)
 
-    PushDrawCommand(surface.SetDrawColor, title_color)
-    PushDrawCommand(surface.DrawRect, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
-                    window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
-                    window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
-                    GImRiceUI.Config.TitleHeight)
+    -- Title bar
+    AddRectFilled(title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
+        window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
+        window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
+        GImRiceUI.Config.TitleHeight)
 
-    PushDrawCommand(draw.DrawText, window.Name, GImRiceUI.Style.Fonts.Title,
-                    window.Pos.x + GImRiceUI.Config.TitleHeight / 4, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
-                    GImRiceUI.Style.Colors.Text)
+    -- Title text
+    AddText(window.Name, GImRiceUI.Style.Fonts.Title,
+        window.Pos.x + GImRiceUI.Config.TitleHeight / 4, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
+        GImRiceUI.Style.Colors.Text)
 end
 
 local function Render()
@@ -247,6 +264,7 @@ local function ProcessWindowInteractions()
         GDummyPanel:SetPos(topmost_hovered_window.Pos.x, topmost_hovered_window.Pos.y)
         GDummyPanel:SetSize(topmost_hovered_window.Size.w, topmost_hovered_window.Size.h)
         GDummyPanel:MakePopup()
+        GDummyPanel:SetKeyboardInputEnabled(false)
     end
 end
 
