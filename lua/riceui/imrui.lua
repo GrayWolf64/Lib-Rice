@@ -55,21 +55,21 @@ local function CreateNewContext()
         WasLeftMouseDown = false,
 
         MovingWindow = nil,
-        MovingWindowOffset = {x = 0, y = 0}
+        MovingWindowOffset = {x = 0, y = 0},
+
+        HotID = nil,
+        ActiveID = nil,
+
+        FrameCount = 0
     }
 
     hook.Add("PostGamemodeLoaded", "ImGDummyWindow", function()
         GDummyPanel = vgui.Create("DFrame")
-        GDummyPanel:SetSize(ScrW(), ScrH())
-        GDummyPanel:SetDrawOnTop(true)
-        GDummyPanel:SetTitle("")
-        GDummyPanel:ShowCloseButton(false)
-        GDummyPanel:SetDraggable(false)
-        GDummyPanel:SetSizable(false)
         GDummyPanel:SetScreenLock(true)
-        GDummyPanel:SetMouseInputEnabled(false)
-        GDummyPanel:SetKeyboardInputEnabled(false)
-
+        GDummyPanel:SetTitle("")                GDummyPanel:SetSize(ScrW(), ScrH())
+        GDummyPanel:ShowCloseButton(false)      GDummyPanel:SetDrawOnTop(true)
+        GDummyPanel:SetDraggable(false)         GDummyPanel:SetSizable(false)
+        GDummyPanel:SetMouseInputEnabled(false) GDummyPanel:SetKeyboardInputEnabled(false)
         GDummyPanel.Paint = function() end
     end)
 
@@ -82,7 +82,7 @@ local function PushDrawCommand(draw_call, ...)
     ImDrawList[#ImDrawList + 1] = {draw_call = draw_call, args = {...}}
 end
 
-local function ExecuteDrawCommands()
+local function Render()
     for _, cmd in ipairs(ImDrawList) do
         cmd.draw_call(unpack(cmd.args))
     end
@@ -108,6 +108,13 @@ end
 local function RenderWindow(window)
     if not window then return end
 
+    local title_color
+    if GImRiceUI.ActiveID == window.ID then
+        title_color = GImRiceUI.Style.Colors.TitleBgActive
+    else
+        title_color = GImRiceUI.Style.Colors.TitleBg
+    end
+
     PushDrawCommand(surface.SetDrawColor, GImRiceUI.Style.Colors.WindowBg)
     PushDrawCommand(surface.DrawRect, window.Pos.x, window.Pos.y,
                     window.Size.w, window.Size.h)
@@ -117,7 +124,7 @@ local function RenderWindow(window)
                     window.Size.w, window.Size.h,
                     GImRiceUI.Config.WindowBorderWidth)
 
-    PushDrawCommand(surface.SetDrawColor, GImRiceUI.Style.Colors.TitleBgActive)
+    PushDrawCommand(surface.SetDrawColor, title_color)
     PushDrawCommand(surface.DrawRect, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
                     window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
                     window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
@@ -148,16 +155,23 @@ local function Begin(name)
 
     local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
     local window_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
+    local title_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
 
     if GDummyPanel and window_hit then
         GDummyPanel:MakePopup()
     end
 
-    local title_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
+    if window_hit then
+        GImRiceUI.HotID = window_id
+    elseif GImRiceUI.HotID == window_id then
+        GImRiceUI.HotID = nil
+    end
 
     if title_hit and left_mousedown and
-        not GImRiceUI.MovingWindow and
-        not GImRiceUI.WasLeftMouseDown then
+        (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window_id) and
+        GImRiceUI.MousePressedThisFrame then
+
+        GImRiceUI.ActiveID = window_id
 
         GImRiceUI.MovingWindow = window_id
         GImRiceUI.MovingWindowOffset = {
@@ -171,8 +185,6 @@ local function Begin(name)
         window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
-    GImRiceUI.WasLeftMouseDown = left_mousedown
-
     RenderWindow(window)
 
     return true
@@ -183,8 +195,14 @@ local function NewFrame()
 
     GImRiceUI.MousePos.x = GImRiceUI.MouseX()
     GImRiceUI.MousePos.y = GImRiceUI.MouseY()
+    GImRiceUI.FrameCount = GImRiceUI.FrameCount + 1
 
-    if GImRiceUI.MovingWindow and not GImRiceUI.IsMouseDown(MOUSE_LEFT) then
+    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
+
+    GImRiceUI.MousePressedThisFrame = (left_mousedown and not GImRiceUI.WasLeftMouseDown)
+    GImRiceUI.WasLeftMouseDown = left_mousedown
+
+    if not left_mousedown and GImRiceUI.MovingWindow then
         GImRiceUI.MovingWindow = nil
     end
 
@@ -205,9 +223,9 @@ hook.Add("PostRender", "ImRiceUI", function()
     NewFrame()
 
     Begin("Hello World!")
-    -- Begin("ImRiceUI Demo")
+    Begin("ImRiceUI Demo")
 
-    ExecuteDrawCommands()
+    Render()
 
     cam.End2D()
 end)
