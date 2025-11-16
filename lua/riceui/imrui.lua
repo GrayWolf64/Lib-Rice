@@ -40,6 +40,12 @@ local DefaultConfig = {
     WindowBorderWidth = 1,
 }
 
+--- Index starts from 1
+local MouseButtonMap = {
+    [1] = MOUSE_LEFT,
+    [2] = MOUSE_RIGHT
+}
+
 local function CreateNewContext()
     GImRiceUI = {
         Style = {
@@ -52,12 +58,18 @@ local function CreateNewContext()
         WindowStack = {},
         Windows = {},
 
-        MousePos = {x = 0, y = 0},
-        MouseX = gui.MouseX,
-        MouseY = gui.MouseY,
-        IsMouseDown = input.IsMouseDown,
-        WasLeftMouseDown = false,
-        MousePressedThisFrame = false,
+        IO = {
+            MousePos = {x = 0, y = 0},
+            MouseX = gui.MouseX,
+            MouseY = gui.MouseY,
+            IsMouseDown = input.IsMouseDown,
+
+            MouseDown             = {false, false},
+            MouseClicked          = {false, false},
+            MouseReleased         = {false, false},
+            MouseDownDuration     = {-1, -1},
+            MouseDownDurationPrev = {-1, -1}
+        },
 
         MovingWindow = nil,
         MovingWindowOffset = {x = 0, y = 0},
@@ -179,10 +191,10 @@ local function Render()
 end
 
 local function IsMouseHoveringRect(x, y, w, h)
-    if GImRiceUI.MousePos.x < x or
-        GImRiceUI.MousePos.y < y or
-        GImRiceUI.MousePos.x >= x + w or
-        GImRiceUI.MousePos.y >= y + h then
+    if GImRiceUI.IO.MousePos.x < x or
+        GImRiceUI.IO.MousePos.y < y or
+        GImRiceUI.IO.MousePos.x >= x + w or
+        GImRiceUI.IO.MousePos.y >= y + h then
 
         return false
     end
@@ -207,31 +219,31 @@ local function Begin(name)
         insert_at(GImRiceUI.WindowStack, window_id)
     end
 
-    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
-
     local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
     local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
 
-    if window_hit and GImRiceUI.MousePressedThisFrame and GImRiceUI.HotID == window_id then
+    if window_hit and GImRiceUI.IO.MouseClicked[1] and GImRiceUI.HotID == window_id then
         GImRiceUI.ActiveID = window_id
         BringWindowToFront(window_id)
     end
 
+    local left_mousedown = GImRiceUI.IO.MouseDown[1]
+
     if title_hit and left_mousedown and
         (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window_id) and
-        GImRiceUI.MousePressedThisFrame and
+        GImRiceUI.IO.MouseClicked[1] and
         GImRiceUI.HotID == window_id then
 
         GImRiceUI.MovingWindow = window_id
         GImRiceUI.MovingWindowOffset = {
-            x = GImRiceUI.MousePos.x - window.Pos.x,
-            y = GImRiceUI.MousePos.y - window.Pos.y
+            x = GImRiceUI.IO.MousePos.x - window.Pos.x,
+            y = GImRiceUI.IO.MousePos.y - window.Pos.y
         }
     end
 
     if GImRiceUI.MovingWindow == window_id and left_mousedown then
-        window.Pos.x = GImRiceUI.MousePos.x - GImRiceUI.MovingWindowOffset.x
-        window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.MovingWindowOffset.y
+        window.Pos.x = GImRiceUI.IO.MousePos.x - GImRiceUI.MovingWindowOffset.x
+        window.Pos.y = GImRiceUI.IO.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
     return true
@@ -251,11 +263,13 @@ local function ProcessWindowInteractions()
             if window_hit and GImRiceUI.HotID == nil then
                 GImRiceUI.HotID = window_id
                 topmost_hovered_window = window
+
+                break
             end
         end
     end
 
-    if GImRiceUI.MousePressedThisFrame and not topmost_hovered_window then
+    if GImRiceUI.IO.MouseClicked[1] and not topmost_hovered_window then
         GImRiceUI.ActiveID = nil
     end
 
@@ -267,19 +281,44 @@ local function ProcessWindowInteractions()
     end
 end
 
+--- ImGui::UpdateMouseInputs()
+local function UpdateMouseInputs()
+    local io = GImRiceUI.IO -- pointer to IO field
+
+    io.MousePos.x = io.MouseX()
+    io.MousePos.y = io.MouseY()
+    GImRiceUI.FrameCount = GImRiceUI.FrameCount + 1
+
+    for i = 1, #MouseButtonMap do
+        local button_down = io.IsMouseDown(MouseButtonMap[i])
+
+        io.MouseClicked[i] = button_down and (io.MouseDownDuration[i] < 0)
+
+        io.MouseReleased[i] = not button_down and (io.MouseDownDuration[i] >= 0)
+
+        if button_down then
+            if io.MouseDownDuration[i] < 0 then
+                io.MouseDownDuration[i] = 0
+            else
+                io.MouseDownDuration[i] = io.MouseDownDuration[i] + 1
+            end
+        else
+
+            io.MouseDownDuration[i] = -1.0
+        end
+
+        io.MouseDownDurationPrev[i] = io.MouseDownDuration[i]
+
+        io.MouseDown[i] = button_down
+    end
+end
+
 local function NewFrame()
     if not GImRiceUI or not GImRiceUI.Initialized then return end
 
-    GImRiceUI.MousePos.x = GImRiceUI.MouseX()
-    GImRiceUI.MousePos.y = GImRiceUI.MouseY()
-    GImRiceUI.FrameCount = GImRiceUI.FrameCount + 1
+    UpdateMouseInputs()
 
-    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
-
-    GImRiceUI.MousePressedThisFrame = (left_mousedown and not GImRiceUI.WasLeftMouseDown)
-    GImRiceUI.WasLeftMouseDown = left_mousedown
-
-    if not left_mousedown and GImRiceUI.MovingWindow then
+    if not GImRiceUI.IO.MouseDown[1] and GImRiceUI.MovingWindow then
         GImRiceUI.MovingWindow = nil
     end
 
