@@ -209,6 +209,26 @@ local function Begin(name)
 
     local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
 
+    local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
+    local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
+
+    if window_hit and GImRiceUI.MousePressedThisFrame and GImRiceUI.HotID == window_id then
+        GImRiceUI.ActiveID = window_id
+        BringWindowToFront(window_id)
+    end
+
+    if title_hit and left_mousedown and
+        (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window_id) and
+        GImRiceUI.MousePressedThisFrame and
+        GImRiceUI.HotID == window_id then
+
+        GImRiceUI.MovingWindow = window_id
+        GImRiceUI.MovingWindowOffset = {
+            x = GImRiceUI.MousePos.x - window.Pos.x,
+            y = GImRiceUI.MousePos.y - window.Pos.y
+        }
+    end
+
     if GImRiceUI.MovingWindow == window_id and left_mousedown then
         window.Pos.x = GImRiceUI.MousePos.x - GImRiceUI.MovingWindowOffset.x
         window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.MovingWindowOffset.y
@@ -220,7 +240,6 @@ end
 local function ProcessWindowInteractions()
     GImRiceUI.HotID = nil
 
-    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
     local topmost_hovered_window = nil
 
     for i = #GImRiceUI.WindowStack, 1, -1 do
@@ -228,30 +247,10 @@ local function ProcessWindowInteractions()
         local window = GImRiceUI.Windows[window_id]
         if window then
             local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
-            local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
 
             if window_hit and GImRiceUI.HotID == nil then
                 GImRiceUI.HotID = window_id
                 topmost_hovered_window = window
-            end
-
-            if window_hit and GImRiceUI.MousePressedThisFrame and GImRiceUI.HotID == window_id then
-                GImRiceUI.ActiveID = window_id
-                BringWindowToFront(window_id)
-            end
-
-            if title_hit and left_mousedown and
-                (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window_id) and
-                GImRiceUI.MousePressedThisFrame and
-                GImRiceUI.HotID == window_id then
-
-                GImRiceUI.MovingWindow = window_id
-                GImRiceUI.MovingWindowOffset = {
-                    x = GImRiceUI.MousePos.x - window.Pos.x,
-                    y = GImRiceUI.MousePos.y - window.Pos.y
-                }
-
-                break
             end
         end
     end
