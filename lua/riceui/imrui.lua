@@ -28,7 +28,7 @@ local StyleColorsDark = {
 }
 
 local StyleFontsDefault = {
-    TitleFont = "BudgetLabel"
+    Title = "BudgetLabel"
 }
 
 local DefaultConfig = {
@@ -109,6 +109,9 @@ local function CreateNewWindow(name)
             Name = name,
             Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
             Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
+
+            Open = true,
+            Collapsed = false
         }
     end
 
@@ -116,7 +119,7 @@ local function CreateNewWindow(name)
 end
 
 local function RenderWindow(window)
-    if not window then return end
+    if not window or not window.Open then return end
 
     local title_color
     if GImRiceUI.ActiveID == window.ID then
@@ -140,7 +143,7 @@ local function RenderWindow(window)
                     window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
                     GImRiceUI.Config.TitleHeight)
 
-    PushDrawCommand(draw.DrawText, window.Name, GImRiceUI.Style.Fonts.TitleFont,
+    PushDrawCommand(draw.DrawText, window.Name, GImRiceUI.Style.Fonts.Title,
                     window.Pos.x + GImRiceUI.Config.TitleHeight / 4, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
                     GImRiceUI.Style.Colors.Text)
 end
@@ -234,6 +237,10 @@ local function ProcessWindowInteractions()
                 break
             end
         end
+    end
+
+    if GImRiceUI.MousePressedThisFrame and not topmost_hovered_window then
+        GImRiceUI.ActiveID = nil
     end
 
     if GDummyPanel and topmost_hovered_window then
