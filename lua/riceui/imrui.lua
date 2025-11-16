@@ -5,6 +5,7 @@ local insert_at = table.insert
 
 local GImRiceUI = nil
 
+--- Notable: VGUIMousePressAllowed?
 local GDummyPanel = nil
 
 local function ParseRGBA(str)
@@ -18,13 +19,17 @@ local function ImHash(name)
     return string.format("Im_%s", string.sub(util.SHA256(name), 1, 16))
 end
 
+--- ImGui::StyleColorsDark
 local StyleColorsDark = {
     Text          = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
     WindowBg      = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
     Border        = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
     TitleBg       = ParseRGBA("ImVec4(0.04f, 0.04f, 0.04f, 1.00f)"),
     TitleBgActive = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
-    MenuBarBg     = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)")
+    MenuBarBg     = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)"),
+    Button        = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.40f)"),
+    ButtonHovered = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 1.00f)"),
+    ButtonActive  = ParseRGBA("ImVec4(0.06f, 0.53f, 0.98f, 1.00f)")
 }
 
 local StyleFontsDefault = {
@@ -93,6 +98,18 @@ local function CreateNewContext()
     return GImRiceUI
 end
 
+local function IsMouseHoveringRect(x, y, w, h)
+    if GImRiceUI.IO.MousePos.x < x or
+        GImRiceUI.IO.MousePos.y < y or
+        GImRiceUI.IO.MousePos.x >= x + w or
+        GImRiceUI.IO.MousePos.y >= y + h then
+
+        return false
+    end
+
+    return true
+end
+
 local function BringWindowToFront(window_id)
     for i, id in ipairs(GImRiceUI.WindowStack) do
         if id == window_id then
@@ -126,6 +143,57 @@ local function AddText(text, font, x, y, color)
     PushDrawCommand(surface.SetDrawColor, color)
     PushDrawCommand(surface.DrawText, text)
 end
+
+local function AddLine(x1, y1, x2, y2, color)
+    PushDrawCommand(surface.SetDrawColor, color)
+    PushDrawCommand(surface.DrawLine, x1, y1, x2, y2)
+end
+
+-- local function ButtonBehavior(button_id, x, y, w, h)
+--     local io = GImRiceUI.IO
+--     local hovering = IsMouseHoveringRect(x, y, w, h)
+--     local pressed = false
+
+--     if hovering and GImRiceUI.HotID == nil then
+--         GImRiceUI.HotID = button_id
+--     end
+
+--     local is_hot = (GImRiceUI.HotID == button_id)
+
+--     if is_hot and io.MouseClicked[1] then
+--         pressed = true
+--         GImRiceUI.ActiveID = button_id
+--     end
+
+--     return pressed, hovering, is_hot
+-- end
+
+-- local function CloseButton(button_id, x, y, w, h)
+--     local pressed, hovered, is_hot = ButtonBehavior(button_id, x, y, w, h)
+
+--     local color
+--     if (hovered or is_hot) then
+--         color = GImRiceUI.Style.Colors.ButtonHovered
+--     else
+--         color = GImRiceUI.Style.Colors.Button
+--     end
+
+--     AddRectFilled(color, x, y, w, h)
+
+--     local center_x = x + w * 0.5
+--     local center_y = y + h * 0.5
+--     local cross_extent = w * 0.5 * 0.7071 - 1
+
+--     AddLine(center_x - cross_extent, center_y - cross_extent,
+--             center_x + cross_extent, center_y + cross_extent,
+--             GImRiceUI.Style.Colors.Text)
+
+--     AddLine(center_x + cross_extent, center_y - cross_extent,
+--             center_x - cross_extent, center_y + cross_extent,
+--             GImRiceUI.Style.Colors.Text)
+
+--     return pressed
+-- end
 
 local function CreateNewWindow(name)
     if not GImRiceUI then return nil end
@@ -175,6 +243,16 @@ local function RenderWindow(window)
     AddText(window.Name, GImRiceUI.Style.Fonts.Title,
         window.Pos.x + GImRiceUI.Config.TitleHeight / 4, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
         GImRiceUI.Style.Colors.Text)
+
+    -- Close button
+    -- local close_button_size = GImRiceUI.Config.TitleHeight - 8
+    -- local close_button_x = window.Pos.x + window.Size.w - close_button_size - 4
+    -- local close_button_y = window.Pos.y + 4
+    -- local close_button_id = window.ID .. "##CLOSE"
+
+    -- if CloseButton(close_button_id, close_button_x, close_button_y, close_button_size, close_button_size) then
+    --     window.Open = false
+    -- end
 end
 
 local function Render()
@@ -188,18 +266,6 @@ local function Render()
     for _, cmd in ipairs(ImDrawList) do
         cmd.draw_call(unpack(cmd.args))
     end
-end
-
-local function IsMouseHoveringRect(x, y, w, h)
-    if GImRiceUI.IO.MousePos.x < x or
-        GImRiceUI.IO.MousePos.y < y or
-        GImRiceUI.IO.MousePos.x >= x + w or
-        GImRiceUI.IO.MousePos.y >= y + h then
-
-        return false
-    end
-
-    return true
 end
 
 local function Begin(name)
@@ -317,6 +383,8 @@ local function NewFrame()
     if not GImRiceUI or not GImRiceUI.Initialized then return end
 
     UpdateMouseInputs()
+
+    GImRiceUI.HotID = nil
 
     if not GImRiceUI.IO.MouseDown[1] and GImRiceUI.MovingWindow then
         GImRiceUI.MovingWindow = nil
