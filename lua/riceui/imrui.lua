@@ -158,7 +158,7 @@ local function Render()
     end
 end
 
-local function RegionHit(x, y, w, h)
+local function IsMouseHoveringRect(x, y, w, h)
     if GImRiceUI.MousePos.x < x or
         GImRiceUI.MousePos.y < y or
         GImRiceUI.MousePos.x >= x + w or
@@ -176,42 +176,6 @@ local function Begin(name)
     local window_id = CreateNewWindow(name)
     local window = GImRiceUI.Windows[window_id]
 
-    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
-    local window_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
-    local title_hit = RegionHit(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
-
-    if GDummyPanel and window_hit then
-        GDummyPanel:MakePopup()
-    end
-
-    if window_hit then
-        GImRiceUI.HotID = window_id
-    elseif GImRiceUI.HotID == window_id then
-        GImRiceUI.HotID = nil
-    end
-
-    if window_hit and GImRiceUI.MousePressedThisFrame then
-        GImRiceUI.ActiveID = window_id
-
-        BringWindowToFront(window_id)
-    end
-
-    if title_hit and left_mousedown and
-        (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window_id) and
-        GImRiceUI.MousePressedThisFrame then
-
-        GImRiceUI.MovingWindow = window_id
-        GImRiceUI.MovingWindowOffset = {
-            x = GImRiceUI.MousePos.x - window.Pos.x,
-            y = GImRiceUI.MousePos.y - window.Pos.y
-        }
-    end
-
-    if GImRiceUI.MovingWindow == window_id and left_mousedown then
-        window.Pos.x = GImRiceUI.MousePos.x - GImRiceUI.MovingWindowOffset.x
-        window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.MovingWindowOffset.y
-    end
-
     local in_stack = false
     for _, id in ipairs(GImRiceUI.WindowStack) do
         if id == window_id then
@@ -220,10 +184,63 @@ local function Begin(name)
         end
     end
     if not in_stack then
-        table.insert(GImRiceUI.WindowStack, window_id)
+        insert_at(GImRiceUI.WindowStack, window_id)
+    end
+
+    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
+
+    if GImRiceUI.MovingWindow == window_id and left_mousedown then
+        window.Pos.x = GImRiceUI.MousePos.x - GImRiceUI.MovingWindowOffset.x
+        window.Pos.y = GImRiceUI.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
     return true
+end
+
+local function ProcessWindowInteractions()
+    GImRiceUI.HotID = nil
+
+    local left_mousedown = GImRiceUI.IsMouseDown(MOUSE_LEFT)
+    local topmost_hovered_window = nil
+
+    for i = #GImRiceUI.WindowStack, 1, -1 do
+        local window_id = GImRiceUI.WindowStack[i]
+        local window = GImRiceUI.Windows[window_id]
+        if window then
+            local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
+            local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
+
+            if window_hit and GImRiceUI.HotID == nil then
+                GImRiceUI.HotID = window_id
+                topmost_hovered_window = window
+            end
+
+            if window_hit and GImRiceUI.MousePressedThisFrame and GImRiceUI.HotID == window_id then
+                GImRiceUI.ActiveID = window_id
+                BringWindowToFront(window_id)
+            end
+
+            if title_hit and left_mousedown and
+                (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window_id) and
+                GImRiceUI.MousePressedThisFrame and
+                GImRiceUI.HotID == window_id then
+
+                GImRiceUI.MovingWindow = window_id
+                GImRiceUI.MovingWindowOffset = {
+                    x = GImRiceUI.MousePos.x - window.Pos.x,
+                    y = GImRiceUI.MousePos.y - window.Pos.y
+                }
+
+                break
+            end
+        end
+    end
+
+    if GDummyPanel and topmost_hovered_window then
+        GDummyPanel:SetPos(topmost_hovered_window.Pos.x, topmost_hovered_window.Pos.y)
+        GDummyPanel:SetSize(topmost_hovered_window.Size.w, topmost_hovered_window.Size.h)
+        GDummyPanel:MakePopup()
+    end
 end
 
 local function NewFrame()
@@ -245,6 +262,8 @@ local function NewFrame()
     if GDummyPanel then
         GDummyPanel:SetMouseInputEnabled(false)
     end
+
+    ProcessWindowInteractions()
 
     ImDrawList = {}
 end
