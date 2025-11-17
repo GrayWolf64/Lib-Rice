@@ -8,6 +8,10 @@ local GImRiceUI = nil
 --- Notable: VGUIMousePressAllowed?
 local GDummyPanel = nil
 
+--- If lower, the window title cross or arrow will look awful
+-- TODO: let client decide?
+RunConsoleCommand("mat_antialias", "8")
+
 local function ParseRGBA(str)
     local r, g, b, a = str:match("ImVec4%(([%d%.]+)f?, ([%d%.]+)f?, ([%d%.]+)f?, ([%d%.]+)f?%)")
     return {r = tonumber(r) * 255, g = tonumber(g) * 255, b = tonumber(b) * 255, a = tonumber(a) * 255}
@@ -110,27 +114,55 @@ local function PushDrawCommand(draw_list, draw_call, ...)
     draw_list[#draw_list + 1] = {draw_call = draw_call, args = {...}}
 end
 
-local function AddRectFilled(window, color, x, y, w, h)
-    PushDrawCommand(window.DrawList, surface.SetDrawColor, color)
-    PushDrawCommand(window.DrawList, surface.DrawRect, x, y, w, h)
+local function AddRectFilled(draw_list, color, x, y, w, h)
+    PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, surface.DrawRect, x, y, w, h)
 end
 
-local function AddRectOutline(window, color, x, y, w, h, thickness)
-    PushDrawCommand(window.DrawList, surface.SetDrawColor, color)
-    PushDrawCommand(window.DrawList, surface.DrawOutlinedRect, x, y, w, h, thickness)
+local function AddRectOutline(draw_list, color, x, y, w, h, thickness)
+    PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, surface.DrawOutlinedRect, x, y, w, h, thickness)
 end
 
-local function AddText(window, text, font, x, y, color)
-    PushDrawCommand(window.DrawList, surface.SetTextPos, x, y)
-    PushDrawCommand(window.DrawList, surface.SetFont, font)
-    PushDrawCommand(window.DrawList, surface.SetDrawColor, color)
-    PushDrawCommand(window.DrawList, surface.DrawText, text)
+local function AddText(draw_list, text, font, x, y, color)
+    PushDrawCommand(draw_list, surface.SetTextPos, x, y)
+    PushDrawCommand(draw_list, surface.SetFont, font)
+    PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, surface.DrawText, text)
 end
 
--- local function AddLine(window, x1, y1, x2, y2, color)
---     PushDrawCommand(window.DrawList, surface.SetDrawColor, color)
---     PushDrawCommand(window.DrawList, surface.DrawLine, x1, y1, x2, y2)
--- end
+local function AddLine(draw_list, x1, y1, x2, y2, color)
+    PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, surface.DrawLine, x1, y1, x2, y2)
+end
+
+--- ImGui::RenderArrow
+local function RenderArrow(draw_list, x, y, color, dir, scale)
+    local h = 14 * scale -- FontSize?
+    local r = h * 0.40 * scale
+
+    local center = {
+        x = x + h * 0.5,
+        y = y + h * 0.5 * scale
+    }
+
+    local a, b, c
+
+    if dir == "up" or dir == "down" then
+        if dir == "up" then r = -r end
+        a = {x = center.x + r *  0.000, y = center.y + r *  0.750}
+        b = {x = center.x + r * -0.866, y = center.y + r * -0.750}
+        c = {x = center.x + r *  0.866, y = center.y + r * -0.750}
+    elseif dir == "left" or dir == "right" then
+        if dir == "left" then r = -r end
+        a = {x = center.x + r *  0.750, y = center.y + r *  0.000}
+        b = {x = center.x + r * -0.750, y = center.y + r *  0.866}
+        c = {x = center.x + r * -0.750, y = center.y + r * -0.866}
+    end
+
+    PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, surface.DrawPoly, {a, b, c})
+end
 
 local function PushID(str_id)
     insert_at(GImRiceUI.IDStack, str_id)
@@ -224,18 +256,42 @@ local function CloseButton(window, x, y, w, h)
     local pressed, hovered = ButtonBehavior(button_id, x, y, w, h)
 
     if hovered then
-        AddRectFilled(window, GImRiceUI.Style.Colors.ButtonHovered, x, y, w, h)
+        AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.ButtonHovered, x, y, w, h)
     end
 
-    --- DrawLine draws lines of different thickness, why?
-    AddText(window, "X", "ImCloseButtonCross", x + w * 0.25, y, GImRiceUI.Style.Colors.Text)
+    --- DrawLine draws lines of different thickness, why? Antialiasing
+    -- AddText(window.DrawList, "X", "ImCloseButtonCross", x + w * 0.25, y, GImRiceUI.Style.Colors.Text)
+    local center_x = x + w * 0.5 - 1 -- tuned this 1
+    local center_y = y + h * 0.5 - 1
+    local cross_extent = w * 0.5 * 0.7071 - 1  -- √2/2
+
+    AddLine(window.DrawList, center_x - cross_extent, center_y - cross_extent,
+            center_x + cross_extent, center_y + cross_extent,
+            GImRiceUI.Style.Colors.Text)
+
+    AddLine(window.DrawList, center_x + cross_extent, center_y - cross_extent,
+            center_x - cross_extent, center_y + cross_extent,
+            GImRiceUI.Style.Colors.Text)
 
     return pressed
 end
 
--- local function CollapseButton(window, x, y, w, h)
+local function CollapseButton(window, x, y, w, h)
+    local button_id = GetID("##COLLAPSE")
+    local pressed, hovered = ButtonBehavior(button_id, x, y, w, h)
 
--- end
+    if hovered then
+        AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.ButtonHovered, x, y, w, h)
+    end
+
+    if window.Collapsed then
+        RenderArrow(window.DrawList, x + 1, y + 1, GImRiceUI.Style.Colors.Text, "right", 1)
+    else
+        RenderArrow(window.DrawList, x + 1, y + 1, GImRiceUI.Style.Colors.Text, "down", 1)
+    end
+
+    return pressed
+end
 
 local function CreateNewWindow(name)
     if not GImRiceUI then return nil end
@@ -271,32 +327,46 @@ local function RenderWindow(window)
         title_color = GImRiceUI.Style.Colors.TitleBg
     end
 
+    if window.Collapsed then
+        window.Size.h = GImRiceUI.Config.TitleHeight + GImRiceUI.Config.WindowBorderWidth * 2
+    else
+        window.Size.h = GImRiceUI.Config.WindowSize.h -- temporary
+    end
+
     -- Window background
-    AddRectFilled(window, GImRiceUI.Style.Colors.WindowBg, window.Pos.x, window.Pos.y,
+    AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.WindowBg, window.Pos.x, window.Pos.y,
         window.Size.w, window.Size.h)
 
     -- RenderWindowOuterBorders
-    AddRectOutline(window, GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
+    AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
         window.Size.w, window.Size.h,GImRiceUI.Config.WindowBorderWidth)
 
     -- Title bar
-    AddRectFilled(window, title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
+    AddRectFilled(window.DrawList, title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
         window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
         window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
         GImRiceUI.Config.TitleHeight)
 
     -- Title text
-    AddText(window, window.Name, GImRiceUI.Style.Fonts.Title,
-        window.Pos.x + GImRiceUI.Config.TitleHeight / 4, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
+    AddText(window.DrawList, window.Name, GImRiceUI.Style.Fonts.Title,
+        window.Pos.x + GImRiceUI.Config.TitleHeight, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
         GImRiceUI.Style.Colors.Text)
 
     -- Close button
-    local close_button_size = GImRiceUI.Config.TitleHeight - 8
+    local close_button_size = GImRiceUI.Config.TitleHeight * 0.75
     local close_button_x = window.Pos.x + window.Size.w - close_button_size - 4
     local close_button_y = window.Pos.y + 4
 
     if CloseButton(window, close_button_x, close_button_y, close_button_size, close_button_size) then
         window.Open = false
+    end
+
+    local collapse_button_size = GImRiceUI.Config.TitleHeight - 8
+    local collapse_button_x = window.Pos.x + 4
+    local collapse_button_y = window.Pos.y + 4
+
+    if CollapseButton(window, collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
+        window.Collapsed = not window.Collapsed
     end
 end
 
