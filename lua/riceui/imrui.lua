@@ -430,9 +430,6 @@ local function Begin(name)
         window.Pos.y = GImRiceUI.IO.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
-    -- PopID(window_id)
-    -- GImRiceUI.CurrentWindow = nil
-
     RenderWindow(window)
 
     return true
@@ -550,11 +547,13 @@ hook.Add("PostRender", "ImRiceUI", function()
 
     NewFrame()
 
-    Begin("Hello World!")
-    End()
+    if Begin("Hello World!") then
+        End()
+    end
 
-    Begin("ImRiceUI Demo")
-    End()
+    if Begin("ImRiceUI Demo") then
+        End()
+    end
 
     Render()
 
