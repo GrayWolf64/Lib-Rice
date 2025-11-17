@@ -233,6 +233,10 @@ local function CloseButton(window, x, y, w, h)
     return pressed
 end
 
+-- local function CollapseButton(window, x, y, w, h)
+
+-- end
+
 local function CreateNewWindow(name)
     if not GImRiceUI then return nil end
 
@@ -374,8 +378,6 @@ end
 local function FindHoveredWindow()
     GImRiceUI.HoveredWindow = nil
 
-    local topmost_hovered_window = nil
-
     for i = #GImRiceUI.WindowStack, 1, -1 do
         local window_id = GImRiceUI.WindowStack[i]
         local window = GImRiceUI.Windows[window_id]
@@ -385,21 +387,17 @@ local function FindHoveredWindow()
 
             if window_hit and GImRiceUI.HoveredWindow == nil then
                 GImRiceUI.HoveredWindow = window
-                topmost_hovered_window = window
 
                 break
             end
         end
     end
 
-    if GImRiceUI.IO.MouseClicked[1] and not topmost_hovered_window then
-        GImRiceUI.ActiveID = nil
-    end
-
-    -- HoveredWindow
-    if GDummyPanel and topmost_hovered_window then
-        GDummyPanel:SetPos(topmost_hovered_window.Pos.x, topmost_hovered_window.Pos.y)
-        GDummyPanel:SetSize(topmost_hovered_window.Size.w, topmost_hovered_window.Size.h)
+    --- Our window isn't actually a window. It doesn't "exist"
+    -- need to block input to other game ui like Derma panels
+    if GDummyPanel and GImRiceUI.HoveredWindow then
+        GDummyPanel:SetPos(GImRiceUI.HoveredWindow.Pos.x, GImRiceUI.HoveredWindow.Pos.y)
+        GDummyPanel:SetSize(GImRiceUI.HoveredWindow.Size.w, GImRiceUI.HoveredWindow.Size.h)
         GDummyPanel:MakePopup()
         GDummyPanel:SetKeyboardInputEnabled(false)
     end
