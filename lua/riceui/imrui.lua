@@ -43,6 +43,24 @@ local StyleFontsDefault = {
     Title = "BudgetLabel"
 }
 
+local FontDataDefault = {
+    font      = "Arial",
+    extended  = false,
+    size      = 13,
+    weight    = 500,
+    blursize  = 0,
+    scanlines = 0,
+    antialias = true,
+    underline = false,
+    italic    = false,
+    strikeout = false,
+    symbol    = false,
+    rotary    = false,
+    shadow    = false,
+    additive  = false,
+    outline   = false
+}
+
 local DefaultConfig = {
     WindowSize = {w = 500, h = 480},
     WindowPos = {x = 0, y = 0},
@@ -71,7 +89,6 @@ local function CreateNewContext()
         Windows = {},
 
         CurrentWindow = nil,
-        IDStack = {},
 
         IO = {
             MousePos = {x = 0, y = 0},
@@ -165,21 +182,29 @@ local function RenderArrow(draw_list, x, y, color, dir, scale)
 end
 
 local function PushID(str_id)
-    insert_at(GImRiceUI.IDStack, str_id)
+    local window = GImRiceUI.CurrentWindow
+    if not window then return end
+    insert_at(window.IDStack, str_id)
 
-    -- print("PushID: " .. str_id, "IDStack: " .. table.concat(GImRiceUI.IDStack, ">"))
+    -- print("PushID: " .. str_id, "IDStack: " .. table.concat(window.IDStack, ">"))
 end
 
 local function PopID()
-    if #GImRiceUI.IDStack > 0 then
-        remove_at(GImRiceUI.IDStack)
+    local window = GImRiceUI.CurrentWindow
+    if not window then return end
 
-        -- print("PopID: " .. pop, "IDStack: " .. table.concat(GImRiceUI.IDStack, ">"))
+    if #window.IDStack > 0 then
+        remove_at(window.IDStack)
+
+        -- print("PopID: " .. pop, "IDStack: " .. table.concat(window.IDStack, ">"))
     end
 end
 
 local function GetID(str_id)
-    local full_string = table.concat(GImRiceUI.IDStack, "##") .. "##" .. (str_id or "")
+    local window = GImRiceUI.CurrentWindow
+    if not window then return end
+
+    local full_string = table.concat(window.IDStack, "#") .. "#" .. (str_id or "")
 
     return ImHash(full_string)
 end
@@ -252,7 +277,7 @@ local function ButtonBehavior(button_id, x, y, w, h)
 end
 
 local function CloseButton(window, x, y, w, h)
-    local button_id = GetID("##CLOSE")
+    local button_id = GetID("#CLOSE")
     local pressed, hovered = ButtonBehavior(button_id, x, y, w, h)
 
     if hovered then
@@ -277,7 +302,7 @@ local function CloseButton(window, x, y, w, h)
 end
 
 local function CollapseButton(window, x, y, w, h)
-    local button_id = GetID("##COLLAPSE")
+    local button_id = GetID("#COLLAPSE")
     local pressed, hovered = ButtonBehavior(button_id, x, y, w, h)
 
     if hovered then
@@ -299,6 +324,7 @@ local function CreateNewWindow(name)
     local window_id = ImHash(name)
 
     if not GImRiceUI.Windows[window_id] then
+        --- struct IMGUI_API ImGuiWindow
         GImRiceUI.Windows[window_id] = {
             ID = window_id,
             Name = name,
@@ -308,7 +334,9 @@ local function CreateNewWindow(name)
             Open = true,
             Collapsed = false,
 
-            DrawList = {}
+            DrawList = {},
+
+            IDStack = {}
         }
     end
 
@@ -389,8 +417,9 @@ local function Begin(name)
 
     if not window or not window.Open then return false end
 
-    PushID(window_id)
     GImRiceUI.CurrentWindow = window
+    window.IDStack = {}
+    PushID(window_id)
 
     local in_stack = false
     for _, id in ipairs(GImRiceUI.WindowStack) do
