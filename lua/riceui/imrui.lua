@@ -25,16 +25,17 @@ end
 
 --- ImGui::StyleColorsDark
 local StyleColorsDark = {
-    Text          = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
-    WindowBg      = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
-    Border        = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
-    BorderShadow  = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.00f)"),
-    TitleBg       = ParseRGBA("ImVec4(0.04f, 0.04f, 0.04f, 1.00f)"),
-    TitleBgActive = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
-    MenuBarBg     = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)"),
-    Button        = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.40f)"),
-    ButtonHovered = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 1.00f)"),
-    ButtonActive  = ParseRGBA("ImVec4(0.06f, 0.53f, 0.98f, 1.00f)")
+    Text             = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
+    WindowBg         = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
+    Border           = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
+    BorderShadow     = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.00f)"),
+    TitleBg          = ParseRGBA("ImVec4(0.04f, 0.04f, 0.04f, 1.00f)"),
+    TitleBgActive    = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
+    TitleBgCollapsed = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.51f)"),
+    MenuBarBg        = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)"),
+    Button           = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.40f)"),
+    ButtonHovered    = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 1.00f)"),
+    ButtonActive     = ParseRGBA("ImVec4(0.06f, 0.53f, 0.98f, 1.00f)")
 }
 
 --- TODO: font subsystem later
@@ -388,7 +389,7 @@ local function RenderWindowDecorations(window)
     end
 
     if window.Collapsed then
-        AddRectFilled(window.DrawList, title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
+        AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.TitleBgCollapsed, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
             window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
             window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
             GImRiceUI.Config.TitleHeight - 2 * GImRiceUI.Config.WindowBorderWidth)
