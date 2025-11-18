@@ -28,6 +28,7 @@ local StyleColorsDark = {
     Text          = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
     WindowBg      = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
     Border        = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
+    BorderShadow  = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.00f)"),
     TitleBg       = ParseRGBA("ImVec4(0.04f, 0.04f, 0.04f, 1.00f)"),
     TitleBgActive = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
     MenuBarBg     = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)"),
@@ -60,6 +61,31 @@ local FontDataDefault = {
     additive  = false,
     outline   = false
 }
+
+--- Fonts created have a very long lifecycle, since can't be deleted
+-- ImFont {name = , data = }
+local GImFontAtlas = GImFontAtlas or {Fonts = {}}
+
+--- Add or get a font, always take its return val as fontname
+function GImFontAtlas:AddFont(font_name, font_data)
+    for i = #self.Fonts, 1, -1 do
+        local identical = self.Fonts[i].name
+
+        for key, _ in pairs(FontDataDefault) do
+            if self.Fonts[i].data[key] ~= font_data[key] then
+                identical = ""
+                break
+            end
+        end
+
+        if identical ~= "" then return identical end
+    end
+
+    self.Fonts[#self.Fonts + 1] = {name = font_name, data = font_data}
+    surface.CreateFont(font_name, font_data)
+
+    return font_name
+end
 
 local DefaultConfig = {
     WindowSize = {w = 500, h = 480},
@@ -115,7 +141,7 @@ local function CreateNewContext()
     }
 
     hook.Add("PostGamemodeLoaded", "ImGDummyWindow", function()
-        GDummyPanel = vgui.Create("DFrame")
+        GDummyPanel = GDummyPanel or vgui.Create("DFrame")
         GDummyPanel:SetScreenLock(true)
         GDummyPanel:SetTitle("")                GDummyPanel:SetSize(ScrW(), ScrH())
         GDummyPanel:ShowCloseButton(false)      GDummyPanel:SetDrawOnTop(true)
@@ -331,6 +357,8 @@ local function CreateNewWindow(name)
             Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
             Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
 
+            Active = false,
+
             Open = true,
             Collapsed = false,
 
@@ -341,6 +369,46 @@ local function CreateNewWindow(name)
     end
 
     return window_id
+end
+
+--- ImGui::RenderFrame, ImGui::RenderFrameBorder
+-- local function RenderFrame(draw_list, x, y, w, h)
+
+-- end
+
+--- ImGui::RenderMouseCursor
+
+--- ImGui::RenderWindowDecorations
+-- local function RenderWindowDecorations(window)
+--     if window.Collapsed then
+
+--     else
+
+--     end
+-- end
+
+--- ImGui::RenderWindowTitleBarContents
+local function RenderWindowTitleBarContents(window)
+    -- Collapse button
+    local collapse_button_size = GImRiceUI.Config.TitleHeight - 8
+    local collapse_button_x = window.Pos.x + 4
+    local collapse_button_y = window.Pos.y + 4
+    if CollapseButton(window, collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
+        window.Collapsed = not window.Collapsed
+    end
+
+    -- Close button
+    local close_button_size = GImRiceUI.Config.TitleHeight * 0.75
+    local close_button_x = window.Pos.x + window.Size.w - close_button_size - 4
+    local close_button_y = window.Pos.y + 4
+    if CloseButton(window, close_button_x, close_button_y, close_button_size, close_button_size) then
+        window.Open = false
+    end
+
+    -- Title text
+    AddText(window.DrawList, window.Name, GImRiceUI.Style.Fonts.Title,
+        window.Pos.x + GImRiceUI.Config.TitleHeight, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
+        GImRiceUI.Style.Colors.Text)
 end
 
 local function RenderWindow(window)
@@ -375,27 +443,7 @@ local function RenderWindow(window)
         window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
         GImRiceUI.Config.TitleHeight)
 
-    -- Title text
-    AddText(window.DrawList, window.Name, GImRiceUI.Style.Fonts.Title,
-        window.Pos.x + GImRiceUI.Config.TitleHeight, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
-        GImRiceUI.Style.Colors.Text)
-
-    -- Close button
-    local close_button_size = GImRiceUI.Config.TitleHeight * 0.75
-    local close_button_x = window.Pos.x + window.Size.w - close_button_size - 4
-    local close_button_y = window.Pos.y + 4
-
-    if CloseButton(window, close_button_x, close_button_y, close_button_size, close_button_size) then
-        window.Open = false
-    end
-
-    local collapse_button_size = GImRiceUI.Config.TitleHeight - 8
-    local collapse_button_x = window.Pos.x + 4
-    local collapse_button_y = window.Pos.y + 4
-
-    if CollapseButton(window, collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
-        window.Collapsed = not window.Collapsed
-    end
+    RenderWindowTitleBarContents(window)
 end
 
 local function Render()
@@ -433,6 +481,8 @@ local function Begin(name)
     if not in_stack then
         insert_at(GImRiceUI.WindowStack, window_id)
     end
+
+    window.Active = true
 
     local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
     local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
