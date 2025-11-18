@@ -379,13 +379,35 @@ end
 --- ImGui::RenderMouseCursor
 
 --- ImGui::RenderWindowDecorations
--- local function RenderWindowDecorations(window)
---     if window.Collapsed then
+local function RenderWindowDecorations(window)
+    local title_color
+    if GImRiceUI.ActiveID == window.ID then
+        title_color = GImRiceUI.Style.Colors.TitleBgActive
+    else
+        title_color = GImRiceUI.Style.Colors.TitleBg
+    end
 
---     else
-
---     end
--- end
+    if window.Collapsed then
+        AddRectFilled(window.DrawList, title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
+            window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
+            window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
+            GImRiceUI.Config.TitleHeight - 2 * GImRiceUI.Config.WindowBorderWidth)
+        AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
+            window.Size.w, GImRiceUI.Config.TitleHeight, GImRiceUI.Config.WindowBorderWidth)
+    else
+        AddRectFilled(window.DrawList, title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
+            window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
+            window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
+            GImRiceUI.Config.TitleHeight)
+        -- Window background
+        AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.WindowBg,
+            window.Pos.x, window.Pos.y + GImRiceUI.Config.TitleHeight,
+            window.Size.w, window.Size.h - GImRiceUI.Config.TitleHeight)
+        -- RenderWindowOuterBorders?
+        AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
+            window.Size.w, window.Size.h, GImRiceUI.Config.WindowBorderWidth)
+    end
+end
 
 --- ImGui::RenderWindowTitleBarContents
 local function RenderWindowTitleBarContents(window)
@@ -416,32 +438,7 @@ local function RenderWindow(window)
 
     window.DrawList = {}
 
-    local title_color
-    if GImRiceUI.ActiveID == window.ID then
-        title_color = GImRiceUI.Style.Colors.TitleBgActive
-    else
-        title_color = GImRiceUI.Style.Colors.TitleBg
-    end
-
-    if window.Collapsed then
-        window.Size.h = GImRiceUI.Config.TitleHeight + GImRiceUI.Config.WindowBorderWidth * 2
-    else
-        window.Size.h = GImRiceUI.Config.WindowSize.h -- temporary
-    end
-
-    -- Window background
-    AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.WindowBg, window.Pos.x, window.Pos.y,
-        window.Size.w, window.Size.h)
-
-    -- RenderWindowOuterBorders
-    AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
-        window.Size.w, window.Size.h,GImRiceUI.Config.WindowBorderWidth)
-
-    -- Title bar
-    AddRectFilled(window.DrawList, title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
-        window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
-        window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
-        GImRiceUI.Config.TitleHeight)
+    RenderWindowDecorations(window)
 
     RenderWindowTitleBarContents(window)
 end
