@@ -37,7 +37,7 @@ local StyleColorsDark = {
 }
 
 --- TODO: font subsystem later
-surface.CreateFont("ImCloseButtonCross", {font = "DefaultFixed", size = 18})
+-- surface.CreateFont("ImCloseButtonCross", {font = "DefaultFixed", size = 18})
 
 local StyleFontsDefault = {
     Title = "BudgetLabel"
@@ -418,7 +418,9 @@ local function Begin(name)
     if not window or not window.Open then return false end
 
     GImRiceUI.CurrentWindow = window
-    window.IDStack = {}
+    for i = #window.IDStack, 1, -1 do
+        window.IDStack[i] = nil
+    end
     PushID(window_id)
 
     local in_stack = false
