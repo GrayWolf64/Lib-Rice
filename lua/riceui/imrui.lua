@@ -433,16 +433,6 @@ local function RenderWindowTitleBarContents(window)
         GImRiceUI.Style.Colors.Text)
 end
 
-local function RenderWindow(window)
-    if not window or not window.Open then return end
-
-    window.DrawList = {}
-
-    RenderWindowDecorations(window)
-
-    RenderWindowTitleBarContents(window)
-end
-
 local function Render()
     for _, window_id in ipairs(GImRiceUI.WindowStack) do
         local window = GImRiceUI.Windows[window_id]
@@ -508,7 +498,11 @@ local function Begin(name)
         window.Pos.y = GImRiceUI.IO.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
-    RenderWindow(window)
+    window.DrawList = {}
+
+    RenderWindowDecorations(window)
+
+    RenderWindowTitleBarContents(window)
 
     return true
 end
