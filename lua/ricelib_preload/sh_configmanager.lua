@@ -205,7 +205,7 @@ function RiceLib.Config.RegisterConfigType(type, displayName, meta)
         MetaTable = meta or configMeta
     }
 
-    PrintTable(configTypes)
+    -- PrintTable(configTypes)
 end
 
 ---@class RiceLib_ConfigInfo
