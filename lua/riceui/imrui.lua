@@ -1,12 +1,52 @@
 ImRiceUI = ImRiceUI or {}
 
+local IsValid = IsValid
+
 local remove_at = table.remove
 local insert_at = table.insert
 
 local GImRiceUI = nil
 
 --- Notable: VGUIMousePressAllowed?
-local GDummyPanel = nil
+local GDummyPanel = GDummyPanel or nil
+
+local function SetupDummyPanel()
+    if IsValid(GDummyPanel) then return end
+
+    GDummyPanel = vgui.Create("DFrame")
+
+    GDummyPanel:SetSizable(false)
+    GDummyPanel:SetTitle("")
+    GDummyPanel:SetPaintShadow(false)
+    GDummyPanel:ShowCloseButton(false)
+    GDummyPanel:SetDrawOnTop(true)
+    GDummyPanel:SetDraggable(false)
+    GDummyPanel:SetMouseInputEnabled(false)
+    GDummyPanel:SetKeyboardInputEnabled(false)
+
+    GDummyPanel:SetVisible(false)
+
+    GDummyPanel.Paint = function(self, w, h)
+        surface.SetDrawColor(160, 32, 240)
+        surface.DrawOutlinedRect(0, 0, w + 4, h + 4, 4)
+    end
+end
+
+local function AttachDummyPanel(x, y, w, h)
+    if not GDummyPanel then return end
+
+    GDummyPanel:SetPos(x, y)
+    GDummyPanel:SetSize(w, h)
+    GDummyPanel:SetVisible(true)
+    GDummyPanel:MakePopup()
+    GDummyPanel:SetKeyboardInputEnabled(false)
+end
+
+local function DetachDummyPanel()
+    if not GDummyPanel then return end
+
+    GDummyPanel:SetVisible(false)
+end
 
 --- If lower, the window title cross or arrow will look awful
 -- TODO: let client decide?
@@ -112,9 +152,10 @@ local function CreateNewContext()
         Config = DefaultConfig,
         Initialized = true,
 
-        WindowStack = {},
+        WindowsFocusOrder = {}, -- ID
         Windows = {},
 
+        CurrentWindowStack = {}, -- ID
         CurrentWindow = nil,
 
         IO = {
@@ -142,13 +183,7 @@ local function CreateNewContext()
     }
 
     hook.Add("PostGamemodeLoaded", "ImGDummyWindow", function()
-        GDummyPanel = GDummyPanel or vgui.Create("DFrame")
-        GDummyPanel:SetScreenLock(true)
-        GDummyPanel:SetTitle("")                GDummyPanel:SetSize(ScrW(), ScrH())
-        GDummyPanel:ShowCloseButton(false)      GDummyPanel:SetDrawOnTop(true)
-        GDummyPanel:SetDraggable(false)         GDummyPanel:SetSizable(false)
-        GDummyPanel:SetMouseInputEnabled(false) -- GDummyPanel:SetKeyboardInputEnabled(false)
-        GDummyPanel.Paint = function() end
+        SetupDummyPanel()
     end)
 
     return GImRiceUI
@@ -248,15 +283,16 @@ local function IsMouseHoveringRect(x, y, w, h)
     return true
 end
 
+--- ImGui::FocusWindow
 local function FocusWindow(window_id)
-    for i, id in ipairs(GImRiceUI.WindowStack) do
+    for i, id in ipairs(GImRiceUI.WindowsFocusOrder) do
         if id == window_id then
-            remove_at(GImRiceUI.WindowStack, i)
+            remove_at(GImRiceUI.WindowsFocusOrder, i)
             break
         end
     end
 
-    insert_at(GImRiceUI.WindowStack, window_id)
+    insert_at(GImRiceUI.WindowsFocusOrder, window_id)
 end
 
 local function ItemHoverable(item_id, x, y, w, h)
@@ -365,8 +401,15 @@ local function CreateNewWindow(name)
 
             DrawList = {},
 
-            IDStack = {}
+            IDStack = {},
+
+            --- struct ImGuiWindowTempData
+            DC = {
+
+            }
         }
+
+        insert_at(GImRiceUI.WindowsFocusOrder, window_id)
     end
 
     return window_id
@@ -426,6 +469,8 @@ local function RenderWindowTitleBarContents(window)
     local close_button_y = window.Pos.y + 4
     if CloseButton(window, close_button_x, close_button_y, close_button_size, close_button_size) then
         window.Open = false
+
+        DetachDummyPanel()
     end
 
     -- Title text
@@ -435,7 +480,7 @@ local function RenderWindowTitleBarContents(window)
 end
 
 local function Render()
-    for _, window_id in ipairs(GImRiceUI.WindowStack) do
+    for _, window_id in ipairs(GImRiceUI.WindowsFocusOrder) do
         local window = GImRiceUI.Windows[window_id]
         if window and window.Open and window.DrawList then
             for _, cmd in ipairs(window.DrawList) do
@@ -446,34 +491,28 @@ local function Render()
 end
 
 local function Begin(name)
-    if name == nil or name == "" then return end
+    if name == nil or name == "" then
+        GImRiceUI.CurrentWindow = nil
+        return false
+    end
 
     local window_id = CreateNewWindow(name)
     local window = GImRiceUI.Windows[window_id]
 
-    if not window or not window.Open then return false end
-
     GImRiceUI.CurrentWindow = window
+
     for i = #window.IDStack, 1, -1 do
         window.IDStack[i] = nil
     end
     PushID(window_id)
 
-    local in_stack = false
-    for _, id in ipairs(GImRiceUI.WindowStack) do
-        if id == window_id then
-            in_stack = true
-            break
-        end
-    end
-    if not in_stack then
-        insert_at(GImRiceUI.WindowStack, window_id)
-    end
+    window.ParentWindow = GImRiceUI.CurrentWindow
+    insert_at(GImRiceUI.CurrentWindowStack, window_id)
 
     window.Active = true
 
     local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
-    local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
+    -- local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
 
     if window_hit and GImRiceUI.IO.MouseClicked[1] and GImRiceUI.HoveredWindow == window then
         GImRiceUI.ActiveID = window_id
@@ -482,7 +521,7 @@ local function Begin(name)
 
     local left_mousedown = GImRiceUI.IO.MouseDown[1]
 
-    if title_hit and left_mousedown and
+    if window_hit and left_mousedown and
         (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window) and
         GImRiceUI.IO.MouseClicked[1] and
         GImRiceUI.HoveredWindow == window then
@@ -499,27 +538,32 @@ local function Begin(name)
         window.Pos.y = GImRiceUI.IO.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
-    window.DrawList = {}
+    for i = #window.DrawList, 1, -1 do
+        window.DrawList[i] = nil
+    end
 
     RenderWindowDecorations(window)
 
     RenderWindowTitleBarContents(window)
 
-    return true
+    return not window.Collapsed
 end
 
 local function End()
-    if not GImRiceUI.CurrentWindow then return end
+    local window = GImRiceUI.CurrentWindow
+    if not window then return end
 
     PopID()
-    GImRiceUI.CurrentWindow = nil
+    remove_at(GImRiceUI.CurrentWindowStack)
+
+    GImRiceUI.CurrentWindow = window.ParentWindow
 end
 
 local function FindHoveredWindow()
     GImRiceUI.HoveredWindow = nil
 
-    for i = #GImRiceUI.WindowStack, 1, -1 do
-        local window_id = GImRiceUI.WindowStack[i]
+    for i = #GImRiceUI.WindowsFocusOrder, 1, -1 do
+        local window_id = GImRiceUI.WindowsFocusOrder[i]
         local window = GImRiceUI.Windows[window_id]
 
         if window and window.Open then
@@ -535,11 +579,13 @@ local function FindHoveredWindow()
 
     --- Our window isn't actually a window. It doesn't "exist"
     -- need to block input to other game ui like Derma panels
-    if GDummyPanel and GImRiceUI.HoveredWindow then
-        GDummyPanel:SetPos(GImRiceUI.HoveredWindow.Pos.x, GImRiceUI.HoveredWindow.Pos.y)
-        GDummyPanel:SetSize(GImRiceUI.HoveredWindow.Size.w, GImRiceUI.HoveredWindow.Size.h)
-        GDummyPanel:MakePopup()
-        GDummyPanel:SetKeyboardInputEnabled(false)
+    if GImRiceUI.HoveredWindow then
+        local dummy_height = GImRiceUI.HoveredWindow.Size.h
+        if GImRiceUI.HoveredWindow.Collapsed then
+            dummy_height = GImRiceUI.Config.TitleHeight
+        end
+        AttachDummyPanel(GImRiceUI.HoveredWindow.Pos.x, GImRiceUI.HoveredWindow.Pos.y,
+            GImRiceUI.HoveredWindow.Size.w, dummy_height)
     end
 end
 
@@ -565,7 +611,6 @@ local function UpdateMouseInputs()
                 io.MouseDownDuration[i] = io.MouseDownDuration[i] + 1
             end
         else
-
             io.MouseDownDuration[i] = -1.0
         end
 
@@ -578,13 +623,10 @@ end
 local function NewFrame()
     if not GImRiceUI or not GImRiceUI.Initialized then return end
 
-    for i = #GImRiceUI.WindowStack, 1, -1 do
-        local window_id = GImRiceUI.WindowStack[i]
-        local window = GImRiceUI.Windows[window_id]
-        if not window or not window.Open then
-            remove_at(GImRiceUI.WindowStack, i)
-        end
+    for i = #GImRiceUI.CurrentWindowStack, 1, -1 do
+        GImRiceUI.CurrentWindowStack[i] = nil
     end
+    GImRiceUI.CurrentWindow = nil
 
     UpdateMouseInputs()
 
@@ -593,19 +635,6 @@ local function NewFrame()
 
     if not GImRiceUI.IO.MouseDown[1] and GImRiceUI.MovingWindow then
         GImRiceUI.MovingWindow = nil
-    end
-
-    if GDummyPanel then
-        GDummyPanel:SetMouseInputEnabled(false)
-    end
-
-    for _, window in ipairs(GImRiceUI.Windows) do
-        if window and window.DrawList then
-            --- Don't leak my ram
-            for i = #window.DrawList, 1, -1 do
-                window.DrawList[i] = nil
-            end
-        end
     end
 
     FindHoveredWindow()
