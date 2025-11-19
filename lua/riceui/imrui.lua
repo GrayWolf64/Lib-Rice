@@ -27,8 +27,8 @@ local function SetupDummyPanel()
     GDummyPanel:SetVisible(false)
 
     GDummyPanel.Paint = function(self, w, h)
-        surface.SetDrawColor(160, 32, 240)
-        surface.DrawOutlinedRect(0, 0, w + 4, h + 4, 4)
+        -- surface.SetDrawColor(0, 255, 0)
+        -- surface.DrawOutlinedRect(0, 0, w, h, 4)
     end
 end
 
@@ -57,6 +57,7 @@ local function ParseRGBA(str)
     return {r = tonumber(r) * 255, g = tonumber(g) * 255, b = tonumber(b) * 255, a = tonumber(a) * 255}
 end
 
+--- TODO: use FNV1-32 instead
 local function ImHash(name)
     if not GImRiceUI then return end
 
@@ -79,8 +80,6 @@ local StyleColorsDark = {
 }
 
 --- TODO: font subsystem later
--- surface.CreateFont("ImCloseButtonCross", {font = "DefaultFixed", size = 18})
-
 local StyleFontsDefault = {
     Title = "BudgetLabel"
 }
@@ -283,8 +282,8 @@ local function IsMouseHoveringRect(x, y, w, h)
     return true
 end
 
---- ImGui::FocusWindow
-local function FocusWindow(window_id)
+--- ImGui::BringWindowToFocusFront
+local function BringWindowToFocusFront(window_id)
     for i, id in ipairs(GImRiceUI.WindowsFocusOrder) do
         if id == window_id then
             remove_at(GImRiceUI.WindowsFocusOrder, i)
@@ -392,7 +391,7 @@ local function CreateNewWindow(name)
             ID = window_id,
             Name = name,
             Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
-            Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
+            Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h}, -- Current size (==SizeFull or collapsed title bar size)
 
             Active = false,
 
@@ -403,9 +402,9 @@ local function CreateNewWindow(name)
 
             IDStack = {},
 
-            --- struct ImGuiWindowTempData
+            --- struct IMGUI_API ImGuiWindowTempData
             DC = {
-
+                CursorPos = {}
             }
         }
 
@@ -469,8 +468,6 @@ local function RenderWindowTitleBarContents(window)
     local close_button_y = window.Pos.y + 4
     if CloseButton(window, close_button_x, close_button_y, close_button_size, close_button_size) then
         window.Open = false
-
-        DetachDummyPanel()
     end
 
     -- Title text
@@ -506,22 +503,27 @@ local function Begin(name)
     end
     PushID(window_id)
 
-    window.ParentWindow = GImRiceUI.CurrentWindow
     insert_at(GImRiceUI.CurrentWindowStack, window_id)
 
     window.Active = true
 
+    if window.Collapsed then
+        window.Size.h = GImRiceUI.Config.TitleHeight
+    else
+        window.Size.h = GImRiceUI.Config.WindowSize.h
+    end
+
     local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
-    -- local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
+    local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
 
     if window_hit and GImRiceUI.IO.MouseClicked[1] and GImRiceUI.HoveredWindow == window then
         GImRiceUI.ActiveID = window_id
-        FocusWindow(window_id)
+        BringWindowToFocusFront(window_id)
     end
 
     local left_mousedown = GImRiceUI.IO.MouseDown[1]
 
-    if window_hit and left_mousedown and
+    if title_hit and left_mousedown and
         (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window) and
         GImRiceUI.IO.MouseClicked[1] and
         GImRiceUI.HoveredWindow == window then
@@ -556,20 +558,24 @@ local function End()
     PopID()
     remove_at(GImRiceUI.CurrentWindowStack)
 
-    GImRiceUI.CurrentWindow = window.ParentWindow
+    GImRiceUI.CurrentWindow = GImRiceUI.CurrentWindowStack[#GImRiceUI.CurrentWindowStack]
 end
 
 local function FindHoveredWindow()
     GImRiceUI.HoveredWindow = nil
+
+    local x, y, w, h
 
     for i = #GImRiceUI.WindowsFocusOrder, 1, -1 do
         local window_id = GImRiceUI.WindowsFocusOrder[i]
         local window = GImRiceUI.Windows[window_id]
 
         if window and window.Open then
-            local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
+            x, y, w, h = window.Pos.x, window.Pos.y, window.Size.w, window.Size.h
 
-            if window_hit and GImRiceUI.HoveredWindow == nil then
+            local hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
+
+            if hit and GImRiceUI.HoveredWindow == nil then
                 GImRiceUI.HoveredWindow = window
 
                 break
@@ -578,14 +584,15 @@ local function FindHoveredWindow()
     end
 
     --- Our window isn't actually a window. It doesn't "exist"
-    -- need to block input to other game ui like Derma panels
+    -- need to block input to other game ui like Derma panels, and prevent render artifacts
     if GImRiceUI.HoveredWindow then
-        local dummy_height = GImRiceUI.HoveredWindow.Size.h
-        if GImRiceUI.HoveredWindow.Collapsed then
-            dummy_height = GImRiceUI.Config.TitleHeight
+        AttachDummyPanel(0, 0, ScrW(), ScrH())
+    else
+        if x and y and w and h then
+            AttachDummyPanel(x, y, w, h)
+        else
+            DetachDummyPanel()
         end
-        AttachDummyPanel(GImRiceUI.HoveredWindow.Pos.x, GImRiceUI.HoveredWindow.Pos.y,
-            GImRiceUI.HoveredWindow.Size.w, dummy_height)
     end
 end
 
