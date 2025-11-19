@@ -443,25 +443,29 @@ local function RenderWindowDecorations(window)
         title_color = GImRiceUI.Style.Colors.TitleBg
     end
 
+    local border_width = GImRiceUI.Config.WindowBorderWidth
+
     if window.Collapsed then
-        AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.TitleBgCollapsed, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
-            window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
-            window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
-            GImRiceUI.Config.TitleHeight - 2 * GImRiceUI.Config.WindowBorderWidth)
-        AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
-            window.Size.w, GImRiceUI.Config.TitleHeight, GImRiceUI.Config.WindowBorderWidth)
+        AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.TitleBgCollapsed,
+            window.Pos.x + border_width, window.Pos.y + border_width,
+            window.Size.w - 2 * border_width,
+            GImRiceUI.Config.TitleHeight - 2 * border_width)
+        AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border,
+            window.Pos.x, window.Pos.y,
+            window.Size.w, GImRiceUI.Config.TitleHeight, border_width)
     else
-        AddRectFilled(window.DrawList, title_color, window.Pos.x + GImRiceUI.Config.WindowBorderWidth,
-            window.Pos.y + GImRiceUI.Config.WindowBorderWidth,
-            window.Size.w - 2 * GImRiceUI.Config.WindowBorderWidth,
+        AddRectFilled(window.DrawList, title_color,
+            window.Pos.x + border_width, window.Pos.y + border_width,
+            window.Size.w - 2 * border_width,
             GImRiceUI.Config.TitleHeight)
         -- Window background
         AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.WindowBg,
-            window.Pos.x, window.Pos.y + GImRiceUI.Config.TitleHeight,
-            window.Size.w, window.Size.h - GImRiceUI.Config.TitleHeight)
+            window.Pos.x + border_width, window.Pos.y + GImRiceUI.Config.TitleHeight + border_width,
+            window.Size.w - 2 * border_width, window.Size.h - GImRiceUI.Config.TitleHeight - border_width)
         -- RenderWindowOuterBorders?
-        AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border, window.Pos.x, window.Pos.y,
-            window.Size.w, window.Size.h, GImRiceUI.Config.WindowBorderWidth)
+        AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border,
+            window.Pos.x, window.Pos.y,
+            window.Size.w, window.Size.h, border_width)
     end
 end
 
