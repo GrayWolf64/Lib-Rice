@@ -155,6 +155,7 @@ local MouseButtonMap = {
     [2] = MOUSE_RIGHT
 }
 
+--- struct ImGuiContext
 local function CreateNewContext()
     GImRiceUI = {
         Style = {
@@ -184,7 +185,7 @@ local function CreateNewContext()
         },
 
         MovingWindow = nil,
-        MovingWindowOffset = {x = 0, y = 0},
+        ActiveIDClickOffset = {x = 0, y = 0},
 
         HoveredWindow = nil,
         ActiveID = nil,
@@ -504,6 +505,39 @@ local function Render()
     end
 end
 
+--- void ImGui::StartMouseMovingWindow
+local function StartMouseMovingWindow(window)
+    GImRiceUI.ActiveIDClickOffset = {
+        x = GImRiceUI.IO.MousePos.x - window.Pos.x,
+        y = GImRiceUI.IO.MousePos.y - window.Pos.y
+    }
+
+    GImRiceUI.MovingWindow = window
+end
+
+--- void ImGui::UpdateMouseMovingWindowNewFrame
+local function UpdateMouseMovingWindowNewFrame()
+    local window = GImRiceUI.MovingWindow
+    if not window then return end
+
+    window.Pos.x = GImRiceUI.IO.MousePos.x - GImRiceUI.ActiveIDClickOffset.x
+    window.Pos.y = GImRiceUI.IO.MousePos.y - GImRiceUI.ActiveIDClickOffset.y
+end
+
+--- void ImGui::UpdateMouseMovingWindowEndFrame()
+local function UpdateMouseMovingWindowEndFrame()
+    local hovered_window = GImRiceUI.HoveredWindow
+
+    if GImRiceUI.IO.MouseClicked[1] then
+        if hovered_window then
+            StartMouseMovingWindow(hovered_window)
+        else
+            -- TODO: FocusWindow(NULL)
+            GImRiceUI.ActiveID = nil
+        end
+    end
+end
+
 local function Begin(name)
     if name == nil or name == "" then
         GImRiceUI.CurrentWindow = nil
@@ -531,30 +565,10 @@ local function Begin(name)
     end
 
     local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
-    local title_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, GImRiceUI.Config.TitleHeight)
 
     if window_hit and GImRiceUI.IO.MouseClicked[1] and GImRiceUI.HoveredWindow == window then
         GImRiceUI.ActiveID = window_id
         BringWindowToFocusFront(window_id)
-    end
-
-    local left_mousedown = GImRiceUI.IO.MouseDown[1]
-
-    if title_hit and left_mousedown and
-        (GImRiceUI.MovingWindow == nil or GImRiceUI.MovingWindow == window) and
-        GImRiceUI.IO.MouseClicked[1] and
-        GImRiceUI.HoveredWindow == window then
-
-        GImRiceUI.MovingWindow = window
-        GImRiceUI.MovingWindowOffset = {
-            x = GImRiceUI.IO.MousePos.x - window.Pos.x,
-            y = GImRiceUI.IO.MousePos.y - window.Pos.y
-        }
-    end
-
-    if GImRiceUI.MovingWindow == window and left_mousedown then
-        window.Pos.x = GImRiceUI.IO.MousePos.x - GImRiceUI.MovingWindowOffset.x
-        window.Pos.y = GImRiceUI.IO.MousePos.y - GImRiceUI.MovingWindowOffset.y
     end
 
     for i = #window.DrawList, 1, -1 do
@@ -662,6 +676,13 @@ local function NewFrame()
     end
 
     FindHoveredWindow()
+
+    UpdateMouseMovingWindowNewFrame()
+end
+
+--- TODO: FrameCountEnded
+local function EndFrame()
+    UpdateMouseMovingWindowEndFrame()
 end
 
 -- test here
@@ -680,6 +701,8 @@ hook.Add("PostRender", "ImRiceUI", function()
     if Begin("ImRiceUI Demo") then
         End()
     end
+
+    EndFrame()
 
     Render()
 
