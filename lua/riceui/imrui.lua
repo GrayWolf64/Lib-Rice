@@ -219,7 +219,7 @@ end
 local function AddText(draw_list, text, font, x, y, color)
     PushDrawCommand(draw_list, surface.SetTextPos, x, y)
     PushDrawCommand(draw_list, surface.SetFont, font)
-    PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, surface.SetTextColor, color)
     PushDrawCommand(draw_list, surface.DrawText, text)
 end
 
@@ -253,6 +253,7 @@ local function RenderArrow(draw_list, x, y, color, dir, scale)
     end
 
     PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, draw.NoTexture)
     PushDrawCommand(draw_list, surface.DrawPoly, {a, b, c})
 end
 
@@ -342,12 +343,13 @@ local function ButtonBehavior(button_id, x, y, w, h)
 
     if hovered and io.MouseClicked[1] then
         pressed = true
-        GImRiceUI.ActiveID = button_id
+        GImRiceUI.ActiveID = GImRiceUI.CurrentWindow.ID
     end
 
-    if GImRiceUI.ActiveID == button_id and io.MouseReleased[1] then
-        GImRiceUI.ActiveID = nil
-    end
+    -- FIXME: Is this correct? ActiveIDWindow or ActiveID?
+    -- if GImRiceUI.ActiveID == button_id and io.MouseReleased[1] then
+    --     GImRiceUI.ActiveID = nil
+    -- end
 
     return pressed, hovered
 end
