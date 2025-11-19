@@ -57,11 +57,24 @@ local function ParseRGBA(str)
     return {r = tonumber(r) * 255, g = tonumber(g) * 255, b = tonumber(b) * 255, a = tonumber(a) * 255}
 end
 
---- TODO: use FNV1-32 instead
-local function ImHash(name)
+--- Use FNV1a, as one ImGui FIXME suggested
+local str_byte, bit_bxor, bit_band = string.byte, bit.bxor, bit.band
+local function ImHashStr(str)
     if not GImRiceUI then return end
 
-    return string.format("Im_%s", string.sub(util.SHA256(name), 1, 16))
+    local FNV_OFFSET_BASIS = 0x811C9DC5
+    local FNV_PRIME = 0x01000193
+
+    local hash = FNV_OFFSET_BASIS
+
+    local byte
+    for i = 1, #str do
+        byte = str_byte(str, i)
+        hash = bit_bxor(hash, byte)
+        hash = bit_band(hash * FNV_PRIME, 0xFFFFFFFF)
+    end
+
+    return string.format("Im_%d", hash)
 end
 
 --- ImGui::StyleColorsDark
@@ -267,7 +280,7 @@ local function GetID(str_id)
 
     local full_string = table.concat(window.IDStack, "#") .. "#" .. (str_id or "")
 
-    return ImHash(full_string)
+    return ImHashStr(full_string)
 end
 
 local function IsMouseHoveringRect(x, y, w, h)
@@ -383,7 +396,7 @@ end
 local function CreateNewWindow(name)
     if not GImRiceUI then return nil end
 
-    local window_id = ImHash(name)
+    local window_id = ImHashStr(name)
 
     if not GImRiceUI.Windows[window_id] then
         --- struct IMGUI_API ImGuiWindow
