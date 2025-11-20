@@ -354,9 +354,9 @@ local function ButtonBehavior(button_id, x, y, w, h)
     return pressed, hovered
 end
 
-local function CloseButton(window, x, y, w, h)
-    local button_id = GetID("#CLOSE")
-    local pressed, hovered = ButtonBehavior(button_id, x, y, w, h)
+local function CloseButton(id, x, y, w, h)
+    local window = GImRiceUI.CurrentWindow
+    local pressed, hovered = ButtonBehavior(id, x, y, w, h)
 
     if hovered then
         AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.ButtonHovered, x, y, w, h)
@@ -379,9 +379,9 @@ local function CloseButton(window, x, y, w, h)
     return pressed
 end
 
-local function CollapseButton(window, x, y, w, h)
-    local button_id = GetID("#COLLAPSE")
-    local pressed, hovered = ButtonBehavior(button_id, x, y, w, h)
+local function CollapseButton(id, x, y, w, h)
+    local window = GImRiceUI.CurrentWindow
+    local pressed, hovered = ButtonBehavior(id, x, y, w, h)
 
     if hovered then
         AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.ButtonHovered, x, y, w, h)
@@ -478,7 +478,7 @@ local function RenderWindowTitleBarContents(window)
     local collapse_button_size = GImRiceUI.Config.TitleHeight - 8
     local collapse_button_x = window.Pos.x + 4
     local collapse_button_y = window.Pos.y + 4
-    if CollapseButton(window, collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
+    if CollapseButton(GetID("#COLLAPSE"), collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
         window.Collapsed = not window.Collapsed
     end
 
@@ -486,7 +486,7 @@ local function RenderWindowTitleBarContents(window)
     local close_button_size = GImRiceUI.Config.TitleHeight * 0.75
     local close_button_x = window.Pos.x + window.Size.w - close_button_size - 4
     local close_button_y = window.Pos.y + 4
-    if CloseButton(window, close_button_x, close_button_y, close_button_size, close_button_size) then
+    if CloseButton(GetID("#CLOSE"), close_button_x, close_button_y, close_button_size, close_button_size) then
         window.Open = false
     end
 
