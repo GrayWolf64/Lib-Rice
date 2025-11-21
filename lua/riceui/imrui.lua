@@ -11,6 +11,8 @@ local pairs  = pairs
 local ScrW = ScrW
 local ScrH = ScrH
 
+local INF = math.huge
+
 local GImRiceUI = nil
 
 local ImDir_Left  = 0
@@ -480,8 +482,8 @@ local function UpdateWindowManualResize(window)
 
         if held then
             -- TODO: simplify, extract into funcs above
-            local min_size = window.SizeMin or { w = 60, h = 50 }
-            local max_size = window.SizeMax or { w = math.huge, h = math.huge }
+            local min_size = window.SizeMin or {w = 60, h = 50}
+            local max_size = window.SizeMax or {w = INF, h = INF}
 
             local clamp_rect = {
                 Min = {x = window.Pos.x + min_size.w, y = window.Pos.y + min_size.h},
@@ -489,13 +491,13 @@ local function UpdateWindowManualResize(window)
             }
 
             local clamp_min = {
-                x = (corner_pos.x == 1.0) and clamp_rect.Min.x or -math.huge,
-                y = (corner_pos.y == 1.0) and clamp_rect.Min.y or -math.huge
+                x = (corner_pos.x == 1.0) and clamp_rect.Min.x or -INF,
+                y = (corner_pos.y == 1.0) and clamp_rect.Min.y or -INF
             }
 
             local clamp_max = {
-                x = (corner_pos.x == 0.0) and clamp_rect.Max.x or math.huge,
-                y = (corner_pos.y == 0.0) and clamp_rect.Max.y or math.huge
+                x = (corner_pos.x == 0.0) and clamp_rect.Max.x or INF,
+                y = (corner_pos.y == 0.0) and clamp_rect.Max.y or INF
             }
 
             local corner_target = {
@@ -579,7 +581,7 @@ local function CloseButton(id, x, y, w, h)
     -- AddText(window.DrawList, "X", "ImCloseButtonCross", x + w * 0.25, y, GImRiceUI.Style.Colors.Text)
     local center_x = x + w * 0.5 - 1 -- tuned this 1
     local center_y = y + h * 0.5 - 1
-    local cross_extent = w * 0.5 * 0.7071 - 1  -- √2/2
+    local cross_extent = w * 0.5 * 0.7071 - 1
 
     AddLine(window.DrawList, center_x - cross_extent, center_y - cross_extent,
             center_x + cross_extent, center_y + cross_extent,
