@@ -7,6 +7,11 @@ local insert_at = table.insert
 
 local GImRiceUI = nil
 
+local ImDir_Left  = 0
+local ImDir_Right = 1
+local ImDir_Up    = 2
+local ImDir_Down  = 3
+
 --- Notable: VGUIMousePressAllowed?
 local GDummyPanel = GDummyPanel or nil
 
@@ -33,7 +38,7 @@ local function SetupDummyPanel()
 end
 
 local function AttachDummyPanel(x, y, w, h)
-    if not GDummyPanel then return end
+    if not IsValid(GDummyPanel) then return end
 
     GDummyPanel:SetPos(x, y)
     GDummyPanel:SetSize(w, h)
@@ -43,9 +48,15 @@ local function AttachDummyPanel(x, y, w, h)
 end
 
 local function DetachDummyPanel()
-    if not GDummyPanel then return end
+    if not IsValid(GDummyPanel) then return end
 
     GDummyPanel:SetVisible(false)
+end
+
+local function SetCursor(cursor_str)
+    if not IsValid(GDummyPanel) then return end
+
+    GDummyPanel:SetCursor(cursor_str)
 end
 
 --- If lower, the window title cross or arrow will look awful
@@ -58,6 +69,7 @@ local function ParseRGBA(str)
 end
 
 --- Use FNV1a, as one ImGui FIXME suggested
+-- TODO: fix other places where ids are treated as strings!!!
 local str_byte, bit_bxor, bit_band = string.byte, bit.bxor, bit.band
 local function ImHashStr(str)
     if not GImRiceUI then return end
@@ -74,22 +86,30 @@ local function ImHashStr(str)
         hash = bit_band(hash * FNV_PRIME, 0xFFFFFFFF)
     end
 
-    return string.format("Im_%d", hash)
+    -- FIXME: is this possible?
+    -- if hash == 0 then
+
+    -- end
+
+    return hash
 end
 
 --- ImGui::StyleColorsDark
 local StyleColorsDark = {
-    Text             = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
-    WindowBg         = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
-    Border           = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
-    BorderShadow     = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.00f)"),
-    TitleBg          = ParseRGBA("ImVec4(0.04f, 0.04f, 0.04f, 1.00f)"),
-    TitleBgActive    = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
-    TitleBgCollapsed = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.51f)"),
-    MenuBarBg        = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)"),
-    Button           = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.40f)"),
-    ButtonHovered    = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 1.00f)"),
-    ButtonActive     = ParseRGBA("ImVec4(0.06f, 0.53f, 0.98f, 1.00f)")
+    Text              = ParseRGBA("ImVec4(1.00f, 1.00f, 1.00f, 1.00f)"),
+    WindowBg          = ParseRGBA("ImVec4(0.06f, 0.06f, 0.06f, 0.94f)"),
+    Border            = ParseRGBA("ImVec4(0.43f, 0.43f, 0.50f, 0.50f)"),
+    BorderShadow      = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.00f)"),
+    TitleBg           = ParseRGBA("ImVec4(0.04f, 0.04f, 0.04f, 1.00f)"),
+    TitleBgActive     = ParseRGBA("ImVec4(0.16f, 0.29f, 0.48f, 1.00f)"),
+    TitleBgCollapsed  = ParseRGBA("ImVec4(0.00f, 0.00f, 0.00f, 0.51f)"),
+    MenuBarBg         = ParseRGBA("ImVec4(0.14f, 0.14f, 0.14f, 1.00f)"),
+    Button            = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.40f)"),
+    ButtonHovered     = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 1.00f)"),
+    ButtonActive      = ParseRGBA("ImVec4(0.06f, 0.53f, 0.98f, 1.00f)"),
+    ResizeGrip        = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.20f)"),
+    ResizeGripHovered = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.67f)"),
+    ResizeGripActive  = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.95f)")
 }
 
 --- TODO: font subsystem later
@@ -159,8 +179,10 @@ local MouseButtonMap = {
 local function CreateNewContext()
     GImRiceUI = {
         Style = {
+            FramePadding = {x = 4, y = 3},
+
             Colors = StyleColorsDark,
-            Fonts = StyleFontsDefault
+            Fonts = StyleFontsDefault,
         },
         Config = DefaultConfig,
         Initialized = true,
@@ -177,22 +199,32 @@ local function CreateNewContext()
             MouseY = gui.MouseY,
             IsMouseDown = input.IsMouseDown,
 
+            --- Just support 2 buttons now, L & R
             MouseDown             = {false, false},
             MouseClicked          = {false, false},
             MouseReleased         = {false, false},
             MouseDownDuration     = {-1, -1},
-            MouseDownDurationPrev = {-1, -1}
+            MouseDownDurationPrev = {-1, -1},
+
+            MouseClickedPos = {[1] = {}, [2] = {}}
         },
 
         MovingWindow = nil,
         ActiveIDClickOffset = {x = 0, y = 0},
 
         HoveredWindow = nil,
-        ActiveID = nil,
+
+        ActiveID = nil, -- Active widget
+        ActiveIDWindow = nil, -- Active window
+
+        ActiveIDIsJustActivated = nil,
 
         HoveredID = nil,
 
-        FrameCount = 0
+        FrameCount = 0,
+
+        FontSize = 18,
+        FontSizeBase = 18
     }
 
     hook.Add("PostGamemodeLoaded", "ImGDummyWindow", function()
@@ -200,6 +232,18 @@ local function CreateNewContext()
     end)
 
     return GImRiceUI
+end
+
+--- void ImGui::SetActiveID
+local function SetActiveID(id, window)
+    GImRiceUI.ActiveIDIsJustActivated = (GImRiceUI.ActiveID ~= id)
+
+    GImRiceUI.ActiveID = id
+    GImRiceUI.ActiveIDWindow = window
+end
+
+local function ClearActiveID()
+    SetActiveID(0, nil)
 end
 
 local function PushDrawCommand(draw_list, draw_call, ...)
@@ -228,6 +272,28 @@ local function AddLine(draw_list, x1, y1, x2, y2, color)
     PushDrawCommand(draw_list, surface.DrawLine, x1, y1, x2, y2)
 end
 
+local function AddTriangleFilled(draw_list, indices, color)
+    PushDrawCommand(draw_list, surface.SetDrawColor, color)
+    PushDrawCommand(draw_list, draw.NoTexture)
+    PushDrawCommand(draw_list, surface.DrawPoly, indices)
+end
+
+local function RenderTextClipped(draw_list, text, font, x, y, color, w, h)
+    surface.SetFont(font)
+    local text_width, text_height = surface.GetTextSize(text)
+    local need_clipping = text_width > w or text_height > h
+
+    if need_clipping then
+        PushDrawCommand(draw_list, render.SetScissorRect, x, y, x + w, y + h, true)
+    end
+
+    AddText(draw_list, text, font, x, y, color)
+
+    if need_clipping then
+        PushDrawCommand(draw_list, render.SetScissorRect, 0, 0, 0, 0, false)
+    end
+end
+
 --- ImGui::RenderArrow
 local function RenderArrow(draw_list, x, y, color, dir, scale)
     local h = 14 * scale -- FontSize?
@@ -240,29 +306,25 @@ local function RenderArrow(draw_list, x, y, color, dir, scale)
 
     local a, b, c
 
-    if dir == "up" or dir == "down" then
-        if dir == "up" then r = -r end
+    if dir == ImDir_Up or dir == ImDir_Down then
+        if dir == ImDir_Up then r = -r end
         a = {x = center.x + r *  0.000, y = center.y + r *  0.750}
         b = {x = center.x + r * -0.866, y = center.y + r * -0.750}
         c = {x = center.x + r *  0.866, y = center.y + r * -0.750}
-    elseif dir == "left" or dir == "right" then
-        if dir == "left" then r = -r end
+    elseif dir == ImDir_Left or dir == ImDir_Right then
+        if dir == ImDir_Left then r = -r end
         a = {x = center.x + r *  0.750, y = center.y + r *  0.000}
         b = {x = center.x + r * -0.750, y = center.y + r *  0.866}
         c = {x = center.x + r * -0.750, y = center.y + r * -0.866}
     end
 
-    PushDrawCommand(draw_list, surface.SetDrawColor, color)
-    PushDrawCommand(draw_list, draw.NoTexture)
-    PushDrawCommand(draw_list, surface.DrawPoly, {a, b, c})
+    AddTriangleFilled(draw_list, {a, b, c}, color)
 end
 
 local function PushID(str_id)
     local window = GImRiceUI.CurrentWindow
     if not window then return end
     insert_at(window.IDStack, str_id)
-
-    -- print("PushID: " .. str_id, "IDStack: " .. table.concat(window.IDStack, ">"))
 end
 
 local function PopID()
@@ -271,8 +333,6 @@ local function PopID()
 
     if #window.IDStack > 0 then
         remove_at(window.IDStack)
-
-        -- print("PopID: " .. pop, "IDStack: " .. table.concat(window.IDStack, ">"))
     end
 end
 
@@ -297,44 +357,32 @@ local function IsMouseHoveringRect(x, y, w, h)
     return true
 end
 
---- ImGui::BringWindowToFocusFront
-local function BringWindowToFocusFront(window_id)
-    for i, id in ipairs(GImRiceUI.WindowsFocusOrder) do
-        if id == window_id then
-            remove_at(GImRiceUI.WindowsFocusOrder, i)
-            break
-        end
-    end
+--- bool ImGui::ItemHoverable
+local function ItemHoverable(id, x, y, w, h)
+    local window = GImRiceUI.CurrentWindow
 
-    insert_at(GImRiceUI.WindowsFocusOrder, window_id)
-end
-
-local function ItemHoverable(item_id, x, y, w, h)
-    if not GImRiceUI.CurrentWindow or not GImRiceUI.CurrentWindow.Open then
+    if GImRiceUI.HoveredWindow ~= window then
         return false
     end
 
-    if GImRiceUI.HoveredWindow ~= GImRiceUI.CurrentWindow then
+    if not IsMouseHoveringRect(x, y, w, h) then
         return false
     end
 
-    local hovered = IsMouseHoveringRect(x, y, w, h)
-    if not hovered then
+    if GImRiceUI.HoveredID and GImRiceUI.HoveredID ~= id then
         return false
     end
 
-    if GImRiceUI.HoveredID == nil then
-        GImRiceUI.HoveredID = item_id
-
-        return true
+    if id ~= 0 then
+        GImRiceUI.HoveredID = id
     end
 
-    return false
+    return true
 end
 
 local function ButtonBehavior(button_id, x, y, w, h)
-    if GImRiceUI.CurrentWindow and not GImRiceUI.CurrentWindow.Open then
-        return false, false
+    if not GImRiceUI.CurrentWindow or not GImRiceUI.CurrentWindow.Open then
+        return false, false, false
     end
 
     local io = GImRiceUI.IO
@@ -343,7 +391,16 @@ local function ButtonBehavior(button_id, x, y, w, h)
 
     if hovered and io.MouseClicked[1] then
         pressed = true
-        GImRiceUI.ActiveID = GImRiceUI.CurrentWindow.ID
+        GImRiceUI.ActiveID = button_id
+    end
+
+    local held = false
+    if GImRiceUI.ActiveID == button_id then
+        if io.MouseDown[1] then
+            held = true
+        else
+            ClearActiveID()
+        end
     end
 
     -- FIXME: Is this correct? ActiveIDWindow or ActiveID?
@@ -351,7 +408,108 @@ local function ButtonBehavior(button_id, x, y, w, h)
     --     GImRiceUI.ActiveID = nil
     -- end
 
-    return pressed, hovered
+    return pressed, hovered, held
+end
+
+--- static ImVec2 CalcWindowSizeAfterConstraint
+-- local function CalcWindowSizeAfterConstraint(window, size_desired)
+
+-- end
+
+--- static void CalcResizePosSizeFromAnyCorner
+-- local function CalcResizePosSizeFromAnyCorner(window, corner_target)
+
+-- end
+
+--- static int ImGui::UpdateWindowManualResize
+-- TODO: now we only have one resize grip
+local function UpdateWindowManualResize(window)
+    PushID("#RESIZE")
+
+    local resize_rect = {
+        x = window.Pos.x + window.Size.w - GImRiceUI.FontSize * 1.3,
+        y = window.Pos.y + window.Size.h - GImRiceUI.FontSize * 1.3,
+        w = GImRiceUI.FontSize * 1.3,
+        h = GImRiceUI.FontSize * 1.3
+    }
+
+    local pressed, hovered, held = ButtonBehavior(GetID(0), resize_rect.x, resize_rect.y, resize_rect.w, resize_rect.h)
+
+    PopID()
+
+    if hovered or held then
+        GImRiceUI.MovingWindow = nil
+        SetCursor("sizenwse")
+    end
+
+    if held then
+        local corner_pos_n = {x = 1.0, y = 1.0}  -- Bottom-right corner
+        local inner_dir = {x = -1, y = -1}       -- Resize direction
+
+        -- TODO: simplify, extract into funcs above
+        local min_size = window.SizeMin or { w = 50, h = 50 }
+        local max_size = window.SizeMax or { w = math.huge, h = math.huge }
+
+        local clamp_rect = {
+            Min = { x = window.Pos.x + min_size.w, y = window.Pos.y + min_size.h },
+            Max = { x = window.Pos.x + max_size.w, y = window.Pos.y + max_size.h }
+        }
+
+        local clamp_min = {
+            x = (corner_pos_n.x == 1.0) and clamp_rect.Min.x or -math.huge,
+            y = (corner_pos_n.y == 1.0) and clamp_rect.Min.y or -math.huge
+        }
+
+        local clamp_max = {
+            x = (corner_pos_n.x == 0.0) and clamp_rect.Max.x or math.huge,
+            y = (corner_pos_n.y == 0.0) and clamp_rect.Max.y or math.huge
+        }
+
+        -- Calculate corner target based on mouse position and grip offset
+        local grip_hover_outer_size = GImRiceUI.FontSize * 1.3
+
+        local corner_target = {
+            x = GImRiceUI.IO.MousePos.x - (inner_dir.x * grip_hover_outer_size),
+            y = GImRiceUI.IO.MousePos.y - (inner_dir.y * grip_hover_outer_size)
+        }
+
+        corner_target.x = math.max(clamp_min.x, math.min(clamp_max.x, corner_target.x))
+        corner_target.y = math.max(clamp_min.y, math.min(clamp_max.y, corner_target.y))
+
+        local new_size = {
+            w = math.max(min_size.w, corner_target.x - window.Pos.x),
+            h = math.max(min_size.h, corner_target.y - window.Pos.y)
+        }
+
+        new_size.w = math.min(new_size.w, max_size.w)
+        new_size.h = math.min(new_size.h, max_size.h)
+
+        window.Size = {w = new_size.w, h = new_size.h}
+
+        window.SizeFull = {w = new_size.w, h = new_size.h}
+    end
+
+    local resize_grip_colors = {}
+    local grip_color = GImRiceUI.Style.Colors.ResizeGrip
+    if pressed or held then
+        grip_color = GImRiceUI.Style.Colors.ResizeGripActive
+    elseif hovered then
+        grip_color = GImRiceUI.Style.Colors.ResizeGripHovered
+    end
+    resize_grip_colors[1] = grip_color
+    return resize_grip_colors
+end
+
+--- ImGui::BringWindowToDisplayFront
+local function BringWindowToDisplayFront(window_id)
+    for i, id in ipairs(GImRiceUI.WindowsFocusOrder) do
+        if id == window_id then
+            remove_at(GImRiceUI.WindowsFocusOrder, i)
+            break
+        end
+    end
+
+    insert_at(GImRiceUI.WindowsFocusOrder, window_id)
 end
 
 local function CloseButton(id, x, y, w, h)
@@ -388,9 +546,9 @@ local function CollapseButton(id, x, y, w, h)
     end
 
     if window.Collapsed then
-        RenderArrow(window.DrawList, x + 1, y + 1, GImRiceUI.Style.Colors.Text, "right", 1)
+        RenderArrow(window.DrawList, x + 1, y + 1, GImRiceUI.Style.Colors.Text, ImDir_Right, 1)
     else
-        RenderArrow(window.DrawList, x + 1, y + 1, GImRiceUI.Style.Colors.Text, "down", 1)
+        RenderArrow(window.DrawList, x + 1, y + 1, GImRiceUI.Style.Colors.Text, ImDir_Down, 1)
     end
 
     return pressed
@@ -408,6 +566,7 @@ local function CreateNewWindow(name)
             Name = name,
             Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
             Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h}, -- Current size (==SizeFull or collapsed title bar size)
+            SizeFull = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
 
             Active = false,
 
@@ -438,9 +597,9 @@ end
 --- ImGui::RenderMouseCursor
 
 --- ImGui::RenderWindowDecorations
-local function RenderWindowDecorations(window)
+local function RenderWindowDecorations(window, titlebar_is_highlight, resize_grip_colors, resize_grip_draw_size)
     local title_color
-    if GImRiceUI.ActiveID == window.ID then
+    if GImRiceUI.ActiveID == window.ID then -- FIXME: use ActiveIDWindow!!!
         title_color = GImRiceUI.Style.Colors.TitleBgActive
     else
         title_color = GImRiceUI.Style.Colors.TitleBg
@@ -465,6 +624,15 @@ local function RenderWindowDecorations(window)
         AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.WindowBg,
             window.Pos.x + border_width, window.Pos.y + GImRiceUI.Config.TitleHeight + border_width,
             window.Size.w - 2 * border_width, window.Size.h - GImRiceUI.Config.TitleHeight - border_width)
+
+        -- Resize grip(s)
+        local grip_indices = {
+            {x = window.Pos.x + window.Size.w - border_width * 1.2, y = window.Pos.y + window.Size.h - border_width * 1.2 - resize_grip_draw_size},
+            {x = window.Pos.x + window.Size.w - border_width * 1.2, y = window.Pos.y + window.Size.h - border_width * 1.2},
+            {x = window.Pos.x + window.Size.w - border_width * 1.2 - resize_grip_draw_size, y = window.Pos.y + window.Size.h - border_width * 1.2}
+        }
+        AddTriangleFilled(window.DrawList, grip_indices, resize_grip_colors[1])
+
         -- RenderWindowOuterBorders?
         AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border,
             window.Pos.x, window.Pos.y,
@@ -476,7 +644,7 @@ end
 local function RenderWindowTitleBarContents(window)
     -- Collapse button
     local collapse_button_size = GImRiceUI.Config.TitleHeight - 8
-    local collapse_button_x = window.Pos.x + 4
+    local collapse_button_x = window.Pos.x + 4 -- TODO: use style padding val
     local collapse_button_y = window.Pos.y + 4
     if CollapseButton(GetID("#COLLAPSE"), collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
         window.Collapsed = not window.Collapsed
@@ -491,9 +659,11 @@ local function RenderWindowTitleBarContents(window)
     end
 
     -- Title text
-    AddText(window.DrawList, window.Name, GImRiceUI.Style.Fonts.Title,
+    local text_clip_width = window.Size.w - GImRiceUI.Config.TitleHeight - close_button_size - collapse_button_size
+    RenderTextClipped(window.DrawList, window.Name, GImRiceUI.Style.Fonts.Title,
         window.Pos.x + GImRiceUI.Config.TitleHeight, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
-        GImRiceUI.Style.Colors.Text)
+        GImRiceUI.Style.Colors.Text,
+        text_clip_width, window.Size.h)
 end
 
 local function Render()
@@ -510,8 +680,8 @@ end
 --- void ImGui::StartMouseMovingWindow
 local function StartMouseMovingWindow(window)
     GImRiceUI.ActiveIDClickOffset = {
-        x = GImRiceUI.IO.MousePos.x - window.Pos.x,
-        y = GImRiceUI.IO.MousePos.y - window.Pos.y
+        x = GImRiceUI.IO.MouseClickedPos[1].x - window.Pos.x,
+        y = GImRiceUI.IO.MouseClickedPos[1].y - window.Pos.y
     }
 
     GImRiceUI.MovingWindow = window
@@ -563,21 +733,25 @@ local function Begin(name)
     if window.Collapsed then
         window.Size.h = GImRiceUI.Config.TitleHeight
     else
-        window.Size.h = GImRiceUI.Config.WindowSize.h
+        window.Size.h = window.SizeFull.h
     end
 
     local window_hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
 
     if window_hit and GImRiceUI.IO.MouseClicked[1] and GImRiceUI.HoveredWindow == window then
         GImRiceUI.ActiveID = window_id
-        BringWindowToFocusFront(window_id)
+        BringWindowToDisplayFront(window_id)
     end
 
     for i = #window.DrawList, 1, -1 do
         window.DrawList[i] = nil
     end
 
-    RenderWindowDecorations(window)
+    local resize_grip_colors
+    if not window.Collapsed then
+        resize_grip_colors = UpdateWindowManualResize(window)
+    end
+    RenderWindowDecorations(window, nil, resize_grip_colors, GImRiceUI.FontSize * 1.2)
 
     RenderWindowTitleBarContents(window)
 
@@ -590,10 +764,11 @@ local function End()
 
     PopID()
     remove_at(GImRiceUI.CurrentWindowStack)
-
+    -- TODO: SetCurrentWindow
     GImRiceUI.CurrentWindow = GImRiceUI.CurrentWindowStack[#GImRiceUI.CurrentWindowStack]
 end
 
+--- FIXME: UpdateHoveredWindowAndCaptureFlags???
 local function FindHoveredWindow()
     GImRiceUI.HoveredWindow = nil
 
@@ -606,7 +781,7 @@ local function FindHoveredWindow()
         if window and window.Open then
             x, y, w, h = window.Pos.x, window.Pos.y, window.Size.w, window.Size.h
 
-            local hit = IsMouseHoveringRect(window.Pos.x, window.Pos.y, window.Size.w, window.Size.h)
+            local hit = IsMouseHoveringRect(x, y, w, h)
 
             if hit and GImRiceUI.HoveredWindow == nil then
                 GImRiceUI.HoveredWindow = window
@@ -641,6 +816,10 @@ local function UpdateMouseInputs()
         local button_down = io.IsMouseDown(MouseButtonMap[i])
 
         io.MouseClicked[i] = button_down and (io.MouseDownDuration[i] < 0)
+
+        if io.MouseClicked[i] then
+            io.MouseClickedPos[i] = {x = io.MousePos.x, y = io.MousePos.y}
+        end
 
         io.MouseReleased[i] = not button_down and (io.MouseDownDuration[i] >= 0)
 
