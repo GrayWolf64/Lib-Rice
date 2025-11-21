@@ -5,6 +5,12 @@ local IsValid = IsValid
 local remove_at = table.remove
 local insert_at = table.insert
 
+local ipairs = ipairs
+local pairs  = pairs
+
+local ScrW = ScrW
+local ScrH = ScrH
+
 local GImRiceUI = nil
 
 local ImDir_Left  = 0
@@ -187,10 +193,10 @@ local function CreateNewContext()
         Config = DefaultConfig,
         Initialized = true,
 
-        WindowsFocusOrder = {}, -- ID
         Windows = {},
+        WindowsByID = {},
 
-        CurrentWindowStack = {}, -- ID
+        CurrentWindowStack = {},
         CurrentWindow = nil,
 
         IO = {
@@ -501,15 +507,19 @@ local function UpdateWindowManualResize(window)
 end
 
 --- ImGui::BringWindowToDisplayFront
-local function BringWindowToDisplayFront(window_id)
-    for i, id in ipairs(GImRiceUI.WindowsFocusOrder) do
-        if id == window_id then
-            remove_at(GImRiceUI.WindowsFocusOrder, i)
+local function BringWindowToDisplayFront(window)
+    local current_front_window = GImRiceUI.Windows[#GImRiceUI.Windows]
+
+    if current_front_window == window then return end
+
+    for i, this_window in ipairs(GImRiceUI.Windows) do
+        if this_window == window then
+            remove_at(GImRiceUI.Windows, i)
             break
         end
     end
 
-    insert_at(GImRiceUI.WindowsFocusOrder, window_id)
+    insert_at(GImRiceUI.Windows, window)
 end
 
 local function CloseButton(id, x, y, w, h)
@@ -555,38 +565,38 @@ local function CollapseButton(id, x, y, w, h)
 end
 
 local function CreateNewWindow(name)
-    if not GImRiceUI then return nil end
+    if not GImRiceUI then return end
 
     local window_id = ImHashStr(name)
 
-    if not GImRiceUI.Windows[window_id] then
-        --- struct IMGUI_API ImGuiWindow
-        GImRiceUI.Windows[window_id] = {
-            ID = window_id,
-            Name = name,
-            Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
-            Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h}, -- Current size (==SizeFull or collapsed title bar size)
-            SizeFull = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
+    --- struct IMGUI_API ImGuiWindow
+    local window = {
+        ID = window_id,
+        Name = name,
+        Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
+        Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h}, -- Current size (==SizeFull or collapsed title bar size)
+        SizeFull = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
 
-            Active = false,
+        Active = false,
 
-            Open = true,
-            Collapsed = false,
+        Open = true,
+        Collapsed = false,
 
-            DrawList = {},
+        DrawList = {},
 
-            IDStack = {},
+        IDStack = {},
 
-            --- struct IMGUI_API ImGuiWindowTempData
-            DC = {
-                CursorPos = {}
-            }
+        --- struct IMGUI_API ImGuiWindowTempData
+        DC = {
+            CursorPos = {}
         }
+    }
 
-        insert_at(GImRiceUI.WindowsFocusOrder, window_id)
-    end
+    GImRiceUI.WindowsByID[window_id] = window
 
-    return window_id
+    insert_at(GImRiceUI.Windows, window)
+
+    return window
 end
 
 --- ImGui::RenderFrame, ImGui::RenderFrameBorder
@@ -667,8 +677,7 @@ local function RenderWindowTitleBarContents(window)
 end
 
 local function Render()
-    for _, window_id in ipairs(GImRiceUI.WindowsFocusOrder) do
-        local window = GImRiceUI.Windows[window_id]
+    for _, window in ipairs(GImRiceUI.Windows) do
         if window and window.Open and window.DrawList then
             for _, cmd in ipairs(window.DrawList) do
                 cmd.draw_call(unpack(cmd.args))
@@ -710,14 +719,29 @@ local function UpdateMouseMovingWindowEndFrame()
     end
 end
 
+--- ImGui::FindWindowByID
+local function FindWindowByID(id)
+    if not GImRiceUI then return end
+
+    return GImRiceUI.WindowsByID[id]
+end
+
+--- ImGui::FindWindowByName
+local function FindWindowByName(name)
+    local id = ImHashStr(name)
+    return FindWindowByID(id)
+end
+
 local function Begin(name)
-    if name == nil or name == "" then
-        GImRiceUI.CurrentWindow = nil
-        return false
+    if name == nil or name == "" then return false end
+
+    local window = FindWindowByName(name)
+    local window_just_created = (window == nil)
+    if window_just_created then
+        window = CreateNewWindow(name)
     end
 
-    local window_id = CreateNewWindow(name)
-    local window = GImRiceUI.Windows[window_id]
+    local window_id = window.ID
 
     GImRiceUI.CurrentWindow = window
 
@@ -726,7 +750,7 @@ local function Begin(name)
     end
     PushID(window_id)
 
-    insert_at(GImRiceUI.CurrentWindowStack, window_id)
+    insert_at(GImRiceUI.CurrentWindowStack, window)
 
     window.Active = true
 
@@ -740,7 +764,7 @@ local function Begin(name)
 
     if window_hit and GImRiceUI.IO.MouseClicked[1] and GImRiceUI.HoveredWindow == window then
         GImRiceUI.ActiveID = window_id
-        BringWindowToDisplayFront(window_id)
+        BringWindowToDisplayFront(window)
     end
 
     for i = #window.DrawList, 1, -1 do
@@ -774,9 +798,8 @@ local function FindHoveredWindow()
 
     local x, y, w, h
 
-    for i = #GImRiceUI.WindowsFocusOrder, 1, -1 do
-        local window_id = GImRiceUI.WindowsFocusOrder[i]
-        local window = GImRiceUI.Windows[window_id]
+    for i = #GImRiceUI.Windows, 1, -1 do
+        local window = GImRiceUI.Windows[i]
 
         if window and window.Open then
             x, y, w, h = window.Pos.x, window.Pos.y, window.Size.w, window.Size.h
@@ -865,6 +888,8 @@ end
 local function EndFrame()
     UpdateMouseMovingWindowEndFrame()
 end
+
+--- void ImGui::Shutdown()
 
 -- test here
 
