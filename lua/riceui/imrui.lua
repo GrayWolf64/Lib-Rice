@@ -18,6 +18,11 @@ local ImDir_Right = 1
 local ImDir_Up    = 2
 local ImDir_Down  = 3
 
+local ImResizeGripDef = {
+    {CornerPos = {x = 1, y = 1}, InnerDir = {x = -1, y = -1}}, -- Bottom right grip
+    {CornerPos = {x = 0, y = 1}, InnerDir = {x =  1, y = -1}} -- Bottom left
+}
+
 --- Notable: VGUIMousePressAllowed?
 local GDummyPanel = GDummyPanel or nil
 
@@ -59,7 +64,7 @@ local function DetachDummyPanel()
     GDummyPanel:SetVisible(false)
 end
 
-local function SetCursor(cursor_str)
+local function SetMouseCursor(cursor_str)
     if not IsValid(GDummyPanel) then return end
 
     GDummyPanel:SetCursor(cursor_str)
@@ -99,6 +104,8 @@ local function ImHashStr(str)
 
     return hash
 end
+
+local ImNoColor = {r = 0, g = 0, b = 0, a = 0}
 
 --- ImGui::StyleColorsDark
 local StyleColorsDark = {
@@ -193,8 +200,8 @@ local function CreateNewContext()
         Config = DefaultConfig,
         Initialized = true,
 
-        Windows = {},
-        WindowsByID = {},
+        Windows = {}, -- Windows sorted in display order, back to front
+        WindowsByID = {}, -- Map window's ID to window ref
 
         CurrentWindowStack = {},
         CurrentWindow = nil,
@@ -428,81 +435,119 @@ end
 -- end
 
 --- static int ImGui::UpdateWindowManualResize
--- TODO: now we only have one resize grip
 local function UpdateWindowManualResize(window)
+    local grip_hover_inner_size = GImRiceUI.FontSize * 1.3
+    local grip_hover_outer_size = GImRiceUI.FontSize * 0.2
+
     PushID("#RESIZE")
 
-    local resize_rect = {
-        x = window.Pos.x + window.Size.w - GImRiceUI.FontSize * 1.3,
-        y = window.Pos.y + window.Size.h - GImRiceUI.FontSize * 1.3,
-        w = GImRiceUI.FontSize * 1.3,
-        h = GImRiceUI.FontSize * 1.3
-    }
+    local resize_grip_colors = {}
+    for i = 1, #ImResizeGripDef do
+        local corner_pos = ImResizeGripDef[i].CornerPos
+        local inner_dir = ImResizeGripDef[i].InnerDir
 
-    local pressed, hovered, held = ButtonBehavior(GetID(0), resize_rect.x, resize_rect.y, resize_rect.w, resize_rect.h)
+        local corner = {
+            x = window.Pos.x + corner_pos.x * window.Size.w,
+            y = window.Pos.y + corner_pos.y * window.Size.h
+        }
+
+        local resize_rect = {
+            x = corner.x - inner_dir.x * grip_hover_outer_size,
+            y = corner.y - inner_dir.y * grip_hover_outer_size,
+            w = inner_dir.x * (grip_hover_inner_size + grip_hover_outer_size),
+            h = inner_dir.y * (grip_hover_inner_size + grip_hover_outer_size)
+        }
+
+        if resize_rect.w < 0 then
+            resize_rect.x = resize_rect.x + resize_rect.w
+            resize_rect.w = -resize_rect.w
+        end
+        if resize_rect.h < 0 then
+            resize_rect.y = resize_rect.y + resize_rect.h
+            resize_rect.h = -resize_rect.h
+        end
+
+        local pressed, hovered, held = ButtonBehavior(GetID(i), resize_rect.x, resize_rect.y, resize_rect.w, resize_rect.h)
+
+        if hovered or held then
+            GImRiceUI.MovingWindow = nil
+            if i == 1 then
+                SetMouseCursor("sizenwse")
+            elseif i == 2 then
+                SetMouseCursor("sizenesw")
+            end
+        end
+
+        if held then
+            -- TODO: simplify, extract into funcs above
+            local min_size = window.SizeMin or { w = 60, h = 50 }
+            local max_size = window.SizeMax or { w = math.huge, h = math.huge }
+
+            local clamp_rect = {
+                Min = {x = window.Pos.x + min_size.w, y = window.Pos.y + min_size.h},
+                Max = {x = window.Pos.x + max_size.w, y = window.Pos.y + max_size.h}
+            }
+
+            local clamp_min = {
+                x = (corner_pos.x == 1.0) and clamp_rect.Min.x or -math.huge,
+                y = (corner_pos.y == 1.0) and clamp_rect.Min.y or -math.huge
+            }
+
+            local clamp_max = {
+                x = (corner_pos.x == 0.0) and clamp_rect.Max.x or math.huge,
+                y = (corner_pos.y == 0.0) and clamp_rect.Max.y or math.huge
+            }
+
+            local corner_target = {
+                x = GImRiceUI.IO.MousePos.x - (inner_dir.x * grip_hover_outer_size),
+                y = GImRiceUI.IO.MousePos.y - (inner_dir.y * grip_hover_outer_size)
+            }
+
+            corner_target.x = math.max(clamp_min.x, math.min(clamp_max.x, corner_target.x))
+            corner_target.y = math.max(clamp_min.y, math.min(clamp_max.y, corner_target.y))
+
+            local new_pos = {x = window.Pos.x, y = window.Pos.y}
+            local new_size = {w = window.Size.w, h = window.Size.h}
+
+            if corner_pos.x == 1 then
+                new_size.w = math.max(min_size.w, corner_target.x - window.Pos.x)
+                new_size.h = math.max(min_size.h, corner_target.y - window.Pos.y)
+            else
+                local potential_new_width = (window.Pos.x + window.Size.w) - corner_target.x
+
+                if potential_new_width >= min_size.w then
+                    new_pos.x = corner_target.x
+                    new_size.w = potential_new_width
+                else
+                    new_pos.x = window.Pos.x + window.Size.w - min_size.w
+                    new_size.w = min_size.w
+                end
+
+                new_size.h = math.max(min_size.h, corner_target.y - window.Pos.y)
+            end
+
+            new_size.w = math.min(new_size.w, max_size.w)
+            new_size.h = math.min(new_size.h, max_size.h)
+
+            window.Pos = {x = new_pos.x, y = new_pos.y}
+            window.Size = {w = new_size.w, h = new_size.h}
+            window.SizeFull = {w = new_size.w, h = new_size.h}
+        end
+
+        local grip_color = GImRiceUI.Style.Colors.ResizeGrip
+        if i == 2 then
+            grip_color = ImNoColor
+        end
+        if pressed or held then
+            grip_color = GImRiceUI.Style.Colors.ResizeGripActive
+        elseif hovered then
+            grip_color = GImRiceUI.Style.Colors.ResizeGripHovered
+        end
+        resize_grip_colors[i] = grip_color
+    end
 
     PopID()
 
-    if hovered or held then
-        GImRiceUI.MovingWindow = nil
-        SetCursor("sizenwse")
-    end
-
-    if held then
-        local corner_pos_n = {x = 1.0, y = 1.0}  -- Bottom-right corner
-        local inner_dir = {x = -1, y = -1}       -- Resize direction
-
-        -- TODO: simplify, extract into funcs above
-        local min_size = window.SizeMin or { w = 50, h = 50 }
-        local max_size = window.SizeMax or { w = math.huge, h = math.huge }
-
-        local clamp_rect = {
-            Min = { x = window.Pos.x + min_size.w, y = window.Pos.y + min_size.h },
-            Max = { x = window.Pos.x + max_size.w, y = window.Pos.y + max_size.h }
-        }
-
-        local clamp_min = {
-            x = (corner_pos_n.x == 1.0) and clamp_rect.Min.x or -math.huge,
-            y = (corner_pos_n.y == 1.0) and clamp_rect.Min.y or -math.huge
-        }
-
-        local clamp_max = {
-            x = (corner_pos_n.x == 0.0) and clamp_rect.Max.x or math.huge,
-            y = (corner_pos_n.y == 0.0) and clamp_rect.Max.y or math.huge
-        }
-
-        -- Calculate corner target based on mouse position and grip offset
-        local grip_hover_outer_size = GImRiceUI.FontSize * 1.3
-
-        local corner_target = {
-            x = GImRiceUI.IO.MousePos.x - (inner_dir.x * grip_hover_outer_size),
-            y = GImRiceUI.IO.MousePos.y - (inner_dir.y * grip_hover_outer_size)
-        }
-
-        corner_target.x = math.max(clamp_min.x, math.min(clamp_max.x, corner_target.x))
-        corner_target.y = math.max(clamp_min.y, math.min(clamp_max.y, corner_target.y))
-
-        local new_size = {
-            w = math.max(min_size.w, corner_target.x - window.Pos.x),
-            h = math.max(min_size.h, corner_target.y - window.Pos.y)
-        }
-
-        new_size.w = math.min(new_size.w, max_size.w)
-        new_size.h = math.min(new_size.h, max_size.h)
-
-        window.Size = {w = new_size.w, h = new_size.h}
-
-        window.SizeFull = {w = new_size.w, h = new_size.h}
-    end
-
-    local resize_grip_colors = {}
-    local grip_color = GImRiceUI.Style.Colors.ResizeGrip
-    if pressed or held then
-        grip_color = GImRiceUI.Style.Colors.ResizeGripActive
-    elseif hovered then
-        grip_color = GImRiceUI.Style.Colors.ResizeGripHovered
-    end
-    resize_grip_colors[1] = grip_color
     return resize_grip_colors
 end
 
@@ -636,12 +681,33 @@ local function RenderWindowDecorations(window, titlebar_is_highlight, resize_gri
             window.Size.w - 2 * border_width, window.Size.h - GImRiceUI.Config.TitleHeight - border_width)
 
         -- Resize grip(s)
-        local grip_indices = {
-            {x = window.Pos.x + window.Size.w - border_width * 1.2, y = window.Pos.y + window.Size.h - border_width * 1.2 - resize_grip_draw_size},
-            {x = window.Pos.x + window.Size.w - border_width * 1.2, y = window.Pos.y + window.Size.h - border_width * 1.2},
-            {x = window.Pos.x + window.Size.w - border_width * 1.2 - resize_grip_draw_size, y = window.Pos.y + window.Size.h - border_width * 1.2}
-        }
-        AddTriangleFilled(window.DrawList, grip_indices, resize_grip_colors[1])
+        for i = 1, #ImResizeGripDef do
+            local corner_pos = ImResizeGripDef[i].CornerPos
+            local inner_dir = ImResizeGripDef[i].InnerDir
+
+            local corner = {
+                x = window.Pos.x + corner_pos.x * window.Size.w,
+                y = window.Pos.y + corner_pos.y * window.Size.h
+            }
+
+            local padding = border_width * 1.3
+            local grip_indices -- TODO: this is hard to maintain
+            if inner_dir.x == -1 and inner_dir.y == -1 then
+                grip_indices = {
+                    {x = corner.x + padding * inner_dir.x, y = corner.y + padding * inner_dir.y}, -- Bottom-right corner
+                    {x = corner.x - resize_grip_draw_size - padding, y = corner.y - padding}, -- Left
+                    {x = corner.x + padding * inner_dir.x, y = corner.y - resize_grip_draw_size - padding} -- Up
+                }
+            elseif inner_dir.x  == 1 and inner_dir.y == -1 then
+                grip_indices = {
+                    {x = corner.x + padding * inner_dir.x, y = corner.y + padding * inner_dir.y}, -- Bottom-left corner
+                    {x = corner.x + padding * inner_dir.x, y = corner.y - resize_grip_draw_size - padding}, -- Up
+                    {x = corner.x + resize_grip_draw_size + padding, y = corner.y - padding} -- Right
+                }
+            end
+
+            AddTriangleFilled(window.DrawList, grip_indices, resize_grip_colors[i])
+        end
 
         -- RenderWindowOuterBorders?
         AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border,
