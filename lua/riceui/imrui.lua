@@ -203,6 +203,8 @@ local function CreateNewContext()
         Style = {
             FramePadding = {x = 4, y = 3},
 
+            WindowRounding = 0,
+
             Colors = StyleColorsDark,
             Fonts = StyleFontsDefault,
 
@@ -492,7 +494,7 @@ end
 
 --- static int ImGui::UpdateWindowManualResize
 local function UpdateWindowManualResize(window)
-    local grip_draw_size = ImTrunc(ImMax(GImRiceUI.FontSize * 1.35, window.WindowRounding + 1.0 + GImRiceUI.FontSize * 0.2))
+    local grip_draw_size = ImTrunc(ImMax(GImRiceUI.FontSize * 1.35, GImRiceUI.Style.WindowRounding + 1.0 + GImRiceUI.FontSize * 0.2))
     local grip_hover_inner_size = ImTrunc(grip_draw_size * 0.75)
     local grip_hover_outer_size = GImRiceUI.WindowsBorderHoverPadding + 1
 
@@ -682,8 +684,6 @@ local function CreateNewWindow(name)
 
         Open = true,
         Collapsed = false,
-
-        WindowRounding = 0,
 
         DrawList = {},
 
@@ -911,7 +911,7 @@ local function Begin(name)
     if not window.Collapsed then
         resize_grip_colors = UpdateWindowManualResize(window)
     end
-    local resize_grip_draw_size = ImTrunc(ImMax(GImRiceUI.FontSize * 1.10, window.WindowRounding + 1.0 + GImRiceUI.FontSize * 0.2));
+    local resize_grip_draw_size = ImTrunc(ImMax(GImRiceUI.FontSize * 1.10, GImRiceUI.Style.WindowRounding + 1.0 + GImRiceUI.FontSize * 0.2));
 
     local title_bar_is_highlight = true -- FIXME: proper cond, just always highlight now
 
