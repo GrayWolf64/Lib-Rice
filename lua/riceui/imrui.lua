@@ -671,7 +671,7 @@ local function CreateNewWindow(name)
     local window = {
         ID = window_id,
 
-        MoveID = GetID("#MOVE"),
+        MoveID = 0,
 
         Name = name,
         Pos = {x = GImRiceUI.Config.WindowPos.x, y = GImRiceUI.Config.WindowPos.y},
@@ -884,6 +884,7 @@ local function Begin(name)
         window.IDStack[i] = nil
     end
     PushID(window_id)
+    window.MoveID = GetID("#MOVE") -- TODO: investigate
 
     insert_at(GImRiceUI.CurrentWindowStack, window)
 
