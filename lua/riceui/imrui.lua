@@ -1044,13 +1044,11 @@ hook.Add("PostRender", "ImRiceUI", function()
 
     NewFrame()
 
-    if Begin("Hello World!") then
-        End()
-    end
+    Begin("Hello World!")
+    End()
 
-    if Begin("ImRiceUI Demo") then
-        End()
-    end
+    Begin("ImRiceUI Demo")
+    End()
 
     EndFrame()
 
