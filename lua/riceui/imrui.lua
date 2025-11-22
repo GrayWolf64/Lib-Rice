@@ -186,8 +186,6 @@ local DefaultConfig = {
     WindowSize = {w = 500, h = 480},
     WindowPos = {x = 0, y = 0},
 
-    TitleHeight = 25,
-
     WindowBorderWidth = 1,
 }
 
@@ -261,6 +259,11 @@ local function CreateNewContext()
 
     return GImRiceUI
 end
+
+--- void ImGuiStyle::ScaleAllSizes
+-- local function ScaleAllSizes(scale_factor)
+
+-- end
 
 --- void ImGui::StopMouseMovingWindow()
 local function StopMouseMovingWindow()
@@ -680,6 +683,8 @@ local function CreateNewWindow(name)
         Size = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h}, -- Current size (==SizeFull or collapsed title bar size)
         SizeFull = {w = GImRiceUI.Config.WindowSize.w, h = GImRiceUI.Config.WindowSize.h},
 
+        TitleBarHeight = 0,
+
         Active = false,
 
         Open = true,
@@ -724,19 +729,19 @@ local function RenderWindowDecorations(window, titlebar_is_highlight, resize_gri
         AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.TitleBgCollapsed,
             window.Pos.x + border_width, window.Pos.y + border_width,
             window.Size.w - 2 * border_width,
-            GImRiceUI.Config.TitleHeight - 2 * border_width)
+            window.TitleBarHeight - 2 * border_width)
         AddRectOutline(window.DrawList, GImRiceUI.Style.Colors.Border,
             window.Pos.x, window.Pos.y,
-            window.Size.w, GImRiceUI.Config.TitleHeight, border_width)
+            window.Size.w, window.TitleBarHeight, border_width)
     else
         AddRectFilled(window.DrawList, title_color,
             window.Pos.x + border_width, window.Pos.y + border_width,
             window.Size.w - 2 * border_width,
-            GImRiceUI.Config.TitleHeight)
+            window.TitleBarHeight)
         -- Window background
         AddRectFilled(window.DrawList, GImRiceUI.Style.Colors.WindowBg,
-            window.Pos.x + border_width, window.Pos.y + GImRiceUI.Config.TitleHeight + border_width,
-            window.Size.w - 2 * border_width, window.Size.h - GImRiceUI.Config.TitleHeight - border_width)
+            window.Pos.x + border_width, window.Pos.y + window.TitleBarHeight + border_width,
+            window.Size.w - 2 * border_width, window.Size.h - window.TitleBarHeight - border_width)
 
         -- Resize grip(s)
         for i = 1, #ImResizeGripDef do
@@ -777,7 +782,7 @@ end
 --- ImGui::RenderWindowTitleBarContents
 local function RenderWindowTitleBarContents(window)
     -- Collapse button
-    local collapse_button_size = GImRiceUI.Config.TitleHeight - 8
+    local collapse_button_size = window.TitleBarHeight - 8
     local collapse_button_x = window.Pos.x + 4 -- TODO: use style padding val
     local collapse_button_y = window.Pos.y + 4
     if CollapseButton(GetID("#COLLAPSE"), collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
@@ -785,7 +790,7 @@ local function RenderWindowTitleBarContents(window)
     end
 
     -- Close button
-    local close_button_size = GImRiceUI.Config.TitleHeight * 0.75
+    local close_button_size = window.TitleBarHeight * 0.75
     local close_button_x = window.Pos.x + window.Size.w - close_button_size - 4
     local close_button_y = window.Pos.y + 4
     if CloseButton(GetID("#CLOSE"), close_button_x, close_button_y, close_button_size, close_button_size) then
@@ -793,9 +798,9 @@ local function RenderWindowTitleBarContents(window)
     end
 
     -- Title text
-    local text_clip_width = window.Size.w - GImRiceUI.Config.TitleHeight - close_button_size - collapse_button_size
+    local text_clip_width = window.Size.w - window.TitleBarHeight - close_button_size - collapse_button_size
     RenderTextClipped(window.DrawList, window.Name, GImRiceUI.Style.Fonts.Title,
-        window.Pos.x + GImRiceUI.Config.TitleHeight, window.Pos.y + GImRiceUI.Config.TitleHeight / 4,
+        window.Pos.x + window.TitleBarHeight, window.Pos.y + window.TitleBarHeight / 4,
         GImRiceUI.Style.Colors.Text,
         text_clip_width, window.Size.h)
 end
@@ -890,8 +895,10 @@ local function Begin(name)
 
     window.Active = true
 
+    window.TitleBarHeight = GImRiceUI.FontSize + GImRiceUI.Style.FramePadding.y * 2
+
     if window.Collapsed then
-        window.Size.h = GImRiceUI.Config.TitleHeight
+        window.Size.h = window.TitleBarHeight
     else
         window.Size.h = window.SizeFull.h
     end
