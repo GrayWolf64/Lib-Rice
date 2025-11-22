@@ -6,7 +6,6 @@ local remove_at = table.remove
 local insert_at = table.insert
 
 local ipairs = ipairs
-local pairs  = pairs
 
 local ScrW = ScrW
 local ScrH = ScrH
@@ -19,6 +18,10 @@ local ImDir_Left  = 0
 local ImDir_Right = 1
 local ImDir_Up    = 2
 local ImDir_Down  = 3
+
+--- font_data size range: 4~255
+local IM_FONT_SIZE_MIN = 4
+local IM_FONT_SIZE_MAX = 255
 
 local ImResizeGripDef = {
     {CornerPos = {x = 1, y = 1}, InnerDir = {x = -1, y = -1}}, -- Bottom right grip
@@ -85,8 +88,6 @@ end
 -- TODO: fix other places where ids are treated as strings!!!
 local str_byte, bit_bxor, bit_band = string.byte, bit.bxor, bit.band
 local function ImHashStr(str)
-    if not GImRiceUI then return end
-
     local FNV_OFFSET_BASIS = 0x811C9DC5
     local FNV_PRIME = 0x01000193
 
@@ -110,6 +111,7 @@ end
 local ImMin = math.min
 local ImMax = math.max
 local ImFloor = math.floor
+local ImRound = math.Round
 local function ImLerp(a, b, t) return a + (b - a) * t end
 local function ImClamp(v, min, max) return ImMin(ImMax(v, min), max) end
 local function ImTrunc(f) return ImFloor(f + 0.5) end
@@ -134,18 +136,13 @@ local StyleColorsDark = {
     ResizeGripActive  = ParseRGBA("ImVec4(0.26f, 0.59f, 0.98f, 0.95f)")
 }
 
---- TODO: font subsystem later
-local StyleFontsDefault = {
-    Title = "BudgetLabel"
-}
-
 local FontDataDefault = {
     font      = "Arial",
-    extended  = false,
     size      = 13,
     weight    = 500,
     blursize  = 0,
     scanlines = 0,
+    extended  = false,
     antialias = true,
     underline = false,
     italic    = false,
@@ -157,29 +154,142 @@ local FontDataDefault = {
     outline   = false
 }
 
+local str_format = string.format
+local function ImHashFontData(font_data)
+    local str = str_format("%s%03d%04d%02d%02d%1d%1d%1d%1d%1d%1d%1d%1d%1d%1d",
+        font_data.font       or FontDataDefault.font,
+        font_data.size       or FontDataDefault.size,
+        font_data.weight     or FontDataDefault.weight,
+        font_data.blursize   or FontDataDefault.blursize,
+        font_data.scanlines  or FontDataDefault.scanlines,
+        (font_data.extended  or FontDataDefault.extended)  and 1 or 0,
+        (font_data.antialias or FontDataDefault.antialias) and 1 or 0,
+        (font_data.underline or FontDataDefault.underline) and 1 or 0,
+        (font_data.italic    or FontDataDefault.italic)    and 1 or 0,
+        (font_data.strikeout or FontDataDefault.strikeout) and 1 or 0,
+        (font_data.symbol    or FontDataDefault.symbol)    and 1 or 0,
+        (font_data.rotary    or FontDataDefault.rotary)    and 1 or 0,
+        (font_data.shadow    or FontDataDefault.shadow)    and 1 or 0,
+        (font_data.additive  or FontDataDefault.additive)  and 1 or 0,
+        (font_data.outline   or FontDataDefault.outline)   and 1 or 0
+    )
+
+    return "ImFont" .. ImHashStr(str)
+end
+
+local pairs = pairs
+local function FontCopy(font_data)
+    local copy = {}
+    for k, v in pairs(font_data) do
+        copy[k] = v
+    end
+    return copy
+end
+
 --- Fonts created have a very long lifecycle, since can't be deleted
 -- ImFont {name = , data = }
-local GImFontAtlas = GImFontAtlas or {Fonts = {}}
+local ImFontAtlas = ImFontAtlas or {Fonts = {}}
 
---- Add or get a font, always take its return val as fontname
-function GImFontAtlas:AddFont(font_name, font_data)
-    for i = #self.Fonts, 1, -1 do
-        local identical = self.Fonts[i].name
+--- Add or get a font, always take its return val as fontname to be used with surface.SetFont
+-- ImFont* ImFontAtlas::AddFont
+function ImFontAtlas:AddFont(font_data)
+    local hash = ImHashFontData(font_data)
+    if self.Fonts[hash] then return hash end
 
-        for key, _ in pairs(FontDataDefault) do
-            if self.Fonts[i].data[key] ~= font_data[key] then
-                identical = ""
-                break
-            end
-        end
+    self.Fonts[hash] = font_data
+    surface.CreateFont(hash, font_data)
 
-        if identical ~= "" then return identical end
+    return hash
+end
+
+--- void ImGui::UpdateCurrentFontSize
+local function UpdateCurrentFontSize(restore_font_size_after_scaling)
+    local final_size
+    if restore_font_size_after_scaling > 0 then
+        final_size = restore_font_size_after_scaling
+    else
+        final_size = 0
     end
 
-    self.Fonts[#self.Fonts + 1] = {name = font_name, data = font_data}
-    surface.CreateFont(font_name, font_data)
+    if final_size == 0 then
+        final_size = GImRiceUI.FontSizeBase
 
-    return font_name
+        final_size = final_size * GImRiceUI.Style.FontScaleMain
+    end
+
+    -- Again, due to gmod font system limitation
+    final_size = ImRound(final_size)
+    final_size = ImClamp(final_size, IM_FONT_SIZE_MIN, IM_FONT_SIZE_MAX)
+
+    GImRiceUI.FontSize = final_size
+
+    local font_data_new = FontCopy(ImFontAtlas.Fonts[GImRiceUI.Font])
+
+    font_data_new.size = final_size
+
+    local font_new = ImFontAtlas:AddFont(font_data_new)
+    GImRiceUI.Font = font_new
+end
+
+--- void ImGui::SetCurrentFont
+local function SetCurrentFont(font_name, font_size_before_scaling, font_size_after_scaling)
+    GImRiceUI.Font = font_name
+    GImRiceUI.FontSizeBase = font_size_before_scaling
+    UpdateCurrentFontSize(font_size_after_scaling) -- TODO: investigate
+end
+
+local function PushFont(font_name, font_size_base) -- FIXME: checks not implemented?
+    if not font_name or font_name == "" then
+        font_name = GImRiceUI.Font
+    end
+
+    insert_at(GImRiceUI.FontStack, {
+        Font = font_name,
+        FontSizeBeforeScaling = GImRiceUI.FontSizeBase,
+        FontSizeAfterScaling = GImRiceUI.FontSize
+    })
+
+    if font_size_base == 0 then
+        font_size_base = GImRiceUI.FontSizeBase
+    end
+
+    SetCurrentFont(font_name, font_size_base, 0)
+end
+
+local function PopFont()
+    if #GImRiceUI.FontStack == 0 then return end
+
+    local font_stack_data = GImRiceUI.FontStack[#GImRiceUI.FontStack]
+    SetCurrentFont(font_stack_data.Font, font_stack_data.FontSizeBeforeScaling, font_stack_data.FontSizeAfterScaling)
+
+    remove_at(GImRiceUI.FontStack)
+end
+
+local function GetDefaultFont() -- FIXME: fix impl
+    return ImFontAtlas:AddFont({
+        font = "ProggyCleanTT",
+        size = 18
+    })
+end
+
+--- void ImGui::UpdateFontsNewFrame
+local function UpdateFontsNewFrame() -- TODO: investigate
+    GImRiceUI.Font = GetDefaultFont()
+
+    local font_stack_data  = {
+        Font = GImRiceUI.Font,
+        FontSizeBeforeScaling = GImRiceUI.Style.FontSizeBase,
+        FontSizeAfterScaling = GImRiceUI.Style.FontSizeBase
+    }
+
+    SetCurrentFont(font_stack_data.Font, font_stack_data.FontSizeBeforeScaling, 0)
+
+    insert_at(GImRiceUI.FontStack, font_stack_data)
+end
+
+--- void ImGui::UpdateFontsEndFrame
+local function UpdateFontsEndFrame()
+    PopFont()
 end
 
 local DefaultConfig = {
@@ -204,7 +314,9 @@ local function CreateNewContext()
             WindowRounding = 0,
 
             Colors = StyleColorsDark,
-            Fonts = StyleFontsDefault,
+
+            FontSizeBase = 18,
+            FontScaleMain = 1,
 
             WindowMinSize = {w = 55, h = 55}
         },
@@ -249,8 +361,12 @@ local function CreateNewContext()
 
         FrameCount = 0,
 
+        Font = nil, -- Currently bound *FontName* to be used with surface.SetFont
         FontSize = 18,
-        FontSizeBase = 18
+        FontSizeBase = 18,
+
+        --- ImFontStackData
+        FontStack = {}
     }
 
     hook.Add("PostGamemodeLoaded", "ImGDummyWindow", function()
@@ -339,7 +455,7 @@ end
 
 --- ImGui::RenderArrow
 local function RenderArrow(draw_list, x, y, color, dir, scale)
-    local h = 14 * scale -- FontSize?
+    local h = GImRiceUI.FontSize
     local r = h * 0.40 * scale
 
     local center = {
@@ -781,26 +897,32 @@ end
 
 --- ImGui::RenderWindowTitleBarContents
 local function RenderWindowTitleBarContents(window)
-    -- Collapse button
-    local collapse_button_size = window.TitleBarHeight - 8
-    local collapse_button_x = window.Pos.x + 4 -- TODO: use style padding val
-    local collapse_button_y = window.Pos.y + 4
+    local pad_l = GImRiceUI.Style.FramePadding.x
+    local pad_r = GImRiceUI.Style.FramePadding.x
+    local button_size = GImRiceUI.FontSize
+
+    local collapse_button_size = button_size -- TODO: impl has_close_button and etc. based
+    local collapse_button_x = window.Pos.x + pad_l
+    local collapse_button_y = window.Pos.y + GImRiceUI.Style.FramePadding.y
+
+    local close_button_size = button_size
+    local close_button_x = window.Pos.x + window.Size.w - button_size - pad_r
+    local close_button_y = window.Pos.y + GImRiceUI.Style.FramePadding.y
+
     if CollapseButton(GetID("#COLLAPSE"), collapse_button_x, collapse_button_y, collapse_button_size, collapse_button_size) then
         window.Collapsed = not window.Collapsed
     end
 
-    -- Close button
-    local close_button_size = window.TitleBarHeight * 0.75
-    local close_button_x = window.Pos.x + window.Size.w - close_button_size - 4
-    local close_button_y = window.Pos.y + 4
     if CloseButton(GetID("#CLOSE"), close_button_x, close_button_y, close_button_size, close_button_size) then
         window.Open = false
     end
 
     -- Title text
+    surface.SetFont(GImRiceUI.Font) -- TODO: layouting
+    local _, text_h = surface.GetTextSize(window.Name)
     local text_clip_width = window.Size.w - window.TitleBarHeight - close_button_size - collapse_button_size
-    RenderTextClipped(window.DrawList, window.Name, GImRiceUI.Style.Fonts.Title,
-        window.Pos.x + window.TitleBarHeight, window.Pos.y + window.TitleBarHeight / 4,
+    RenderTextClipped(window.DrawList, window.Name, GImRiceUI.Font,
+        window.Pos.x + window.TitleBarHeight, window.Pos.y + (window.TitleBarHeight - text_h) / 1.3,
         GImRiceUI.Style.Colors.Text,
         text_clip_width, window.Size.h)
 end
@@ -1017,6 +1139,8 @@ local function NewFrame()
     end
     GImRiceUI.CurrentWindow = nil
 
+    UpdateFontsNewFrame()
+
     UpdateMouseInputs()
 
     GImRiceUI.HoveredID = 0
@@ -1037,6 +1161,8 @@ end
 
 --- TODO: FrameCountEnded
 local function EndFrame()
+    UpdateFontsEndFrame()
+
     UpdateMouseMovingWindowEndFrame()
 end
 
@@ -1050,6 +1176,9 @@ hook.Add("PostRender", "ImRiceUI", function()
     cam.Start2D()
 
     NewFrame()
+
+    -- Temporary, internal function used
+    -- UpdateCurrentFontSize(ImMax(18, math.abs(90 * math.sin(SysTime()))))
 
     Begin("Hello World!")
     End()
